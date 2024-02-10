@@ -1,8 +1,6 @@
 
-$(document).ready(function ()
-// Handler function when the html document is completely readed
-{
-    document.getElementById('btnLogin').onclick = function (e) { onClickListenerBtnLogin(); }
+$(document).ready(function () {
+    document.getElementById('login_btn').onclick = function (e) { onClickListenerBtnLogin(); }
 });
 
 function onClickListenerBtnLogin()
@@ -21,6 +19,8 @@ function onClickListenerBtnLogin()
         password : password
     };
 
+    alert("Da implementare il Servlet");
+    /*
     $.ajax({
         url : "http://127.0.0.1:8080/login",
         data : JSON.stringify(loginRequest),
@@ -37,4 +37,5 @@ function onClickListenerBtnLogin()
             alert("Non puoi loggarti -> " + response.answer)
         }
     })
+     */
 }

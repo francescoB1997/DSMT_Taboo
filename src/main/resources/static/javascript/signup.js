@@ -7,8 +7,10 @@ $(document).ready(function ()
 function onClickListenerBtnSignup()
 {
     let name = document.getElementById('txtboxName').value;
+    let surname = document.getElementById('txtboxSurname').value;
     let username = document.getElementById('txtboxUsername').value;
-    if(username === "" || name === "")
+
+    if( (username === "") || (name === "") || (surname === ""))
         return;
 
     let password = document.getElementById('txtboxPassword').value;

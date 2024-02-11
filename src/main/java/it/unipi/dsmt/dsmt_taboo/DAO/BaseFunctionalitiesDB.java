@@ -1,4 +1,4 @@
-package it.unipi.dsmt.dsmt_taboo.utility;
+package it.unipi.dsmt.dsmt_taboo.DAO;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

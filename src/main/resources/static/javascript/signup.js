@@ -29,4 +29,19 @@ function onClickListenerBtnSignup()
     }
 
     alert("Spring post login");
+    $.ajax({
+        url : "http://localhost:8080/signup",
+        data : JSON.stringify(person),
+        type : "POST",
+        contentType: 'application/json',
+
+        success: function ()
+        {
+            sessionStorage.setItem("userLog",uname);
+            location.href = "./playerMainPage.html"
+        },
+        error: function(xhr) {
+            alert(xhr.responseText)
+        }
+    })
 }

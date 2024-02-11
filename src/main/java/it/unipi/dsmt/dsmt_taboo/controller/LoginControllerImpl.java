@@ -72,18 +72,16 @@ public class LoginControllerImpl implements LoginControllerInterface
     @Override
     public ResponseEntity<String> signUp(@RequestBody UserDTO userToSignup)
     {
-        UserDTO user = new UserDTO(userToSignup.getFirstName(), UserSignUp.getLastName(), UserSignUp.getUsername(), UserSignUp.getPassword());
-        int control = userDao.signup(user);
+        int control = user.signup(userToSignup);
 
         if (control == 1)
         {
             session = SessionManagement.getInstance();
-            session.setLogUser(user.getUsername());
+            session.setLogUser(userToSignup.getUsername());
 
             return new ResponseEntity<>("Signup success", HttpStatus.OK);
         }
         else if(control == 0) return new ResponseEntity<>("Username already used", HttpStatus.BAD_REQUEST);
-
         else return new ResponseEntity<>("User not inserted", HttpStatus.BAD_REQUEST);
 
     }

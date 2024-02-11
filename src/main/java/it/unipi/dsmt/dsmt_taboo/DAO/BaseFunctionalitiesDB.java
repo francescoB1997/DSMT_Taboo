@@ -8,7 +8,8 @@ import java.sql.SQLException;
 public class BaseFunctionalitiesDB
     // Base functionalities to interact with DB
 {
-    private static final String DB_URL = "jdbc:mysql://localhost:3306/taboo";
+    public static final String DB_NAME = "taboo";
+    private static final String DB_URL = "jdbc:mysql://localhost:3306/" + DB_NAME;
     private static final String DB_USERNAME = "root";
     private static final String DB_PASSWORD = "root";
     private static Connection connection = null;

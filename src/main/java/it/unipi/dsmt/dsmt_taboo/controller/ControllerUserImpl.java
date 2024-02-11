@@ -1,5 +1,5 @@
 package it.unipi.dsmt.dsmt_taboo.controller;
 
-public class ControllerUserImpl {
+public class ControllerUserImpl implements ControllerUserInterface{
 
 }

@@ -7,34 +7,19 @@
     <script src="./javascript/login.js" type="text/javascript"></script>
     <link rel="stylesheet" href="./css/login.css">
 </head>
+    <body>
+        <div class="main">
+            <h1>Taboo Login</h1>
+            <h3>Enter your login credentials</h3>
+                <label id="lblUserName" for="txtboxUsername"> Username: </label>
+                <input type="text" id="txtboxUsername" name="txtboxUsername"  placeholder="Enter your Username" required>
 
-<body>
-    <div class="main">
-        <h1>GeeksforGeeks</h1>
-        <h3>Enter your login credentials</h3>
-            <label id="lblUserName" for="txtboxUsername">
-                Username:
-            </label>
-            <input type="text"
-                   id="txtboxUsername"
-                   name="txtboxUsername"
-                   placeholder="Enter your Username" required>
-
-            <label id="lblPassword" for="txtboxPassword">
-                Password:
-            </label>
-            <input type="password"
-                   id="txtboxPassword"
-                   name="txtboxPassword"
-                   placeholder="Enter your Password" required>
-            <button id="login_btn" name="login_btn">Login</button>
-        <p>Not registered?
-            <a href="#"
-               style="text-decoration: none;">
-                Create an account
-            </a>
-        </p>
-    </div>
-</body>
-
+                <label id="lblPassword" for="txtboxPassword"> Password: </label>
+                <input type="password" id="txtboxPassword" name="txtboxPassword" placeholder="Enter your Password" required>
+                <button id="login_btn" name="login_btn"> Login </button>
+            <p>
+                Not registered? <a href="#" style="text-decoration: none;"> Create an account </a>
+            </p>
+        </div>
+    </body>
 </html>

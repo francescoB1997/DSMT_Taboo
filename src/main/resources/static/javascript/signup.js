@@ -15,7 +15,7 @@ function onClickListenerBtnSignup()
 
     let password = document.getElementById('txtboxPassword').value;
     let repassword = document.getElementById('txtboxRePassword').value;
-    
+
     if (password !== repassword) {
         alert("Passwords do not match. Please re-enter.");
         return;

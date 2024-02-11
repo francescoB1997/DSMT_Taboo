@@ -18,24 +18,23 @@ function onClickListenerBtnLogin()
         username : username,
         password : password
     };
-
-    alert("Da implementare il Servlet");
-    /*
+    alert("Test login")
     $.ajax({
-        url : "http://127.0.0.1:8080/login",
+        url : "http://localhost:8080/login",
         data : JSON.stringify(loginRequest),
         type : "POST",
         dataType: "json",
         contentType: 'application/json',
-        success: function () {
-            sessionStorage.setItem("userLog",username);
-            sessionStorage.setItem("gameId","");
-            location.href = "./playerMainPage.html"
+        success: function ()
+        {
+            sessionStorage.setItem("userLog", username);
+            //sessionStorage.setItem("gameId","");
+            location.href = "./loggedPlayerPage.html"
         },
         error: function(xhr) {
             let response = JSON.parse(xhr.responseText)
             alert("Non puoi loggarti -> " + response.answer)
         }
     })
-     */
+
 }

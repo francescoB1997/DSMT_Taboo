@@ -1,6 +1,7 @@
 
-$(document).ready(function () {
-    document.getElementById('logintBtn').onclick = function (e) { onClickListenerBtnLogin(); }
+$(document).ready(function ()
+{
+    document.getElementById("loginBtn").onclick = function (e) { onClickListenerBtnLogin(); };
 });
 
 function onClickListenerBtnLogin()
@@ -13,7 +14,6 @@ function onClickListenerBtnLogin()
         location.href = "./admin.html"
         sessionStorage.setItem("userLog","admin");
     }
-
     let loginRequest = {
         username : username,
         password : password
@@ -28,14 +28,14 @@ function onClickListenerBtnLogin()
         success: function ()
         {
             sessionStorage.setItem("userLog", username);
-            alert(sessionStorage.getItem("userLog") + " ti reindirizzo...")
+            //alert(sessionStorage.getItem("userLog") + " ti reindirizzo...")
             //sessionStorage.setItem("gameId","");
-            location.href = "./loggedPlayerPage.html"
+            location.href = "../loggedPlayerPage.html"
         },
         error: function(xhr)
         {
-            let response = JSON.parse(xhr.responseText);
-            alert("Non puoi loggarti -> " + response.answer);
+            let serverResponse = JSON.parse(xhr.responseText);
+            alert(serverResponse.responseMessage);
         }
     })
 

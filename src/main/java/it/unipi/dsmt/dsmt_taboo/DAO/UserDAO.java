@@ -1,13 +1,14 @@
 package it.unipi.dsmt.dsmt_taboo.DAO;
 
 import it.unipi.dsmt.dsmt_taboo.exceptions.UserNotExistsException;
+import it.unipi.dsmt.dsmt_taboo.model.DTO.UserDTO;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class UserDAO extends BaseFunctionalitiesDB
+public class UserDAO extends BaseDAO
     // This class handle the UserDTO model and interact with the DB
 {
     public UserDAO()

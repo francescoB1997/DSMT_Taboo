@@ -36,19 +36,20 @@ public class LoginControllerImpl implements LoginControllerInterface
             loginResponse = new ServerReponseDTO("LoginOK");
             responseHttp = HttpStatus.OK;
             session.setLogUser(loginRequest.getUsername());
+            System.out.println("Utente [" + loginRequest.getUsername() + "] loggato");
         }
         catch (UserNotExistsException e)
         {
             loginResponse = new ServerReponseDTO(e.getMessage());
             responseHttp = HttpStatus.BAD_REQUEST;
-            System.out.println("LoginControllerImpl -> UserNotExistsException: " + e.getMessage());
+            System.out.println("LoginControllerImpl -> " + e.getMessage());
         }
         return new ResponseEntity<>(loginResponse, responseHttp);
     }
 
     @PostMapping("/logout")
     @Override
-    public ResponseEntity<String> logoutRequest(@RequestBody String Username)
+    public ResponseEntity<ServerReponseDTO> logoutRequest(@RequestBody String Username)
     {
         System.out.println("Logut request di " + Username);
         ServerReponseDTO logoutResponse;
@@ -61,28 +62,39 @@ public class LoginControllerImpl implements LoginControllerInterface
         }
         else
         {
-            logoutResponse = new ServerReponseDTO("Logout success");
+            logoutResponse = new ServerReponseDTO("Logout Success");
             responseHttp = HttpStatus.OK;
         }
         session.logoutUser(Username);
-        return new ResponseEntity<>(logoutResponse.getResponseMessage(), responseHttp);
+        return new ResponseEntity<>(logoutResponse, responseHttp);
     }
 
     @PostMapping("/signup")
     @Override
-    public ResponseEntity<String> signUp(@RequestBody UserDTO userToSignup)
+    public ResponseEntity<ServerReponseDTO> signUp(@RequestBody UserDTO userToSignup)
     {
         int control = user.signup(userToSignup);
-
+        ServerReponseDTO signupResponse;
+        HttpStatus responseHttp;
         if (control == 1)
         {
             session = SessionManagement.getInstance();
             session.setLogUser(userToSignup.getUsername());
-
-            return new ResponseEntity<>("Signup success", HttpStatus.OK);
+            System.out.println("Username: [" + userToSignup.getUsername() + "] completely registered");
+            signupResponse = new ServerReponseDTO("Signup Success");
+            responseHttp = HttpStatus.OK;
         }
-        else if(control == 0) return new ResponseEntity<>("Username already used", HttpStatus.BAD_REQUEST);
-        else return new ResponseEntity<>("User not inserted", HttpStatus.BAD_REQUEST);
+        else if(control == 0)
+        {
+            signupResponse = new ServerReponseDTO("Username alredy used");
+            responseHttp = HttpStatus.BAD_REQUEST;
+        }
+        else
+        {
+            signupResponse = new ServerReponseDTO("User not inserted");
+            responseHttp = HttpStatus.BAD_REQUEST;
+        }
 
+        return new ResponseEntity<>(signupResponse, responseHttp);
     }
 }

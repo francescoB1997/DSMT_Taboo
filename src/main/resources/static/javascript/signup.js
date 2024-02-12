@@ -14,34 +14,43 @@ function onClickListenerBtnSignup()
         return;
 
     let password = document.getElementById('txtboxPassword').value;
-    let repassword = document.getElementById('txtboxRePassword').value;
+    let rePassword = document.getElementById('txtboxRePassword').value;
 
-    if (password !== repassword) {
+    if (password !== rePassword) {
         alert("Passwords do not match. Please re-enter.");
         return;
     }
 
+    /*Commento da togliere solo alla fine
     let passwordRegex = /^(?=.*\d)(?=.*[a-zA-Z])(?=.*[^a-zA-Z0-9])\S{8,}$/;
 
     if (!passwordRegex.test(password)) {
         alert("Password must be at least 8 characters long and include at least one number, one alphabet, and one symbol.");
         return;
     }
+    */
 
-    alert("Spring post login");
+    let newUser = {
+        username : username,
+        name : name,
+        surname : surname,
+        password : password
+    }
+
     $.ajax({
         url : "http://localhost:8080/signup",
-        data : JSON.stringify(person),
+        data : JSON.stringify(newUser),
         type : "POST",
         contentType: 'application/json',
-
         success: function ()
         {
-            sessionStorage.setItem("userLog",uname);
-            location.href = "./playerMainPage.html"
+            sessionStorage.setItem("userLog", username);
+            location.href = "../loggedPlayerPage.html"
         },
-        error: function(xhr) {
-            alert(xhr.responseText)
+        error: function(xhr)
+        {
+            let serverResponse = JSON.parse(xhr.responseText);
+            alert(serverResponse.responseMessage)
         }
     })
 }

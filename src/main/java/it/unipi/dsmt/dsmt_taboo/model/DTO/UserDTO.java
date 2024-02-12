@@ -2,17 +2,18 @@ package it.unipi.dsmt.dsmt_taboo.model.DTO;
 
 public class UserDTO
 {
+    private String username;
     private String name;
     private String surname;
     private String password;
-    private String username;
 
-    public UserDTO(String name, String surname, String username, String password)
+
+    public UserDTO(String username, String name, String surname, String password)
     {
+        this.username = username;
         this.name = name;
         this.surname = surname;
         this.password = password;
-        this.username= username;
     }
 
     public String getName() {

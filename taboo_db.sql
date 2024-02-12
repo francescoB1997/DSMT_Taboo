@@ -19,13 +19,13 @@ USE `taboo`;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Table structure for table `friends`
+-- Table structure for table `friendship`
 --
 
-DROP TABLE IF EXISTS `friends`;
+DROP TABLE IF EXISTS `friendship`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `friends` (
+CREATE TABLE `friendship` (
                            `Username1` varchar(45) NOT NULL,
                            `Username2` varchar(45) NOT NULL,
                            PRIMARY KEY (`Username1`,`Username2`)
@@ -33,13 +33,13 @@ CREATE TABLE `friends` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `friends`
+-- Dumping data for table `friendship`
 --
 
-LOCK TABLES `friends` WRITE;
-/*!40000 ALTER TABLE `friends` DISABLE KEYS */;
-INSERT INTO `friends` VALUES ('alex_cook','ella_miller'),('alex_cook','mia_brown'),('ella_miller','luke_smith'),('emma_taylor','owen_hall'),('jackson84','max_wilson'),('jackson84','sarah_johnson'),('liam_adams','noah_carter'),('liam_adams','owen_hall'),('liam_adams','zoe_jenkins'),('max_wilson','emma_taylor'),('max_wilson','owen_hall'),('owen_hall','alex_cook'),('owen_hall','ella_miller'),('owen_hall','sarah_johnson'),('sarah_johnson','alex_cook'),('sarah_johnson','david_moore'),('sarah_johnson','jackson84'),('sophie_davis','david_moore'),('user123','jackson84'),('user456','lily22');
-/*!40000 ALTER TABLE `friends` ENABLE KEYS */;
+LOCK TABLES `friendship` WRITE;
+/*!40000 ALTER TABLE `friendship` DISABLE KEYS */;
+INSERT INTO `friendship` VALUES ('alex_cook','ella_miller'),('alex_cook','mia_brown'),('ella_miller','luke_smith'),('emma_taylor','owen_hall'),('jackson84','max_wilson'),('jackson84','sarah_johnson'),('liam_adams','noah_carter'),('liam_adams','owen_hall'),('liam_adams','zoe_jenkins'),('max_wilson','emma_taylor'),('max_wilson','owen_hall'),('owen_hall','alex_cook'),('owen_hall','ella_miller'),('owen_hall','sarah_johnson'),('sarah_johnson','alex_cook'),('sarah_johnson','david_moore'),('sarah_johnson','jackson84'),('sophie_davis','david_moore'),('user123','jackson84'),('user456','lily22');
+/*!40000 ALTER TABLE `friendship` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -95,14 +95,3 @@ LOCK TABLES `user` WRITE;
 INSERT INTO `user` VALUES ('alex_cook','Alex','Cook','OceanWave456'),('amy_carter','Amy','Carter','Garden789'),('david_moore','David','Moore','Moonlight789'),('ella_miller','Ella','Miller','SweetDreams123'),('emma_taylor','Emma','Taylor','Butterfly123'),('grace_clark','Grace','Clark','PurpleRain123'),('jack_robinson','Jack','Robinson','CoffeeTime456'),('jackson84','Jackson','Smith','Secure123!'),('liam_adams','Liam','Adams','SecretGarden123'),('lily22','Lily','Williams','Rainbow456'),('luke_smith','Luke','Smith','GoldenSun456'),('max_wilson','Max','Wilson','BlueSky123'),('mia_brown','Mia','Brown','HappyDay123'),('mike_jones','Mike','Jones','Summer2023!'),('noah_carter','Noah','Carter','SunnyDay789'),('olivia_white','Olivia','White','HappyPlace456'),('owen_hall','Owen','Hall','Starlight456'),('sophie_davis','Sophie','Davis','Sunflower456'),('user1','John','Doe','pass123'),('user10','Emma','Anderson','access'),('user123','Sarah','Johnson','P@ssw0rd123'),('user2','Alice','Smith','qwerty'),('user3','Bob','Johnson','secret'),('user4','Eva','Williams','mypassword'),('user5','Charlie','Brown','letmein'),('user6','Olivia','Davis','p@ssw0rd'),('user7','Michael','Miller','secure123'),('user8','Sophia','Moore','password123'),('user9','Liam','Taylor','123456'),('zoe_jenkins','Zoe','Jenkins','MountainView123');
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
-/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
-
-/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
-/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
-/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
-/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
-
--- Dump completed on 2023-12-14 15:02:09

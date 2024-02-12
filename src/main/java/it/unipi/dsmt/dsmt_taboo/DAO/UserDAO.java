@@ -38,17 +38,16 @@ public class UserDAO extends BaseFunctionalitiesDB
             }
             catch (SQLException ex)
             {
-                ex.printStackTrace();
+                //ex.printStackTrace();
                 return -1;
             }
 
             try (PreparedStatement preparedStatement = connection.prepareStatement(signupUserQuery)) // We can insert the new username
             {
-                preparedStatement.setString(3, user.getUsername());
-                preparedStatement.setString(1, user.getName());
-                preparedStatement.setString(2, user.getSurname());
+                preparedStatement.setString(1, user.getUsername());
+                preparedStatement.setString(2, user.getName());
+                preparedStatement.setString(3, user.getSurname());
                 preparedStatement.setString(4, user.getPassword());
-
 
                 if (preparedStatement.executeUpdate() == 0)
                 {
@@ -56,9 +55,11 @@ public class UserDAO extends BaseFunctionalitiesDB
                     return -1;
                 }
                 connection.commit();
-            } catch (SQLException ex) {
+            } catch (SQLException ex)
+            {
                 connection.rollback();
-                ex.printStackTrace();
+                System.out.println("Eccezione query");
+                //ex.printStackTrace();
                 return -1;
             }
         } catch (SQLException ex) {
@@ -68,10 +69,8 @@ public class UserDAO extends BaseFunctionalitiesDB
         return 1;
     }
 
-
     public void login(String username, String password) throws UserNotExistsException
     {
-        System.out.println("UserDAO: check username=" + username + " password=" + password);
         String loginQuery = "SELECT COUNT(*) as AccountExists FROM " + DB_NAME + ".user as u WHERE (u.username = ? AND u.password = ?);";
         try (
                 Connection connection = this.getConnection();
@@ -85,7 +84,6 @@ public class UserDAO extends BaseFunctionalitiesDB
                 if (resultSet.next())
                 {
                     int userExists = resultSet.getInt("AccountExists");
-                    System.out.println("Risultato query: " + userExists);
                     if(userExists == 0) // then, the user can't correctly login
                         throw new UserNotExistsException();
                 }
@@ -98,6 +96,5 @@ public class UserDAO extends BaseFunctionalitiesDB
             else
                 System.out.println("UserDAO login Exception: " + e.getMessage());
         }
-        System.out.println("Non devo essere mai qui");
     }
 }

@@ -3,7 +3,7 @@ const username = sessionStorage.getItem("userLog");
 
 $(document).ready(function ()
 {
-    //checkLogin();
+    checkLogin();
     setWelcomeText();
     document.getElementById('logoutBtn').onclick = function (e) { onClickListenerBtnLogout(); };
     document.getElementById('createTeamBtn').onclick = function (e) { onClickListenerBtnCreateTeam(); };
@@ -12,18 +12,17 @@ $(document).ready(function ()
 
 function checkLogin()
 {
-    //alert("checkLogin: " + username);
     if(!username)
     {
         //alert("You're not login");
-        location.href = "../login.html";
+        location.href = "../";
     }
 }
 
 function setWelcomeText()
 {
-    let divWelcome = document.getElementById("loginText");
-    divWelcome.innerHTML = "You're logged as: " + username;
+    let divWelcome = document.getElementById("h1WelcomeDiv");
+    divWelcome.innerHTML = "Welcome "  + username + " to Your Home Page";
 }
 
 function onClickListenerBtnLogout()
@@ -38,12 +37,13 @@ function onClickListenerBtnLogout()
         success: function ()
         {
             sessionStorage.removeItem("userLog");
-            location.href = "../login.html";
+            location.href = "../";
         },
         error: function (xhr)
         {
             let serverResponse = JSON.parse(xhr.responseText);
-            alert(serverResponse.responseMessage)
+            alert(serverResponse.responseMessage);
+            location.href = "../";
         }
     });
 }
@@ -59,4 +59,29 @@ function onClickListenerBtnViewFriends()
     //Fare una chiamata asincrona AJAX per ottenere la lista degli amici, ossia un JSON con una lista di nomi
     // e per ognuno, ci vede essere l'info se è Online o meno.
     // Per ogni amico, va creato a runTime un elemento HTML per mostrarlo.
+
+    $.ajax({
+        url: "http://localhost:8080/getFriendList",
+        type: "POST",
+        data: username,
+        contentType: 'application/json',
+        success: function (serverResponse)
+        {
+            let friendDTOList = serverResponse.responseMessage;
+            if(friendDTOList)
+            {
+                let msg = "";
+                while(friend = friendDTOList.pop())
+                    msg = msg + "Friend: " + friend.username + " | Loggato: " + Boolean(friend.logged) + "\n" ;
+                alert(msg);
+            }
+            else
+                alert("friendList vuota");
+        },
+        error: function ()
+        {
+            alert("Unauthorized Request!");
+            location.href = "../";
+        }
+    });
 }

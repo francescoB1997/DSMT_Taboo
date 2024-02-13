@@ -28,7 +28,6 @@ function onClickListenerBtnLogin()
         success: function ()
         {
             sessionStorage.setItem("userLog", username);
-            //alert(sessionStorage.getItem("userLog") + " ti reindirizzo...")
             //sessionStorage.setItem("gameId","");
             location.href = "../loggedPlayerPage.html"
         },

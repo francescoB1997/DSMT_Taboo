@@ -12,11 +12,10 @@ $(document).ready(function ()
 
 function checkLogin()
 {
-    //alert("checkLogin: " + username);
     if(!username)
     {
         //alert("You're not login");
-        location.href = "../index.html";
+        location.href = "../";
     }
 }
 
@@ -43,7 +42,8 @@ function onClickListenerBtnLogout()
         error: function (xhr)
         {
             let serverResponse = JSON.parse(xhr.responseText);
-            alert(serverResponse.responseMessage)
+            alert(serverResponse.responseMessage);
+            location.href = "../";
         }
     });
 }

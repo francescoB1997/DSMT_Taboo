@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title> Welcome to Taboo Page </title>
-    <script src="https://code.jquery.com/jquery-3.4.0.min.js" type="text/javascript"></script>
-    <script src="./javascript/loggedPlayerPage.js" type="text/javascript"></script>
-    <link rel="stylesheet" href="./css/loggedPlayerPage.css">
-</head>
+    <head>
+        <meta charset="UTF-8">
+        <title> Welcome to Taboo Page </title>
+        <script src="https://code.jquery.com/jquery-3.4.0.min.js" type="text/javascript"></script>
+        <script src="./javascript/loggedPlayerPage.js" type="text/javascript"></script>
+        <link rel="stylesheet" href="./css/loggedPlayerPage.css">
+    </head>
     <body>
         <div class="main">
             <img class="flex" src="./img/taboo_icon.png" alt="taboo-logo" height="160" width="160">
@@ -17,8 +17,17 @@
                 <button id="viewFriendsBtn" name="viewFriendsBtn"> <b>Views Friends List</b> </button>
                 <button id="logoutBtn" name="logoutBtn"> <b>Logout</b> </button>
         </div>
-        <div class="tableFriends">
-            Ciao
+        <div id="friendListContainer">
+            <i class="material-icons-extended VfPpkd-fmcmS-TvZj5c VfPpkd-fmcmS-TvZj5c-OWXEXe-M1Soyc" aria-hidden="true" jsname="FwAX0b" data-icon-position="M1Soyc">keyboard</i>
+            <span class="tableFriends">
+                <img id="imgUserIcon" src="./img/user_icon.png" alt="user icon"/>
+            </span>
+            <span class="tableFriends">
+                <p id="username">fra</p>
+            </span>
+            <span class="tableFriends">
+                <img id="imgUserState" src="./img/online.png" alt="user state"/>
+            </span>
         </div>
     </body>
 </html>

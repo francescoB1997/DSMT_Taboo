@@ -13,15 +13,15 @@ public class FriendDTO
     }
 
     public boolean isLogged() {
-        return isLogged;
+        return this.isLogged;
     }
 
-    public void setLogged(boolean logged) {
-        isLogged = logged;
+    public void setLogged(boolean isLogged) {
+        this.isLogged = isLogged;
     }
 
     public String getUsername() {
-        return username;
+        return this.username;
     }
 
     public void setUsername(String username) {

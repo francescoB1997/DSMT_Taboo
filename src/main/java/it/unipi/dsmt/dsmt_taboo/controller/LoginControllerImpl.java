@@ -25,6 +25,7 @@ public class LoginControllerImpl implements LoginControllerInterface
     public ResponseEntity<ServerResponseDTO<String>> loginRequest(@RequestBody  LoginRequestDTO loginRequest)
         // This function handle the login request of a user
     {
+        System.out.println("LoginController: login request from [" + loginRequest.getUsername() + "]");
         this.session = SessionManagement.getInstance();
         ServerResponseDTO loginResponse;
         HttpStatus responseHttp;
@@ -34,7 +35,6 @@ public class LoginControllerImpl implements LoginControllerInterface
             loginResponse = new ServerResponseDTO("LoginOK");
             responseHttp = HttpStatus.OK;
             session.setLogUser(loginRequest.getUsername());
-            System.out.println("Utente [" + loginRequest.getUsername() + "] loggato");
         }
         catch (UserNotExistsException e)
         {
@@ -47,14 +47,14 @@ public class LoginControllerImpl implements LoginControllerInterface
 
     @PostMapping("/logout")
     @Override
-    public ResponseEntity<ServerResponseDTO<String>> logoutRequest(@RequestBody String Username)
+    public ResponseEntity<ServerResponseDTO<String>> logoutRequest(@RequestBody String username)
         // This method is the handler for the logout requests
     {
-        System.out.println("Logut request di " + Username);
+        System.out.println("LoginController: logout request from [" + username + "]");
         ServerResponseDTO logoutResponse;
         HttpStatus responseHttp;
         session = SessionManagement.getInstance();
-        if(!session.isUserLogged(Username))
+        if(!session.isUserLogged(username))
         {
             logoutResponse = new ServerResponseDTO("Logout Failed");
             responseHttp = HttpStatus.FORBIDDEN;
@@ -64,7 +64,7 @@ public class LoginControllerImpl implements LoginControllerInterface
             logoutResponse = new ServerResponseDTO("Logout Success");
             responseHttp = HttpStatus.OK;
         }
-        session.logoutUser(Username);
+        session.logoutUser(username);
         return new ResponseEntity<>(logoutResponse, responseHttp);
     }
 
@@ -73,6 +73,7 @@ public class LoginControllerImpl implements LoginControllerInterface
     public ResponseEntity<ServerResponseDTO<String>> signUp(@RequestBody UserDTO userToSignup)
         // This function is responsible for the signup action
     {
+        System.out.println("LoginController: signup request from [" + userToSignup.getUsername() + "]");
         int control = user.signup(userToSignup);
         ServerResponseDTO signupResponse;
         HttpStatus responseHttp;

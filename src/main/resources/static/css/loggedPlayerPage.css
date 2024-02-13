@@ -1,12 +1,12 @@
 body {
-    display: flex;
     align-items: center;
+    display: flex;
     justify-content: center;
     font-family: sans-serif;
     line-height: 1.5;
     min-height: 100vh;
     background: #f3f3f3;
-    flex-direction: column;
+    flex-direction: row;
     margin: 0;
 }
 
@@ -20,11 +20,6 @@ body {
     text-align: center;
 }
 
-.main p a {
-
-    color: #001074;
-}
-
 .flex {
     border-radius: 10px;
     max-width: 100%}
@@ -36,7 +31,6 @@ h3 {
     color: #d44848;
 }
 
-
 label {
     display: block;
     width: 100%;
@@ -45,17 +39,6 @@ label {
     text-align: left;
     color: #555;
     font-weight: bold;
-}
-
-
-input {
-    display: block;
-    width: 100%;
-    margin-bottom: 15px;
-    padding: 10px;
-    box-sizing: border-box;
-    border: 1px solid #ddd;
-    border-radius: 5px;
 }
 
 button {
@@ -71,8 +54,11 @@ button {
     font-size: 16px;
 }
 
-.wrap {
-    display: flex;
-    justify-content: center;
-    align-items: center;
+.tableFriends
+{
+    : 200px;
+    display: inline-block;
+    background-color: aqua;
+    width: 150px;
+    height: 150px;
 }

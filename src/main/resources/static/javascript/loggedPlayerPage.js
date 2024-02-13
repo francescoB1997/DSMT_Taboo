@@ -60,22 +60,28 @@ function onClickListenerBtnViewFriends()
     // e per ognuno, ci vede essere l'info se è Online o meno.
     // Per ogni amico, va creato a runTime un elemento HTML per mostrarlo.
 
-    // SONO ARRIVATO QUI
     $.ajax({
         url: "http://localhost:8080/getFriendList",
         type: "POST",
         data: username,
-        dataType: "text",
-        contentType: 'application/text',
-        success: function ()
+        contentType: 'application/json',
+        success: function (serverResponse)
         {
-            sessionStorage.removeItem("userLog");
-            location.href = "../index.html";
+            let friendDTOList = serverResponse.responseMessage;
+            if(friendDTOList)
+            {
+                let msg = "";
+                while(friend = friendDTOList.pop())
+                    msg = msg + "Friend: " + friend.username + " | Loggato: " + Boolean(friend.logged) + "\n" ;
+                alert(msg);
+            }
+            else
+                alert("friendList vuota");
         },
-        error: function (xhr)
+        error: function ()
         {
-            let serverResponse = JSON.parse(xhr.responseText);
-            alert(serverResponse.responseMessage)
+            alert("Unauthorized Request!");
+            location.href = "../";
         }
     });
 }

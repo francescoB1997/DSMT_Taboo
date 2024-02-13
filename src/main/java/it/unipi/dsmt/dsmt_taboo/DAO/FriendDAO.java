@@ -18,6 +18,7 @@ public class FriendDAO extends BaseFunctionalitiesDB
 
     public FriendDAO(String username)
     {
+        System.out.println("FriendDAO: " + username);
         this.username = username;
         this.friendList = new ArrayList<>();
         this.session = SessionManagement.getInstance();
@@ -35,29 +36,25 @@ public class FriendDAO extends BaseFunctionalitiesDB
 
     private void getFriendListFromDB()
     {
+        //String getAllFriendQuery = "SELECT F.Username2 as FriendUsername FROM " + DB_NAME + ".friendship as F WHERE (F.Username1 = ?);";
         String getAllFriendQuery = "SELECT F.Username2 as FriendUsername FROM " + DB_NAME + ".friendship as F WHERE (F.Username1 = ?);";
-        try (Connection connection = getConnection())
+        try (
+                Connection connection = getConnection();
+                PreparedStatement checkStatement = connection.prepareStatement(getAllFriendQuery))
         {
-            try (PreparedStatement checkStatement = connection.prepareStatement(getAllFriendQuery))
+            checkStatement.setString(1, this.username);
+            try (ResultSet resultSet = checkStatement.executeQuery())
             {
-                checkStatement.setString(1, this.username);
-                try (ResultSet resultSet = checkStatement.executeQuery())
+                while (resultSet.next())
                 {
-                    while (resultSet.next())
-                    {
-                        String friendUsername = resultSet.getString("FriendUsername");
-                        this.addFriend(new FriendDTO(friendUsername, this.session.isUserLogged(friendUsername)));
-                    }
+                    String friendUsername = resultSet.getString("FriendUsername");
+                    this.addFriend(new FriendDTO(friendUsername, this.session.isUserLogged(friendUsername)));
                 }
             }
         } catch (SQLException ex)
         {
-            System.out.println("getFriendListFromDB eccezione query");
+            System.out.println("getFriendListFromDB eccezione query: " + ex.getMessage());
             return;
         }
-        // DA ELIMINARE SOTTO
-        System.out.print("FriendList: ");
-        this.friendList.forEach(friendUsername -> System.out.print("[" + friendUsername + "] "));
-        System.out.println("");
     }
 }

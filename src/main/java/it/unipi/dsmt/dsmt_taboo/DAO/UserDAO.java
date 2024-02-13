@@ -7,7 +7,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class UserDAO extends BaseFunctionalitiesDB
+public class UserDAO extends BaseDAO
     // This class handle the UserDTO model and interact with the DB
 {
     public UserDAO()

@@ -27,18 +27,18 @@ public class LoginControllerImpl implements LoginControllerInterface
     {
         System.out.println("LoginController: login request from [" + loginRequest.getUsername() + "]");
         this.session = SessionManagement.getInstance();
-        ServerResponseDTO loginResponse;
+        ServerResponseDTO <String> loginResponse;
         HttpStatus responseHttp;
         try
         {
             user.login(loginRequest.getUsername(), loginRequest.getPassword());
-            loginResponse = new ServerResponseDTO("LoginOK");
+            loginResponse = new ServerResponseDTO<>("LoginOK");
             responseHttp = HttpStatus.OK;
             session.setLogUser(loginRequest.getUsername());
         }
         catch (UserNotExistsException e)
         {
-            loginResponse = new ServerResponseDTO(e.getMessage());
+            loginResponse = new ServerResponseDTO<>(e.getMessage());
             responseHttp = HttpStatus.BAD_REQUEST;
             System.out.println("LoginControllerImpl -> " + e.getMessage());
         }
@@ -51,17 +51,17 @@ public class LoginControllerImpl implements LoginControllerInterface
         // This method is the handler for the logout requests
     {
         System.out.println("LoginController: logout request from [" + username + "]");
-        ServerResponseDTO logoutResponse;
+        ServerResponseDTO<String> logoutResponse;
         HttpStatus responseHttp;
         session = SessionManagement.getInstance();
         if(!session.isUserLogged(username))
         {
-            logoutResponse = new ServerResponseDTO("Logout Failed");
+            logoutResponse = new ServerResponseDTO<>("Logout Failed");
             responseHttp = HttpStatus.FORBIDDEN;
         }
         else
         {
-            logoutResponse = new ServerResponseDTO("Logout Success");
+            logoutResponse = new ServerResponseDTO<>("Logout Success");
             responseHttp = HttpStatus.OK;
         }
         session.logoutUser(username);
@@ -75,24 +75,24 @@ public class LoginControllerImpl implements LoginControllerInterface
     {
         System.out.println("LoginController: signup request from [" + userToSignup.getUsername() + "]");
         int control = user.signup(userToSignup);
-        ServerResponseDTO signupResponse;
+        ServerResponseDTO<String> signupResponse;
         HttpStatus responseHttp;
         if (control == 1)
         {
             session = SessionManagement.getInstance();
             session.setLogUser(userToSignup.getUsername());
             System.out.println("Username: [" + userToSignup.getUsername() + "] completely registered");
-            signupResponse = new ServerResponseDTO("Signup Success");
+            signupResponse = new ServerResponseDTO<>("Signup Success");
             responseHttp = HttpStatus.OK;
         }
         else if(control == 0)
         {
-            signupResponse = new ServerResponseDTO("Username alredy used");
+            signupResponse = new ServerResponseDTO<>("Username alredy used");
             responseHttp = HttpStatus.BAD_REQUEST;
         }
         else
         {
-            signupResponse = new ServerResponseDTO("User not inserted");
+            signupResponse = new ServerResponseDTO<>("User not inserted");
             responseHttp = HttpStatus.BAD_REQUEST;
         }
 

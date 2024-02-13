@@ -1,10 +1,13 @@
 
 const username = sessionStorage.getItem("userLog");
 
-$(document).ready(function () {
-    checkLogin();
+$(document).ready(function ()
+{
+    //checkLogin();
     setWelcomeText();
-    document.getElementById('logoutBtn').onclick = function (e) { onClickListenerBtnLogout(); }
+    document.getElementById('logoutBtn').onclick = function (e) { onClickListenerBtnLogout(); };
+    document.getElementById('createTeamBtn').onclick = function (e) { onClickListenerBtnCreateTeam(); };
+    document.getElementById('viewFriendsBtn').onclick = function (e) { onClickListenerBtnViewFriends(); };
 });
 
 function checkLogin()
@@ -43,4 +46,17 @@ function onClickListenerBtnLogout()
             alert(serverResponse.responseMessage)
         }
     });
+}
+
+function onClickListenerBtnCreateTeam()
+{
+    //Contattare servlet per la creazione del team, oppure reindirizzare verso una createTeams.html
+    //in cui selezionare da una lista di AMICI ONLINE quelli da inserire nella squadra (se è semplice, sarebbbe carino il drag and drop)
+}
+
+function onClickListenerBtnViewFriends()
+{
+    //Fare una chiamata asincrona AJAX per ottenere la lista degli amici, ossia un JSON con una lista di nomi
+    // e per ognuno, ci vede essere l'info se è Online o meno.
+    // Per ogni amico, va creato a runTime un elemento HTML per mostrarlo.
 }

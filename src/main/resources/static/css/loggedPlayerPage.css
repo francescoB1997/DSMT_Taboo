@@ -20,14 +20,11 @@ body {
     text-align: center;
 }
 
-.main a {
-
-    color: #d44848;
+.main p a {
+    /* altri stili... */
+    color: #001074; /* Cambia questo con il tuo colore desiderato */
 }
-.main p {
 
-    color: #48054d;
-}
 .flex {
     border-radius: 10px;
     max-width: 100%}
@@ -35,10 +32,10 @@ body {
 h1 {
     color: #48054d;
 }
-
 h3 {
     color: #d44848;
 }
+
 
 label {
     display: block;

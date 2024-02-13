@@ -1,13 +1,33 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <title>Welcome to Taboo Page</title>
-        <script src="https://code.jquery.com/jquery-3.4.0.min.js" type="text/javascript"></script>
-        <script src="./javascript/loggedPlayerPage.js" type="text/javascript"></script>
-    </head>
+<head>
+    <meta charset="UTF-8">
+    <title> Welcome to Taboo Page </title>
+    <script src="https://code.jquery.com/jquery-3.4.0.min.js" type="text/javascript"></script>
+    <script src="./javascript/loggedPlayerPage.js" type="text/javascript"></script>
+    <link rel="stylesheet" href="./css/loggedPlayerPage.css">
+</head>
     <body>
-      <div id="loginText"> You're logged as: </div>
-      <button id="logoutBtn" name="logoutBtn"> Logout </button>
+        <div id="loginText"></div>
+            <button id="createTeamBtn" name="createTeamBtn"> Start a Match </button>
+            <button id="viewFriendsBtn" name="viewFriendsBtn"> Friend List </button>
+            <button id="logoutBtn" name="logoutBtn"> Logout </button>
+    </body>
+
+    <body>
+        <div class="main">
+            <img class="flex" src="./img/taboo_icon.png" alt="taboo-logo" height="160" width="160">
+                <h1>Welcome to Taboo-Game</h1>
+                <i><h3>Enter your login credentials</h3></i>
+
+                <input type="text" id="txtboxUsername" name="txtboxUsername"  placeholder="Username" required>
+
+
+                <input type="password" id="txtboxPassword" name="txtboxPassword" placeholder="Password" required>
+                <button id="loginBtn" name="loginBtn"> Login </button>
+                <p>
+                    Not registered? <a href="./signup.html" style="text-decoration: none;"> Create an account </a>
+                </p>
+        </div>
     </body>
 </html>

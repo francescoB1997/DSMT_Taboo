@@ -60,6 +60,8 @@ function onClickListenerBtnViewFriends()
     // e per ognuno, ci vede essere l'info se è Online o meno.
     // Per ogni amico, va creato a runTime un elemento HTML per mostrarlo.
 
+    location.href = "../friendListPage.html";
+    return;
     $.ajax({
         url: "http://localhost:8080/getFriendList",
         type: "POST",
@@ -83,11 +85,17 @@ function onClickListenerBtnViewFriends()
     });
 }
 
+function emptyFriendList(divContainer)
+{
+    while(divContainer.childElementCount > 0)   // Delete all the old elemnt (if there are)
+        divContainer.removeChild(divContainer.firstChild);
+    divContainer.style.visibility = "hidden";
+}
+
 function createFriendListInHtml(friendDTOList)
 {
     let divContainer = document.getElementById("friendListContainer");
-    while(divContainer.childElementCount > 0)   // Delete all the old elemnt (if there are)
-        divContainer.removeChild(divContainer.firstChild);
+    emptyFriendList(divContainer);
     while(friend = friendDTOList.pop())
     {
         let spanFriend = document.createElement("span");
@@ -121,7 +129,7 @@ function createFriendListInHtml(friendDTOList)
         spanFriend.append(spanImgUserState);
 
         divContainer.append(spanFriend);
-        divContainer.visibility = "visible";
+        divContainer.style.visibility = "visible";
     }
     if(divContainer.childElementCount > 0)
         divContainer.style.height = "400px";

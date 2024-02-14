@@ -19,7 +19,8 @@ public class LoginControllerImpl implements LoginControllerInterface
 {
     @Autowired
     SessionManagement session;
-    private UserDAO user = new UserDAO();
+
+    private final UserDAO user = new UserDAO();
     @PostMapping("/login")
     @Override
     public ResponseEntity<ServerResponseDTO<String>> loginRequest(@RequestBody  LoginRequestDTO loginRequest)
@@ -38,7 +39,7 @@ public class LoginControllerImpl implements LoginControllerInterface
         }
         catch (UserNotExistsException e)
         {
-            loginResponse = new ServerResponseDTO(e.getMessage());
+            loginResponse = new ServerResponseDTO<>(e.getMessage());
             responseHttp = HttpStatus.BAD_REQUEST;
             System.out.println("LoginControllerImpl -> " + e.getMessage());
         }

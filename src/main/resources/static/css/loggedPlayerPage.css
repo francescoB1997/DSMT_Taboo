@@ -1,12 +1,12 @@
-body {
+body
+{
     align-items: center;
     display: flex;
     justify-content: center;
     font-family: sans-serif;
     line-height: 1.5;
     min-height: 100vh;
-    background: #f3f3f3;
-    background-color: black;
+    background-color: black; /* background: #f3f3f3; */
     flex-direction: row;
     margin: 0;
 }
@@ -57,15 +57,7 @@ button
     background-color: #48054d;
     width: 100%;
     font-size: 16px;
-}
-
-#spanListConainter
-{
-    border: 2px solid #000;
-    background-color: #48054d;
-    border-radius: 15px;
-    margin-left: 100px;
-    width: 300px;
+    font-weight: bold;
 }
 
 ::-webkit-scrollbar {
@@ -84,7 +76,11 @@ button
 
 #friendListContainer
 {
-
+    border: 2px solid #000;
+    background-color: #48054d;
+    border-radius: 15px;
+    margin-left: 100px;
+    width: 300px;
     overflow: auto;
 }
 

@@ -6,12 +6,14 @@ body {
     line-height: 1.5;
     min-height: 100vh;
     background: #f3f3f3;
+    background-color: black;
     flex-direction: row;
     margin: 0;
 }
 
-.main {
-    margin-left: 270px;
+.main
+{
+    margin-left: 400px;
     background-color: #fff;
     border-radius: 15px;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
@@ -21,18 +23,19 @@ body {
     text-align: center;
 }
 
-.flex {
+.flex
+{
     border-radius: 10px;
-    max-width: 100%}
-
-h1 {
-    color: #48054d;
-}
-h3 {
-    color: #d44848;
+    max-width: 100%;
+    height: 160px;
+    width: 160px;
 }
 
-label {
+h1 { color: #48054d; }
+h3 { color: #d44848; }
+
+label
+{
     display: block;
     width: 100%;
     margin-top: 10px;
@@ -42,7 +45,8 @@ label {
     font-weight: bold;
 }
 
-button {
+button
+{
     padding: 15px;
     border-radius: 10px;
     margin-top: 15px;
@@ -54,28 +58,68 @@ button {
     width: 100%;
     font-size: 16px;
 }
+
+#spanListConainter
+{
+    border: 2px solid #000;
+    background-color: #48054d;
+    border-radius: 15px;
+    margin-left: 100px;
+    width: 300px;
+}
+
+::-webkit-scrollbar {
+    width: 5px;
+}
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+::-webkit-scrollbar-thumb {
+    background: #888;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+
 #friendListContainer
 {
-    display: inline-block;
-    background-color: #d44848;
-    margin-left: 100px;
-    text-align: center;
-    width: 150px;
+
+    overflow: auto;
 }
 
-.tableFriends
+.friend
 {
-    display: inline-block;
+    display: block;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    text-align: center;
 }
 
-#imgUserIcon
+.listElement
+{
+    display: inline;
+    padding: 20px;
+    width: 80px;
+}
+
+.listElement p
+{
+    font-size: 15px;
+    width: 50px;
+    text-align: center;
+    color: white;
+}
+
+.imgUserIcon
 {
     width: 50px;
     height: 50px;
 }
 
-#imgUserState
+.imgUserState
 {
-    width: 20px;
-    height: 20px;
+    width: 25px;
+    height: 25px;
 }

@@ -8,10 +8,7 @@ import it.unipi.dsmt.dsmt_taboo.utility.SessionManagement;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.util.ArrayList;
@@ -21,8 +18,6 @@ import java.util.List;
 public class LoggedUserControllerImpl implements LoggedUserControllerInterface
     // This class handle the action performed by a Logged User
 {
-    @GetMapping("/getFriendList")
-    public ModelAndView method() { return new ModelAndView("redirect:" + "/"); }
     @PostMapping("/getFriendList")
     public ResponseEntity<ServerResponseDTO<List<FriendDTO>>> viewFriendList(@RequestBody String username)
     // The server response is a JSON message that contains a list of FriendDTO

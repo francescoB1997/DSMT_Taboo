@@ -1,0 +1,53 @@
+body
+{
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    font-family: sans-serif;
+    line-height: 1.5;
+    min-height: 100vh;
+    background: #f3f3f3;
+    flex-direction: row;
+    margin: 0;
+}
+
+table
+{
+    width: 700px;
+    height: 400px;
+    background-color: #eee;
+    border: 1px solid #666666;
+    text-align: center;
+}
+
+.rowFriend
+{
+    display: table-row;
+    width: 700px;
+    clear: both;
+    text-align: center;
+}
+
+td
+{
+    text-align: center;
+}
+
+p
+{
+    font-size: 15px;
+    text-align: center;
+    width: 50px;
+}
+
+.imgUserIcon
+{
+    width: 50px;
+    height: 50px;
+}
+
+.imgUserState
+{
+    width: 25px;
+    height: 25px;
+}

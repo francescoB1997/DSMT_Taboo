@@ -19,7 +19,8 @@ public class LoginControllerImpl implements LoginControllerInterface
 {
     @Autowired
     SessionManagement session;
-    private UserDAO user = new UserDAO();
+
+    private final UserDAO user = new UserDAO();
     @PostMapping("/login")
     @Override
     public ResponseEntity<ServerResponseDTO<String>> loginRequest(@RequestBody  LoginRequestDTO loginRequest)

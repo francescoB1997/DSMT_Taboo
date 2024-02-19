@@ -36,13 +36,15 @@ public class FriendDAO extends BaseDAO
 
     private void getFriendListFromDB()
     {
-        //String getAllFriendQuery = "SELECT F.Username2 as FriendUsername FROM " + DB_NAME + ".friendship as F WHERE (F.Username1 = ?);";
-        String getAllFriendQuery = "SELECT F.Username2 as FriendUsername FROM " + DB_NAME + ".friendship as F WHERE (F.Username1 = ?);";
+        String getAllFriendQuery = "SELECT CASE WHEN F.Username1 = ? then F.Username2 else F.Username1 END as FriendUsername FROM " +
+                DB_NAME + ".friendship as F where Username1 = ? OR Username2 = ? ";
         try (
                 Connection connection = getConnection();
                 PreparedStatement checkStatement = connection.prepareStatement(getAllFriendQuery))
         {
             checkStatement.setString(1, this.username);
+            checkStatement.setString(2, this.username);
+            checkStatement.setString(3, this.username);
             try (ResultSet resultSet = checkStatement.executeQuery())
             {
                 while (resultSet.next())

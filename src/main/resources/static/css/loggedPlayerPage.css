@@ -13,7 +13,6 @@ body
 
 .main
 {
-    margin-left: 400px;
     background-color: #fff;
     border-radius: 15px;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
@@ -71,51 +70,4 @@ button
 }
 ::-webkit-scrollbar-thumb:hover {
     background: #555;
-}
-
-
-#friendListContainer
-{
-    border: 2px solid #000;
-    background-color: #48054d;
-    border-radius: 15px;
-    margin-left: 100px;
-    width: 300px;
-    overflow: auto;
-}
-
-.friend
-{
-    display: block;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    text-align: center;
-}
-
-.listElement
-{
-    display: inline;
-    padding: 20px;
-    width: 80px;
-}
-
-.listElement p
-{
-    font-size: 15px;
-    width: 50px;
-    text-align: center;
-    color: white;
-}
-
-.imgUserIcon
-{
-    width: 50px;
-    height: 50px;
-}
-
-.imgUserState
-{
-    width: 25px;
-    height: 25px;
 }

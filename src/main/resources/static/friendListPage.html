@@ -8,17 +8,24 @@
     <script src="./javascript/viewFriendList.js" type="text/javascript"></script>
 </head>
 <body>
-    <table class="tableFriend">
-        <thead>
-            <tr>
-                <th>Username</th>
-                <th> </th>
-                <th>Online/Offline</th>
-                <th>Action</th>
-            </tr>
-        </thead>
-        <tbody id="friendListTableBody">
-        </tbody>
-    </table>
+    <div>
+        <button id="btnShowSearchUser"> Show Search Functions </button>
+        <input id="txtboxUserToSearch" placeholder="Insert a username to search" class="hidden"/>
+        <button id="btnSearchUser"> Search user </button>
+        <table class="tableFriend">
+            <thead>
+                <tr>
+                    <th id="thUsername">Username</th>
+                    <th> </th>
+                    <th>Online/Offline</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="friendListTableBody">
+            </tbody>
+            <tbody id="userListTableBody">
+            </tbody>
+        </table>
+    </div>
 </body>
 </html>

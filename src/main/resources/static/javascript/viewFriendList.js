@@ -1,10 +1,13 @@
 const username = sessionStorage.getItem("userLog");
+let showFriendList = true;
 
 $(document).ready(function ()
 {
     checkLogin();
-    ajaxGetFriendList();
-
+    //ajaxGetFriendList();
+    document.getElementById("btnShowSearchUser").onclick = function (e) { onClickListenerBtnShowSearchFunctions(); };
+    document.getElementById("btnSearchUser").onclick = function (e) { onClickBtnSearchUser(e); };
+    //document.getElementById("txtboxUserToSearch").addEventListener("keypress", function (event) { onClickBtnSearchUser(event); });
 });
 
 function checkLogin()
@@ -53,6 +56,7 @@ function createFriendListInHtml(friendDTOList)
     while(friend = friendDTOList.pop())
     {
         let trFriend = document.createElement("tr");
+        trFriend.id = friend.username;
 
         let tdUserIcon = document.createElement("td");
         let imgUserIcon = document.createElement("img");
@@ -82,8 +86,9 @@ function createFriendListInHtml(friendDTOList)
         tdAction.className = "";
         let btnRemoveFriend = document.createElement("button");
         btnRemoveFriend.className = "";
+        btnRemoveFriend.id = "btnRemoveFriend&" + trFriend.id;
         btnRemoveFriend.innerText = "Remove Friend";
-        btnRemoveFriend.onclick = function (e) { onClickListenerBtnRemoveFriends(); };
+        btnRemoveFriend.onclick = function (e) { onClickListenerBtnRemoveFriends(this); };
         tdAction.append(btnRemoveFriend);
         trFriend.append(tdAction);
 
@@ -97,7 +102,76 @@ function emptyFriendList(divContainer)
         divContainer.removeChild(divContainer.firstChild);
 }
 
-function onClickListenerBtnRemoveFriends()
+function onClickListenerBtnRemoveFriends(button)
 {
-    alert("Rimuovi amico");
+    const username = button.id.toString().split('&');
+    alert("Rimuovi amico -> " + username[1]);
+}
+
+function onClickListenerBtnShowSearchFunctions()
+{
+    let tBodySearchUser = document.getElementById("userListTableBody");
+    let tBodyFriendList = document.getElementById("friendListTableBody");
+    let txtBoxUserToSearch = document.getElementById("txtboxUserToSearch");
+    let btnSearchUser = document.getElementById("btnShowSearchUser");
+
+    if(showFriendList)
+    {
+        tBodyFriendList.className = "hidden"
+        tBodySearchUser.className = "visible";
+        txtBoxUserToSearch.className = "visible";
+        btnSearchUser.className = "visible";
+    }
+    else
+    {
+        tBodyFriendList.className = "visible"
+        tBodySearchUser.className = "hidden";
+        txtBoxUserToSearch.className = "hidden";
+        btnSearchUser.className = "visible";
+        //ajaxGetFriendList();
+    }
+    showFriendList = !showFriendList;
+}
+
+function onClickBtnSearchUser(event)
+{
+    let usernameToSearch = document.getElementById("txtboxUserToSearch").value;
+    document.getElementById("txtboxUserToSearch").value = "";
+    let userSearchRequestDTO = {
+        requesterUser : username,
+        userToSearch : usernameToSearch
+        };
+
+    alert("userSearchRequestDTO: " + userSearchRequestDTO.requesterUser + ", " + userSearchRequestDTO.userToSearch);
+
+    $.ajax({
+        url: "http://localhost:8080/searchUser",
+        type: "POST",
+        data: JSON.stringify(userSearchRequestDTO),
+        dataType: "json",
+        contentType: 'application/json',
+        success: function (serverResponse)
+        {
+            alert(serverResponse);
+
+            let searchedUserList = serverResponse.responseMessage;
+            let userToSearchDTO;
+            if (searchedUserList)
+            {
+                alert("searchedUserList OK");
+                //createFriendListInHtml(friendDTOList);
+                while (userToSearchDTO = searchedUserList.pop())
+                {
+                    alert("User in list: [ " + userToSearchDTO.username + ", " + userToSearchDTO.name + ", " + userToSearchDTO.surname + "]");
+                }
+
+            }
+
+        },
+        error: function ()
+        {
+            alert("Unauthorized Request! ciao belòo");
+            location.href = "../";
+        }
+    });
 }

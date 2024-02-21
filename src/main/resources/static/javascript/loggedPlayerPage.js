@@ -1,4 +1,3 @@
-
 const username = sessionStorage.getItem("userLog");
 
 $(document).ready(function ()
@@ -14,7 +13,7 @@ function checkLogin()
 {
     if(!username)
     {
-        alert("You're not login");
+        alert("You're not logged");
         location.href = "../";
     }
 }

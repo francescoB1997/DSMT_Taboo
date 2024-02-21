@@ -1,21 +1,53 @@
 const username = sessionStorage.getItem("userLog");
+let showFriendList = true;
 
 $(document).ready(function ()
 {
     checkLogin();
     ajaxGetFriendList();
-
+    document.getElementById("btnShowSearchUser").onclick = function (e) { onClickListenerBtnShowSearchFunctions(); };
+    document.getElementById("btnSearchUser").onclick = function (e) { onClickBtnSearchUser(e); };
+    //document.getElementById("txtboxUserToSearch").addEventListener("keypress", function (event) { onClickBtnSearchUser(event); });
 });
 
 function checkLogin()
 {
     if(!username)
     {
-        //alert("You're not login");
+        alert("You're not logged");
         location.href = "../";
     }
 }
 
+/* -------------------------- Friend User Management -------------------------- */
+
+function onClickListenerBtnShowSearchFunctions()
+{
+    let searchedUserTable = document.getElementById("searchedUserListTable");
+    let friendListTable = document.getElementById("friendListTable");
+    let btnSearchUser = document.getElementById("btnSearchUser");
+
+    if(showFriendList)
+    {
+        friendListTable.classList.remove("visible");
+        friendListTable.classList.add("hidden");
+        searchedUserTable.classList.remove("hidden");
+        searchedUserTable.classList.add("visible");
+        btnSearchUser.classList.remove("hidden");
+        btnSearchUser.classList.add("visible");
+    }
+    else
+    {
+        friendListTable.classList.remove("hidden");
+        friendListTable.classList.add("visible");
+        searchedUserTable.classList.remove("visible");
+        searchedUserTable.classList.add("hidden");
+        btnSearchUser.classList.remove("visible");
+        btnSearchUser.classList.add("hidden");
+        //ajaxGetFriendList();
+    }
+    showFriendList = !showFriendList;
+}
 
 function ajaxGetFriendList()
 {
@@ -46,13 +78,15 @@ function ajaxGetFriendList()
     });
 }
 
+
 function createFriendListInHtml(friendDTOList)
 {
-    let tableFriendBody = document.getElementById("friendListTableBody");
+    let tableFriendList = document.getElementById("friendListTable");
     //emptyFriendList(divContainer);
     while(friend = friendDTOList.pop())
     {
         let trFriend = document.createElement("tr");
+        trFriend.id = friend.username;
 
         let tdUserIcon = document.createElement("td");
         let imgUserIcon = document.createElement("img");
@@ -82,12 +116,13 @@ function createFriendListInHtml(friendDTOList)
         tdAction.className = "";
         let btnRemoveFriend = document.createElement("button");
         btnRemoveFriend.className = "";
+        btnRemoveFriend.id = "btnRemoveFriend&" + trFriend.id;
         btnRemoveFriend.innerText = "Remove Friend";
-        btnRemoveFriend.onclick = function (e) { onClickListenerBtnRemoveFriends(); };
+        btnRemoveFriend.onclick = function (e) { onClickListenerBtnRemoveFriends(this); };
         tdAction.append(btnRemoveFriend);
         trFriend.append(tdAction);
 
-        tableFriendBody.append(trFriend);
+        tableFriendList.append(trFriend);
     }
 }
 
@@ -97,7 +132,115 @@ function emptyFriendList(divContainer)
         divContainer.removeChild(divContainer.firstChild);
 }
 
-function onClickListenerBtnRemoveFriends()
+function onClickListenerBtnRemoveFriends(button)
 {
-    alert("Rimuovi amico");
+    const username = button.id.toString().split('&');
+    alert("Rimuovi amico -> " + username[1]);
+}
+
+/* -------------------------- Global User Management -------------------------- */
+
+function onClickBtnSearchUser(event)
+{
+    let usernameToSearch = document.getElementById("txtboxUserToSearch").value;
+    document.getElementById("txtboxUserToSearch").value = "";
+    let userSearchRequestDTO = {
+        requesterUsername : username,
+        usernameToSearch : usernameToSearch
+    };
+
+    alert("userSearchRequestDTO: " + userSearchRequestDTO.requesterUsername + ", " + userSearchRequestDTO.usernameToSearch);
+    $.ajax({
+        url: "http://localhost:8080/searchUser",
+        type: "POST",
+        data: JSON.stringify(userSearchRequestDTO),
+        dataType: "json",
+        contentType: 'application/json',
+        success: function (serverResponse)
+        {
+            //alert(serverResponse);
+            let searchedUserList = serverResponse.responseMessage;
+            if (searchedUserList)
+            {
+                alert("- OK - : L'utente ricercato è presente nel Database");
+                createTableSearchedUserInHtml(searchedUserList);
+            }
+        },
+        error: function (serverResponse)
+        {
+            //alert(serverResponse);
+            let searchedUserList = serverResponse.responseMessage;
+            if(!searchedUserList) {
+                alert("- NOT FOUND - : L'utente ricercato NON è presente nel Database")
+            }else{
+                alert("Unauthorized Request! You must be logged to navigate this page");
+                location.href = "../";
+            }
+        }
+    });
+}
+
+function createTableSearchedUserInHtml(searchedUserList)
+{
+    let searchedUserTable = document.getElementById("searchedUserListTable");
+    emptyGlobalUserList(searchedUserTable);
+
+    while(user = searchedUserList.pop())
+    {
+        let trUser = document.createElement("tr");
+        trUser.id = user.username;
+
+        let tdUserIcon = document.createElement("td");
+        let imgUserIcon = document.createElement("img");
+        imgUserIcon.className = "imgUserIcon";
+        imgUserIcon.src = "../img/user_icon.png";
+        imgUserIcon.alt = "user icon image";
+        tdUserIcon.append(imgUserIcon);
+        trUser.append(tdUserIcon);
+
+        let tdUsername = document.createElement("td");
+        tdUsername.id = user.username;
+        let pUsername = document.createElement("p");
+        pUsername.innerText = user.username;
+        tdUsername.append(pUsername);
+        trUser.append(tdUsername);
+
+        let tdName = document.createElement("td");
+        tdName.className = "";
+        let pName = document.createElement("p");
+        pName.innerText = user.name;
+        tdName.append(pName);
+        trUser.append(tdName);
+
+        let tdSurname = document.createElement("td");
+        tdSurname.className = "";
+        let pSurname = document.createElement("p");
+        pSurname.innerText = user.surname;
+        tdSurname.append(pSurname);
+        trUser.append(tdSurname);
+
+        let tdAction = document.createElement("td");
+        tdAction.className = "";
+        let btnAddFriend = document.createElement("button");
+        btnAddFriend.className = "";
+        btnAddFriend.id = "btnAddFriend&" + trUser.id;
+        btnAddFriend.innerText = "Add Friend";
+        btnAddFriend.onclick = function (e) { onClickListenerBtnAddFriends(this); };
+        tdAction.append(btnAddFriend);
+        trUser.append(tdAction);
+
+        searchedUserTable.append(trUser);
+    }
+}
+
+function emptyGlobalUserList(table)
+{
+    while(table.childElementCount > 0)   // Delete all the old element (if there are)
+        table.removeChild(table.firstChild);
+}
+
+function onClickListenerBtnAddFriends(button)
+{
+    const username = button.id.toString().split('&');
+    alert("Aggiunto amico -> " + username[1]);
 }

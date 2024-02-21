@@ -15,6 +15,14 @@ public class UserDTO
         this.surname = surname;
         this.password = password;
     }
+    public UserDTO(String username, String name, String surname)
+        // This constructor is used by SearchUser functionality
+    {
+        this.username = username;
+        this.name = name;
+        this.surname = surname;
+        this.password = "";
+    }
 
     public String getName() {
         return this.name;

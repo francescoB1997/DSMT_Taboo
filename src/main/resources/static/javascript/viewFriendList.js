@@ -4,7 +4,7 @@ let showFriendList = true;
 $(document).ready(function ()
 {
     checkLogin();
-    //ajaxGetFriendList();
+    ajaxGetFriendList();
     document.getElementById("btnShowSearchUser").onclick = function (e) { onClickListenerBtnShowSearchFunctions(); };
     document.getElementById("btnSearchUser").onclick = function (e) { onClickBtnSearchUser(e); };
     //document.getElementById("txtboxUserToSearch").addEventListener("keypress", function (event) { onClickBtnSearchUser(event); });
@@ -51,7 +51,7 @@ function ajaxGetFriendList()
 
 function createFriendListInHtml(friendDTOList)
 {
-    let tableFriendBody = document.getElementById("friendListTableBody");
+    let tableFriendList = document.getElementById("friendListTable");
     //emptyFriendList(divContainer);
     while(friend = friendDTOList.pop())
     {
@@ -92,7 +92,7 @@ function createFriendListInHtml(friendDTOList)
         tdAction.append(btnRemoveFriend);
         trFriend.append(tdAction);
 
-        tableFriendBody.append(trFriend);
+        tableFriendList.append(trFriend);
     }
 }
 
@@ -110,24 +110,27 @@ function onClickListenerBtnRemoveFriends(button)
 
 function onClickListenerBtnShowSearchFunctions()
 {
-    let tBodySearchUser = document.getElementById("userListTableBody");
-    let tBodyFriendList = document.getElementById("friendListTableBody");
-    let txtBoxUserToSearch = document.getElementById("txtboxUserToSearch");
-    let btnSearchUser = document.getElementById("btnShowSearchUser");
+    let searchedUserTable = document.getElementById("searchedUserListTable");
+    let friendListTable = document.getElementById("friendListTable");
+    let btnSearchUser = document.getElementById("btnSearchUser");
 
     if(showFriendList)
     {
-        tBodyFriendList.className = "hidden"
-        tBodySearchUser.className = "visible";
-        txtBoxUserToSearch.className = "visible";
-        btnSearchUser.className = "visible";
+        friendListTable.classList.remove("visible");
+        friendListTable.classList.add("hidden");
+        searchedUserTable.classList.remove("hidden");
+        searchedUserTable.classList.add("visible");
+        btnSearchUser.classList.remove("hidden");
+        btnSearchUser.classList.add("visible");
     }
     else
     {
-        tBodyFriendList.className = "visible"
-        tBodySearchUser.className = "hidden";
-        txtBoxUserToSearch.className = "hidden";
-        btnSearchUser.className = "visible";
+        friendListTable.classList.remove("hidden");
+        friendListTable.classList.add("visible");
+        searchedUserTable.classList.remove("visible");
+        searchedUserTable.classList.add("hidden");
+        btnSearchUser.classList.remove("visible");
+        btnSearchUser.classList.add("hidden");
         //ajaxGetFriendList();
     }
     showFriendList = !showFriendList;
@@ -138,12 +141,11 @@ function onClickBtnSearchUser(event)
     let usernameToSearch = document.getElementById("txtboxUserToSearch").value;
     document.getElementById("txtboxUserToSearch").value = "";
     let userSearchRequestDTO = {
-        requesterUser : username,
-        userToSearch : usernameToSearch
+        requesterUsername : username,
+        usernameToSearch : usernameToSearch
         };
 
-    alert("userSearchRequestDTO: " + userSearchRequestDTO.requesterUser + ", " + userSearchRequestDTO.userToSearch);
-
+    alert("userSearchRequestDTO: " + userSearchRequestDTO.requesterUsername + ", " + userSearchRequestDTO.usernameToSearch);
     $.ajax({
         url: "http://localhost:8080/searchUser",
         type: "POST",
@@ -159,12 +161,7 @@ function onClickBtnSearchUser(event)
             if (searchedUserList)
             {
                 alert("searchedUserList OK");
-                //createFriendListInHtml(friendDTOList);
-                while (userToSearchDTO = searchedUserList.pop())
-                {
-                    alert("User in list: [ " + userToSearchDTO.username + ", " + userToSearchDTO.name + ", " + userToSearchDTO.surname + "]");
-                }
-
+                createTableSearchedUserInHtml(searchedUserList);
             }
 
         },
@@ -174,4 +171,61 @@ function onClickBtnSearchUser(event)
             location.href = "../";
         }
     });
+}
+
+function createTableSearchedUserInHtml(searchedUserList)
+{
+    let searchedUserTable = document.getElementById("searchedUserListTable");
+    while(user = searchedUserList.pop())
+    {
+        let trUser = document.createElement("tr");
+        trUser.id = user.username;
+
+        let tdUserIcon = document.createElement("td");
+        let imgUserIcon = document.createElement("img");
+        imgUserIcon.className = "imgUserIcon";
+        imgUserIcon.src = "../img/user_icon.png";
+        imgUserIcon.alt = "user icon image";
+        tdUserIcon.append(imgUserIcon);
+        trUser.append(tdUserIcon);
+
+        let tdUsername = document.createElement("td");
+        tdUsername.id = user.username;
+        let pUsername = document.createElement("p");
+        pUsername.innerText = user.username;
+        tdUsername.append(pUsername);
+        trUser.append(tdUsername);
+
+        let tdName = document.createElement("td");
+        tdName.className = "";
+        let pName = document.createElement("p");
+        pName.innerText = user.name;
+        tdName.append(pName);
+        trUser.append(tdName);
+
+        let tdSurname = document.createElement("td");
+        tdSurname.className = "";
+        let pSurname = document.createElement("p");
+        pSurname.innerText = user.surname;
+        tdSurname.append(pSurname);
+        trUser.append(tdSurname);
+
+        let tdAction = document.createElement("td");
+        tdAction.className = "";
+        let btnAddFriend = document.createElement("button");
+        btnAddFriend.className = "";
+        btnAddFriend.id = "btnAddFriend&" + trUser.id;
+        btnAddFriend.innerText = "Add Friend";
+        btnAddFriend.onclick = function (e) { onClickListenerBtnAddFriends(this); };
+        tdAction.append(btnAddFriend);
+        trUser.append(tdAction);
+
+        searchedUserTable.append(trUser);
+    }
+}
+
+function onClickListenerBtnAddFriends(button)
+{
+    const username = button.id.toString().split('&');
+    alert("Aggiunto amico -> " + username[1]);
 }

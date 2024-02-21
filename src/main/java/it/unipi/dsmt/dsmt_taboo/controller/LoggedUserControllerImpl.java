@@ -1,11 +1,8 @@
 package it.unipi.dsmt.dsmt_taboo.controller;
 
 import it.unipi.dsmt.dsmt_taboo.DAO.FriendDAO;
-import it.unipi.dsmt.dsmt_taboo.DAO.SearchUserDAO;
-import it.unipi.dsmt.dsmt_taboo.model.DTO.FriendDTO;
-import it.unipi.dsmt.dsmt_taboo.model.DTO.ServerResponseDTO;
-import it.unipi.dsmt.dsmt_taboo.model.DTO.SearchedUserDTO;
-import it.unipi.dsmt.dsmt_taboo.model.DTO.UserSearchRequestDTO;
+import it.unipi.dsmt.dsmt_taboo.DAO.UserDAO;
+import it.unipi.dsmt.dsmt_taboo.model.DTO.*;
 import it.unipi.dsmt.dsmt_taboo.utility.SessionManagement;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -41,25 +38,25 @@ public class LoggedUserControllerImpl implements LoggedUserControllerInterface
 
     @PostMapping("/searchUser")
     @Override
-    public ResponseEntity<ServerResponseDTO<List<SearchedUserDTO>>> searchUser(@RequestBody UserSearchRequestDTO userSearchRequestDTO)
+    public ResponseEntity<ServerResponseDTO<List<UserDTO>>> searchUser(@RequestBody UserSearchRequestDTO userSearchRequestDTO)
     // The server response is a JSON message that contains the list of user, checking before that the requesterUser is 'OK'.
     {
-        System.out.println("LoggedUserController: searchUser request from [" + userSearchRequestDTO.getRequesterUser() + "] -> " +
-                "Searching [" + userSearchRequestDTO.getUserToSearch() + "]");
-        ServerResponseDTO<List<SearchedUserDTO>> userList;
+        System.out.println("LoggedUserController: searchUser request from [" + userSearchRequestDTO.getRequesterUsername() + "] -> " +
+                "Searching [" + userSearchRequestDTO.getUsernameToSearch() + "]");
+        ServerResponseDTO<List<UserDTO>> userListResponse;
         HttpStatus responseHttp;
-        if(SessionManagement.getInstance().isUserLogged(userSearchRequestDTO.getRequesterUser()))  //Check if requesterUser is logged or Not.
+        if(SessionManagement.getInstance().isUserLogged(userSearchRequestDTO.getRequesterUsername()))  //Check if requesterUsername is logged or Not.
         {
-            SearchUserDAO searchUserDAO = new SearchUserDAO();
-            userList = new ServerResponseDTO<>(searchUserDAO.getUserList(userSearchRequestDTO.getUserToSearch()));
+            UserDAO userDAO = new UserDAO();
+            userListResponse = new ServerResponseDTO<>(userDAO.globalSearchUser(userSearchRequestDTO.getUsernameToSearch()));
             responseHttp = HttpStatus.OK;
         }
         else
         {
             System.out.println("LoggedUserController: searchUser request from a NonLogged user");
-            userList = new ServerResponseDTO<>(null);
+            userListResponse = new ServerResponseDTO<>(null);
             responseHttp = HttpStatus.UNAUTHORIZED;
         }
-        return new ResponseEntity<>(userList, responseHttp);
+        return new ResponseEntity<>(userListResponse, responseHttp);
     }
 }

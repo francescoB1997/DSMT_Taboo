@@ -61,6 +61,7 @@ p
 .hidden
 {
     visibility: hidden;
+    display: none;
     z-index: 0;
 }
 

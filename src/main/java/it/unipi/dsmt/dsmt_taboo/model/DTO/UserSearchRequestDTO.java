@@ -2,18 +2,18 @@ package it.unipi.dsmt.dsmt_taboo.model.DTO;
 
 public class UserSearchRequestDTO
 {
-    private String requesterUser;
-    private String userToSearch;
+    private String requesterUsername; // logged username
+    private String usernameToSearch;  //
 
-    public UserSearchRequestDTO(String requesterUser, String userToSearch)
+    public UserSearchRequestDTO(String requesterUsername, String usernameToSearch)
     {
-        this.requesterUser = requesterUser;
-        this.userToSearch = userToSearch;
+        this.requesterUsername = requesterUsername;
+        this.usernameToSearch = usernameToSearch;
     }
 
-    public String getRequesterUser() { return this.requesterUser; }
-    public void setRequesterUser(String requesterUser) { this.requesterUser = requesterUser; }
+    public String getRequesterUsername() { return this.requesterUsername; }
+    public void setRequesterUsername(String requesterUsername) { this.requesterUsername = requesterUsername; }
 
-    public String getUserToSearch() { return userToSearch; }
-    public void setUserToSearch(String userToSearch) { this.userToSearch = userToSearch; }
+    public String getUsernameToSearch() { return this.usernameToSearch; }
+    public void setUsernameToSearch(String usernameToSearch) { this.usernameToSearch = usernameToSearch; }
 }

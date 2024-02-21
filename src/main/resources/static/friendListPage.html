@@ -10,9 +10,9 @@
 <body>
     <div>
         <button id="btnShowSearchUser"> Show Search Functions </button>
-        <input id="txtboxUserToSearch" placeholder="Insert a username to search" class="hidden"/>
+        <input id="txtboxUserToSearch" placeholder="Insert a username to search" class="visible"/>
         <button id="btnSearchUser"> Search user </button>
-        <table class="tableFriend">
+        <table id="friendListTable" class="tableFriend">
             <thead>
                 <tr>
                     <th id="thUsername">Username</th>
@@ -21,9 +21,20 @@
                     <th>Action</th>
                 </tr>
             </thead>
-            <tbody id="friendListTableBody">
+            <tbody>
             </tbody>
-            <tbody id="userListTableBody">
+        </table>
+        <table id="searchedUserListTable" class="tableUsers hidden">
+            <thead>
+            <tr>
+                <th id="thUsername"> Username</th>
+                <th> </th>
+                <th>Name</th>
+                <th>Surname</th>
+                <th>Action</th>
+            </tr>
+            </thead>
+            <tbody>
             </tbody>
         </table>
     </div>

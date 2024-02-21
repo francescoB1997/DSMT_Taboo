@@ -4,6 +4,7 @@ $(document).ready(function ()
 {
     checkLogin();
     ajaxGetFriendList();
+
 });
 
 function checkLogin()
@@ -52,7 +53,6 @@ function createFriendListInHtml(friendDTOList)
     while(friend = friendDTOList.pop())
     {
         let trFriend = document.createElement("tr");
-        trFriend.id = friend.username;
 
         let tdUserIcon = document.createElement("td");
         let imgUserIcon = document.createElement("img");
@@ -82,9 +82,8 @@ function createFriendListInHtml(friendDTOList)
         tdAction.className = "";
         let btnRemoveFriend = document.createElement("button");
         btnRemoveFriend.className = "";
-        btnRemoveFriend.id = "btnRemoveFriend&" + trFriend.id;
         btnRemoveFriend.innerText = "Remove Friend";
-        btnRemoveFriend.onclick = function (e) { onClickListenerBtnRemoveFriends(this); };
+        btnRemoveFriend.onclick = function (e) { onClickListenerBtnRemoveFriends(); };
         tdAction.append(btnRemoveFriend);
         trFriend.append(tdAction);
 
@@ -98,53 +97,7 @@ function emptyFriendList(divContainer)
         divContainer.removeChild(divContainer.firstChild);
 }
 
-function onClickListenerBtnRemoveFriends(button)
+function onClickListenerBtnRemoveFriends()
 {
-    const usernameFriend = button.id.toString().split('&');
-    //alert("Rimuovi amico -> " + usernameFriend[1]);
-    if(confirm("Are u sure you want remove " + usernameFriend[1] + "as your friend?"))
-    {
-        let removeFriendRequest = {
-            username: username,
-            usernameFriend: usernameFriend
-        };
-
-        $.ajax({
-            url: "http://localhost:8080/removeFriend",
-            data: JSON.stringify(removeFriendRequest),
-            type: "POST",
-            dataType: "json",
-            contentType: 'application/json',
-            success: function () {
-                sessionStorage.setItem("userLog", username);
-            },
-            error: function (xhr) {
-                let serverResponse = JSON.parse(xhr.responseText);
-                alert(serverResponse.responseMessage);
-            }
-        })
-    }
-
-    function ajaxRemoveFriends(button)
-    {
-            let removeFriendRequest = {
-                username: username,
-                usernameFriend: usernameFriend
-            };
-
-            $.ajax({
-                url: "http://localhost:8080/removeFriend",
-                data: JSON.stringify(removeFriendRequest),
-                type: "POST",
-                dataType: "json",
-                contentType: 'application/json',
-                success: function () {
-                    sessionStorage.setItem("userLog", username);
-                },
-                error: function (xhr) {
-                    let serverResponse = JSON.parse(xhr.responseText);
-                    alert(serverResponse.responseMessage);
-                }
-            })
-        }
+    alert("Rimuovi amico");
 }

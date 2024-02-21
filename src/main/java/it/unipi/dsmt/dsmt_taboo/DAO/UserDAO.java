@@ -1,6 +1,7 @@
 package it.unipi.dsmt.dsmt_taboo.DAO;
 
 import it.unipi.dsmt.dsmt_taboo.exceptions.UserNotExistsException;
+import it.unipi.dsmt.dsmt_taboo.model.DTO.FriendDTO;
 import it.unipi.dsmt.dsmt_taboo.model.DTO.UserDTO;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -14,6 +15,8 @@ public class UserDAO extends BaseDAO
     {
         super();
     }
+
+
 
     public int signup(UserDTO user)
     {
@@ -95,6 +98,25 @@ public class UserDAO extends BaseDAO
                 throw new UserNotExistsException();
             else
                 System.out.println("UserDAO login Exception: " + e.getMessage());
+        }
+    }
+
+
+    public boolean removeUser(String username) {
+        String removeQuery = "DELETE FROM " + DB_NAME + ".user" + " WHERE username = ?";
+
+        try (
+                Connection connection = getConnection();
+                PreparedStatement preparedStatement = connection.prepareStatement(removeQuery) )
+        {
+
+            preparedStatement.setString(1, username);
+
+            return preparedStatement.executeUpdate() > 0;
+
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            return false;
         }
     }
 }

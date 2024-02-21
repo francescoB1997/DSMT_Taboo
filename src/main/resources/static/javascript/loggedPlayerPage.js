@@ -14,7 +14,7 @@ function checkLogin()
 {
     if(!username)
     {
-        //alert("You're not login");
+        alert("You're not login");
         location.href = "../";
     }
 }

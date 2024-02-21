@@ -46,7 +46,7 @@ function onClickListenerBtnSignup()
         success: function ()
         {
             sessionStorage.setItem("userLog", username);
-            location.href = "../loggedPlayerPage.html";
+            location.href = "../";
         },
         error: function(xhr)
         {

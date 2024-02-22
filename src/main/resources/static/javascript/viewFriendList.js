@@ -14,11 +14,40 @@ function checkLogin()
 {
     if(!username)
     {
-        //alert("You're not login");
+        alert("You're not logged");
         location.href = "../";
     }
 }
 
+/* -------------------------- Friend User Management -------------------------- */
+
+function onClickListenerBtnShowSearchFunctions()
+{
+    let searchedUserTable = document.getElementById("searchedUserListTable");
+    let friendListTable = document.getElementById("friendListTable");
+    let btnSearchUser = document.getElementById("btnSearchUser");
+
+    if(showFriendList)
+    {
+        friendListTable.classList.remove("visible");
+        friendListTable.classList.add("hidden");
+        searchedUserTable.classList.remove("hidden");
+        searchedUserTable.classList.add("visible");
+        btnSearchUser.classList.remove("hidden");
+        btnSearchUser.classList.add("visible");
+    }
+    else
+    {
+        friendListTable.classList.remove("hidden");
+        friendListTable.classList.add("visible");
+        searchedUserTable.classList.remove("visible");
+        searchedUserTable.classList.add("hidden");
+        btnSearchUser.classList.remove("visible");
+        btnSearchUser.classList.add("hidden");
+        //ajaxGetFriendList();
+    }
+    showFriendList = !showFriendList;
+}
 
 function ajaxGetFriendList()
 {
@@ -48,6 +77,7 @@ function ajaxGetFriendList()
         }
     });
 }
+
 
 function createFriendListInHtml(friendDTOList)
 {
@@ -108,33 +138,7 @@ function onClickListenerBtnRemoveFriends(button)
     alert("Rimuovi amico -> " + username[1]);
 }
 
-function onClickListenerBtnShowSearchFunctions()
-{
-    let searchedUserTable = document.getElementById("searchedUserListTable");
-    let friendListTable = document.getElementById("friendListTable");
-    let btnSearchUser = document.getElementById("btnSearchUser");
-
-    if(showFriendList)
-    {
-        friendListTable.classList.remove("visible");
-        friendListTable.classList.add("hidden");
-        searchedUserTable.classList.remove("hidden");
-        searchedUserTable.classList.add("visible");
-        btnSearchUser.classList.remove("hidden");
-        btnSearchUser.classList.add("visible");
-    }
-    else
-    {
-        friendListTable.classList.remove("hidden");
-        friendListTable.classList.add("visible");
-        searchedUserTable.classList.remove("visible");
-        searchedUserTable.classList.add("hidden");
-        btnSearchUser.classList.remove("visible");
-        btnSearchUser.classList.add("hidden");
-        //ajaxGetFriendList();
-    }
-    showFriendList = !showFriendList;
-}
+/* -------------------------- Global User Management -------------------------- */
 
 function onClickBtnSearchUser(event)
 {
@@ -143,7 +147,7 @@ function onClickBtnSearchUser(event)
     let userSearchRequestDTO = {
         requesterUsername : username,
         usernameToSearch : usernameToSearch
-        };
+    };
 
     alert("userSearchRequestDTO: " + userSearchRequestDTO.requesterUsername + ", " + userSearchRequestDTO.usernameToSearch);
     $.ajax({
@@ -154,21 +158,24 @@ function onClickBtnSearchUser(event)
         contentType: 'application/json',
         success: function (serverResponse)
         {
-            alert(serverResponse);
-
+            //alert(serverResponse);
             let searchedUserList = serverResponse.responseMessage;
-            let userToSearchDTO;
             if (searchedUserList)
             {
-                alert("searchedUserList OK");
+                alert("- OK - : L'utente ricercato è presente nel Database");
                 createTableSearchedUserInHtml(searchedUserList);
             }
-
         },
-        error: function ()
+        error: function (serverResponse)
         {
-            alert("Unauthorized Request! ciao belòo");
-            location.href = "../";
+            //alert(serverResponse);
+            let searchedUserList = serverResponse.responseMessage;
+            if(!searchedUserList) {
+                alert("- NOT FOUND - : L'utente ricercato NON è presente nel Database")
+            }else{
+                alert("Unauthorized Request! You must be logged to navigate this page");
+                location.href = "../";
+            }
         }
     });
 }
@@ -176,6 +183,8 @@ function onClickBtnSearchUser(event)
 function createTableSearchedUserInHtml(searchedUserList)
 {
     let searchedUserTable = document.getElementById("searchedUserListTable");
+    emptyGlobalUserList(searchedUserTable);
+
     while(user = searchedUserList.pop())
     {
         let trUser = document.createElement("tr");
@@ -222,6 +231,12 @@ function createTableSearchedUserInHtml(searchedUserList)
 
         searchedUserTable.append(trUser);
     }
+}
+
+function emptyGlobalUserList(table)
+{
+    while(table.childElementCount > 0)   // Delete all the old element (if there are)
+        table.removeChild(table.firstChild);
 }
 
 function onClickListenerBtnAddFriends(button)

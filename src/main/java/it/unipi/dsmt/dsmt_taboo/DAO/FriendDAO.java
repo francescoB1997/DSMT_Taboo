@@ -9,7 +9,7 @@ import java.util.List;
 import it.unipi.dsmt.dsmt_taboo.model.DTO.FriendDTO;
 import it.unipi.dsmt.dsmt_taboo.utility.SessionManagement;
 
-public class FriendDAO extends BaseFunctionalitiesDB
+public class FriendDAO extends BaseDAO
     // This class represents the friendships of a specific user -> username
 {
     private String username;
@@ -78,4 +78,5 @@ public class FriendDAO extends BaseFunctionalitiesDB
             return false;
         }
     }
+
 }

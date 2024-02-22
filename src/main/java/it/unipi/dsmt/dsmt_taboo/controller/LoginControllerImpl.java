@@ -19,8 +19,8 @@ public class LoginControllerImpl implements LoginControllerInterface
 {
     @Autowired
     SessionManagement session;
-
     private final UserDAO user = new UserDAO();
+
     @PostMapping("/login")
     @Override
     public ResponseEntity<ServerResponseDTO<String>> loginRequest(@RequestBody  LoginRequestDTO loginRequest)
@@ -28,7 +28,7 @@ public class LoginControllerImpl implements LoginControllerInterface
     {
         System.out.println("LoginController: login request from [" + loginRequest.getUsername() + "]");
         this.session = SessionManagement.getInstance();
-        ServerResponseDTO<String> loginResponse;
+        ServerResponseDTO <String> loginResponse;
         HttpStatus responseHttp;
         try
         {

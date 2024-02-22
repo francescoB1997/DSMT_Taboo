@@ -5,7 +5,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 
-public class BaseFunctionalitiesDB
+public class BaseDAO
     // Base functionalities to interact with DB
 {
     public static final String DB_NAME = "taboo";
@@ -14,7 +14,7 @@ public class BaseFunctionalitiesDB
     private static final String DB_PASSWORD = "root";
     private static Connection connection = null;
 
-    public BaseFunctionalitiesDB()
+    public BaseDAO()
     {
         connection = this.getConnection();
         if(connection == null)

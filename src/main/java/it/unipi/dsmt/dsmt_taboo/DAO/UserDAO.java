@@ -86,6 +86,7 @@ public class UserDAO extends BaseDAO
     }
 
     public boolean removeUser(String username) {
+        // Admininastrator Functionality
         String removeQuery = "DELETE FROM " + DB_NAME + ".user" + " WHERE username = ?";
 
         try (

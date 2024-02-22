@@ -99,4 +99,53 @@ public class UserDAO extends BaseFunctionalitiesDB
                 System.out.println("UserDAO login Exception: " + e.getMessage());
         }
     }
+
+    public boolean removeUser(String username) {
+        String removeQuery = "DELETE FROM " + DB_NAME + ".user" + " WHERE username = ?";
+
+        try (
+                Connection connection = getConnection();
+                PreparedStatement preparedStatement = connection.prepareStatement(removeQuery) )
+        {
+
+            preparedStatement.setString(1, username);
+
+            return preparedStatement.executeUpdate() > 0;
+
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            return false;
+        }
+    }
+
+    public List<UserDTO> globalSearchUser(String userToSearch)
+    // The method returns the searched user(if the search is specific) or a list of users (if the search is a generic one)
+    {
+        List<UserDTO> globalSearchUserList = new ArrayList<>();
+
+        String searchUserQuery = "SELECT U.Username, U.Name, U.Surname FROM " + DB_NAME + ".user as U " +
+                "WHERE U.Username LIKE ? ;";
+        try (
+                Connection connection = getConnection();
+                PreparedStatement checkStatement = connection.prepareStatement(searchUserQuery))
+        {
+            checkStatement.setString(1, "%" + userToSearch + "%");
+            try (ResultSet resultSet = checkStatement.executeQuery())
+            {
+                while (resultSet.next())
+                {
+                    String username = resultSet.getString("Username");
+                    String name = resultSet.getString("Name");
+                    String surname = resultSet.getString("Surname");
+                    globalSearchUserList.add(new UserDTO(username, name, surname));
+                }
+            }
+        } catch (SQLException ex)
+        {
+            System.out.println("searchUserInDB eccezione query: " + ex.getMessage());
+            return null;
+        }
+        globalSearchUserList.forEach(searchedUserDTO -> System.out.println("[" + searchedUserDTO.getUsername() + "]"));    // DEBUG
+        return globalSearchUserList;
+    }
 }

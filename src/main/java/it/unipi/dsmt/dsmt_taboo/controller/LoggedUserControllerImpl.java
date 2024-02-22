@@ -7,6 +7,7 @@ import it.unipi.dsmt.dsmt_taboo.utility.SessionManagement;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
@@ -14,23 +15,26 @@ import java.util.List;
 public class LoggedUserControllerImpl implements LoggedUserControllerInterface
     // This class handle the action performed by a Logged User
 {
+    @Autowired
+    SessionManagement session;
+
     @PostMapping("/getFriendList")
     @Override
     public ResponseEntity<ServerResponseDTO<List<FriendDTO>>> viewFriendList(@RequestBody String username)
     // The server response is a JSON message that contains a list of FriendDTO
     {
         System.out.println("LoggedUserController: getFriendList request from [" + username + "]");
-        ServerResponseDTO getFriendListResponse;
+        ServerResponseDTO<List<FriendDTO>> getFriendListResponse;
         HttpStatus responseHttp;
         if(SessionManagement.getInstance().isUserLogged(username))  //Check if that user is logged
         {
             FriendDAO friendDAO = new FriendDAO(username);
-            getFriendListResponse = new ServerResponseDTO(friendDAO.getFriendList());
+            getFriendListResponse = new ServerResponseDTO<>(friendDAO.getFriendList());
             responseHttp = HttpStatus.OK;
         }
         else
         {
-            getFriendListResponse = new ServerResponseDTO(null);
+            getFriendListResponse = new ServerResponseDTO<>(null);
             responseHttp = HttpStatus.UNAUTHORIZED;
         }
         return new ResponseEntity<>(getFriendListResponse, responseHttp);
@@ -59,4 +63,5 @@ public class LoggedUserControllerImpl implements LoggedUserControllerInterface
         }
         return new ResponseEntity<>(userListResponse, responseHttp);
     }
+
 }

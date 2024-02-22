@@ -59,4 +59,23 @@ public class FriendDAO extends BaseFunctionalitiesDB
             return;
         }
     }
+
+    public boolean removeFriend(String username1, String username2) {
+        String removeQuery = "DELETE FROM " + DB_NAME + ".friendship " +
+                "WHERE (Username1 = ? AND Username2 = ?) OR (Username1 = ? AND Username2 = ?)";
+                //Indipendentemente dall'ordine dei nomi degli utenti
+
+        try (Connection connection = getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(removeQuery)) {
+            preparedStatement.setString(1, username1);
+            preparedStatement.setString(2, username2);
+            preparedStatement.setString(3, username2);
+            preparedStatement.setString(4, username1);
+
+            return preparedStatement.executeUpdate() > 0;
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            return false;
+        }
+    }
 }

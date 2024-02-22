@@ -20,8 +20,12 @@ body {
     text-align: center;
 }
 
+.flex {
+    border-radius: 10px;
+    max-width: 100%}
+
 h1 {
-    color: #4CAF50;
+    color: #48054d;
 }
 
 label {
@@ -67,7 +71,7 @@ button {
     border: none;
     color: white;
     cursor: pointer;
-    background-color: #4CAF50;
+    background-color: #48054d;
     width: 100%;
     font-size: 16px;
 }

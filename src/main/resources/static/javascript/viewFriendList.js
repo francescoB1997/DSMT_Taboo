@@ -134,8 +134,43 @@ function emptyFriendList(divContainer)
 
 function onClickListenerBtnRemoveFriends(button)
 {
-    const username = button.id.toString().split('&');
-    alert("Rimuovi amico -> " + username[1]);
+    const usernameToRemove = button.id.toString().split('&')[1];
+    if (confirm("Sicuro di voler rimuovere " + usernameToRemove) + " dai tuoi amici?");
+    {
+        let removeFriendRequest = {
+            username : username,
+            usernameFriend : usernameToRemove
+        };
+
+        $.ajax({
+            url: "http://localhost:8080/removeFriend",
+            type: "POST",
+            data:  JSON.stringify(removeFriendRequest),
+            contentType: 'application/json',
+            success: function (serverResponse)
+            {
+                let removeOperation = serverResponse.responseMessage;
+                switch (removeOperation)
+                {
+                    case 0:
+                        alert("The User " + usernameToRemove + " has been successfully removed.");
+                        break;
+                    case 1:
+                        alert("We're Sorry, an Error occurred during remove operation." +
+                            " The friend " + usernameToRemove + " has NOT been removed from your friend list");
+                        break;
+                    default:
+                        //alert("Default: " + responseMessage);
+                        break;
+                }
+            },
+            error: function (xhr)
+            {
+                let responseMessage = xhr.responseText;
+                alert("Error: " + responseMessage);
+            }
+        });
+    }
 }
 
 /* -------------------------- Global User Management -------------------------- */

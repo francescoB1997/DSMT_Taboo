@@ -13,4 +13,6 @@ public interface LoggedUserControllerInterface
     public ResponseEntity<ServerResponseDTO<List<UserDTO>>> searchUser(UserSearchRequestDTO userSearchRequestDTO);
     public ResponseEntity<ServerResponseDTO<Integer>> removeFriend(FriendRequestDTO requesterUsername);
 
+    public ResponseEntity<ServerResponseDTO<Integer>> addFriend( @RequestBody FriendRequestDTO addFriendRequest);
+
 }

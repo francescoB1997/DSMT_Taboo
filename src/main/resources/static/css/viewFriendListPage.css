@@ -20,6 +20,11 @@ table
     text-align: center;
 }
 
+#btnShowSearchUser
+{
+    margin-bottom: 20px;
+}
+
 .rowFriend
 {
     display: table-row;

@@ -3,7 +3,7 @@ package it.unipi.dsmt.dsmt_taboo.model.DTO;
 public class UserSearchRequestDTO
 {
     private String requesterUsername; // logged username
-    private String usernameToSearch;  //
+    private String usernameToSearch;  // username to search in the DB
 
     public UserSearchRequestDTO(String requesterUsername, String usernameToSearch)
     {

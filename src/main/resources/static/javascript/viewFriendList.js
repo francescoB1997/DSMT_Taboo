@@ -26,6 +26,7 @@ function onClickListenerBtnShowSearchFunctions()
     let searchedUserTable = document.getElementById("searchedUserListTable");
     let friendListTable = document.getElementById("friendListTable");
     let btnSearchUser = document.getElementById("btnSearchUser");
+    let txtboxUserToSearch = document.getElementById("txtboxUserToSearch");
 
     if(showFriendList)
     {
@@ -35,6 +36,8 @@ function onClickListenerBtnShowSearchFunctions()
         searchedUserTable.classList.add("visible");
         btnSearchUser.classList.remove("hidden");
         btnSearchUser.classList.add("visible");
+        txtboxUserToSearch.classList.remove("hidden");
+        txtboxUserToSearch.classList.add("visible");
     }
     else
     {
@@ -44,7 +47,9 @@ function onClickListenerBtnShowSearchFunctions()
         searchedUserTable.classList.add("hidden");
         btnSearchUser.classList.remove("visible");
         btnSearchUser.classList.add("hidden");
-        //ajaxGetFriendList();
+        txtboxUserToSearch.classList.remove("visible");
+        txtboxUserToSearch.classList.add("hidden");
+        ajaxGetFriendList();
     }
     showFriendList = !showFriendList;
 }
@@ -82,7 +87,7 @@ function ajaxGetFriendList()
 function createFriendListInHtml(friendDTOList)
 {
     let tableFriendList = document.getElementById("friendListTable");
-    //emptyFriendList(divContainer);
+    emptyTable(tableFriendList);
     while(friend = friendDTOList.pop())
     {
         let trFriend = document.createElement("tr");
@@ -126,10 +131,10 @@ function createFriendListInHtml(friendDTOList)
     }
 }
 
-function emptyFriendList(divContainer)
+function emptyTable(table)
 {
-    while(divContainer.childElementCount > 0)   // Delete all the old elemnt (if there are)
-        divContainer.removeChild(divContainer.firstChild);
+    while(table.childElementCount > 0)   // Delete all the old elemnt (if there are)
+        table.removeChild(table.firstChild);
 }
 
 function onClickListenerBtnRemoveFriends(button)
@@ -218,7 +223,7 @@ function onClickBtnSearchUser(event)
 function createTableSearchedUserInHtml(searchedUserList)
 {
     let searchedUserTable = document.getElementById("searchedUserListTable");
-    emptyGlobalUserList(searchedUserTable);
+    emptyTable(searchedUserTable);
 
     while(user = searchedUserList.pop())
     {
@@ -268,14 +273,41 @@ function createTableSearchedUserInHtml(searchedUserList)
     }
 }
 
-function emptyGlobalUserList(table)
-{
-    while(table.childElementCount > 0)   // Delete all the old element (if there are)
-        table.removeChild(table.firstChild);
-}
-
 function onClickListenerBtnAddFriends(button)
 {
-    const username = button.id.toString().split('&');
-    alert("Aggiunto amico -> " + username[1]);
+    const usernameFriendToAdd = button.id.toString().split('&')[1];
+
+    let addFriendRequest = {
+        username : username,
+        usernameFriend : usernameFriendToAdd
+    };
+    $.ajax({
+        url: "http://localhost:8080/addFriend",
+        type: "POST",
+        data: JSON.stringify(addFriendRequest),
+        dataType: "json",
+        contentType: 'application/json',
+        success: function (serverResponse)
+        {
+            let responseMessage= serverResponse.responseMessage;
+            switch (responseMessage)
+            {
+                case 0:
+                    alert("Already friends");
+                    break;
+                case 1:
+                    alert("Friend added successfully");
+                    break;
+                default:
+                    alert("Default: " + responseMessage);
+                    break;
+            }
+        },
+        error: function (xhr)
+        {
+            //alert(serverResponse);
+            let responseMessage = xhr.responseText;
+            alert("Error: " + responseMessage);
+        }
+    });
 }

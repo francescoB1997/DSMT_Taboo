@@ -45,7 +45,6 @@ function onClickListenerBtnSignup()
         contentType: 'application/json',
         success: function ()
         {
-            sessionStorage.setItem("userLog", username);
             location.href = "../";
         },
         error: function(xhr)

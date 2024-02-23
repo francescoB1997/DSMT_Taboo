@@ -45,6 +45,7 @@ function onClickListenerBtnSignup()
         contentType: 'application/json',
         success: function ()
         {
+            alert("You're been successfully registered")
             location.href = "../";
         },
         error: function(xhr)

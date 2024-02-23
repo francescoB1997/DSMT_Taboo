@@ -4,13 +4,10 @@ import it.unipi.dsmt.dsmt_taboo.DAO.FriendDAO;
 import it.unipi.dsmt.dsmt_taboo.DAO.UserDAO;
 import it.unipi.dsmt.dsmt_taboo.model.DTO.*;
 import it.unipi.dsmt.dsmt_taboo.utility.SessionManagement;
-import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -66,7 +63,7 @@ public class LoggedUserControllerImpl implements LoggedUserControllerInterface
                                     + userSearchRequestDTO.getUsernameToSearch()+ "\n");
 
                 userListResponse = new ServerResponseDTO<>(null);
-                responseHttp = HttpStatus.NOT_FOUND;
+                responseHttp = HttpStatus.OK;
                 return new ResponseEntity<>(userListResponse, responseHttp);
             }
 
@@ -85,4 +82,52 @@ public class LoggedUserControllerImpl implements LoggedUserControllerInterface
 
         return new ResponseEntity<>(userListResponse, responseHttp);
     }
+
+    @PostMapping("/removeFriend")
+    @Override
+    public ResponseEntity<ServerResponseDTO<Integer>>
+    removeFriend(@RequestBody FriendRequestDTO requesterUsername)
+    {
+        HttpStatus responseHttp;
+        ServerResponseDTO<Integer> removeFriendResponse;
+        boolean checkLogin = SessionManagement.getInstance().isUserLogged(requesterUsername.getUsername());
+        int requestStatus = 0;
+
+        if(checkLogin)  //Check if that user is logged
+        {
+            FriendDAO friendDAO = new FriendDAO(requesterUsername.getUsername());
+            boolean removeOpStatus = friendDAO.removeFriendDB(requesterUsername.getUsernameFriend());
+
+            if(removeOpStatus)
+            {
+                System.out.println("\nThe user "
+                                        + requesterUsername.getUsernameFriend() +
+                                                            " has been successfully removed\n");
+                removeFriendResponse = new ServerResponseDTO<>(requestStatus);
+                responseHttp = HttpStatus.OK;
+
+                return new ResponseEntity<>(removeFriendResponse, responseHttp);
+            }
+            else
+            {
+                System.out.println("\nError occurred during remove operation." +
+                                        requesterUsername.getUsernameFriend() +
+                                        " friend has NOT been removed from your friend list\n");
+                requestStatus++;
+                removeFriendResponse = new ServerResponseDTO<>(requestStatus);
+                responseHttp = HttpStatus.BAD_REQUEST;
+
+                return new ResponseEntity<>(removeFriendResponse, responseHttp);
+            }
+        }
+        else
+        {
+            System.out.println("\nLoggedUserController: searchUser request from a NonLogged user\n");
+            removeFriendResponse = new ServerResponseDTO<>(null);
+            responseHttp = HttpStatus.UNAUTHORIZED;
+        }
+
+        return new ResponseEntity<>(removeFriendResponse, responseHttp);
+    }
 }
+

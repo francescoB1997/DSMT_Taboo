@@ -154,11 +154,13 @@ function onClickListenerBtnRemoveFriends(button)
             contentType: 'application/json',
             success: function (serverResponse)
             {
+
                 let removeOperation = serverResponse.responseMessage;
                 switch (removeOperation)
                 {
                     case 0:
                         alert("The User " + usernameToRemove + " has been successfully removed.");
+                        ajaxGetFriendList();
                         break;
                     case 1:
                         alert("We're Sorry, an Error occurred during remove operation." +
@@ -168,6 +170,7 @@ function onClickListenerBtnRemoveFriends(button)
                         //alert("Default: " + responseMessage);
                         break;
                 }
+
             },
             error: function (xhr)
             {

@@ -7,6 +7,7 @@ public class UserDTO
     private String surname;
     private String password;
 
+    public UserDTO(){};
 
     public UserDTO(String username, String name, String surname, String password)
     {

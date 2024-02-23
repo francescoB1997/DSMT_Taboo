@@ -26,6 +26,7 @@ function onClickListenerBtnShowSearchFunctions()
     let searchedUserTable = document.getElementById("searchedUserListTable");
     let friendListTable = document.getElementById("friendListTable");
     let btnSearchUser = document.getElementById("btnSearchUser");
+    let btnShowSearchUser = document.getElementById("btnShowSearchUser");
     let txtboxUserToSearch = document.getElementById("txtboxUserToSearch");
 
     if(showFriendList)
@@ -38,6 +39,7 @@ function onClickListenerBtnShowSearchFunctions()
         btnSearchUser.classList.add("visible");
         txtboxUserToSearch.classList.remove("hidden");
         txtboxUserToSearch.classList.add("visible");
+        btnShowSearchUser.innerText = "Back To Friend List";
     }
     else
     {
@@ -49,7 +51,9 @@ function onClickListenerBtnShowSearchFunctions()
         btnSearchUser.classList.add("hidden");
         txtboxUserToSearch.classList.remove("visible");
         txtboxUserToSearch.classList.add("hidden");
+        btnShowSearchUser.innerText = "Search New Friends";
         ajaxGetFriendList();
+        emptyTable(searchedUserTable);
     }
     showFriendList = !showFriendList;
 }
@@ -208,17 +212,15 @@ function onClickBtnSearchUser(event)
                 alert("- OK - : L'utente ricercato è presente nel Database");
                 createTableSearchedUserInHtml(searchedUserList);
             }
+            else {
+                alert("- NOT FOUND - : L'utente ricercato NON è presente nel Database")
+            }
         },
         error: function (serverResponse)
         {
             //alert(serverResponse);
-            let searchedUserList = serverResponse.responseMessage;
-            if(!searchedUserList) {
-                alert("- NOT FOUND - : L'utente ricercato NON è presente nel Database")
-            }else{
-                alert("Unauthorized Request! You must be logged to navigate this page");
-                location.href = "../";
-            }
+            alert("Unauthorized Request! You must be logged to navigate this page");
+            location.href = "../";
         }
     });
 }
@@ -268,7 +270,10 @@ function createTableSearchedUserInHtml(searchedUserList)
         btnAddFriend.className = "";
         btnAddFriend.id = "btnAddFriend&" + trUser.id;
         btnAddFriend.innerText = "Add Friend";
-        btnAddFriend.onclick = function (e) { onClickListenerBtnAddFriends(this); };
+        if(btnAddFriend.id === ("btnAddFriend&" + username))
+            btnAddFriend.disabled = true;
+        else
+            btnAddFriend.onclick = function (e) { onClickListenerBtnAddFriends(this); };
         tdAction.append(btnAddFriend);
         trUser.append(tdAction);
 

@@ -90,7 +90,9 @@ public class LoggedUserControllerImpl implements LoggedUserControllerInterface
     {
         HttpStatus responseHttp;
         ServerResponseDTO<Integer> removeFriendResponse;
-        boolean checkLogin = SessionManagement.getInstance().isUserLogged(requesterUsername.getUsername());
+        boolean checkLogin = SessionManagement.
+                                    getInstance().
+                                        isUserLogged(requesterUsername.getUsername());
         int requestStatus = 0;
 
         if(checkLogin)  //Check if that user is logged
@@ -106,7 +108,6 @@ public class LoggedUserControllerImpl implements LoggedUserControllerInterface
                 removeFriendResponse = new ServerResponseDTO<>(requestStatus);
                 responseHttp = HttpStatus.OK;
 
-                return new ResponseEntity<>(removeFriendResponse, responseHttp);
             }
             else
             {
@@ -117,8 +118,9 @@ public class LoggedUserControllerImpl implements LoggedUserControllerInterface
                 removeFriendResponse = new ServerResponseDTO<>(requestStatus);
                 responseHttp = HttpStatus.BAD_REQUEST;
 
-                return new ResponseEntity<>(removeFriendResponse, responseHttp);
             }
+
+            return new ResponseEntity<>(removeFriendResponse, responseHttp);
         }
         else
         {

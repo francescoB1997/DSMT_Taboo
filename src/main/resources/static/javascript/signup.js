@@ -41,11 +41,13 @@ function onClickListenerBtnSignup()
     $.ajax({
         url : "http://localhost:8080/signup",
         data : JSON.stringify(newUser),
+        dataType : "json",
         type : "POST",
         contentType: 'application/json',
         success: function ()
         {
-            sessionStorage.setItem("userLog", username);
+            //sessionStorage.setItem("userLog", username);
+            alert("You're been successfully registered")
             location.href = "../";
         },
         error: function(xhr)

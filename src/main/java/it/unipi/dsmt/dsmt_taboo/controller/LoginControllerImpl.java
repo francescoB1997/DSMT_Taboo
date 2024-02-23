@@ -80,8 +80,6 @@ public class LoginControllerImpl implements LoginControllerInterface
         HttpStatus responseHttp;
         if (control == 1)
         {
-            session = SessionManagement.getInstance();
-            session.setLogUser(userToSignup.getUsername());
             System.out.println("Username: [" + userToSignup.getUsername() + "] completely registered");
             signupResponse = new ServerResponseDTO<>("Signup Success");
             responseHttp = HttpStatus.OK;

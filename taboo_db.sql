@@ -118,3 +118,21 @@ BEGIN
 END//
 
 DELIMITER ;
+
+Use taboo;
+
+DROP FUNCTION IF EXISTS userExists;
+DELIMITER //
+CREATE FUNCTION userExists(username VARCHAR(45))
+    RETURNS BOOLEAN DETERMINISTIC
+BEGIN
+    DECLARE exists_ INT;
+
+    SELECT COUNT(*) INTO exists_
+    FROM user as U
+    WHERE U.username = username;
+
+    RETURN exists_ > 0;
+END//
+
+DELIMITER ;

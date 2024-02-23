@@ -1,9 +1,6 @@
 package it.unipi.dsmt.dsmt_taboo.DAO;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import it.unipi.dsmt.dsmt_taboo.model.DTO.FriendDTO;
@@ -66,6 +63,57 @@ public class FriendDAO extends BaseDAO
         } catch (SQLException ex) {
             ex.printStackTrace();
             return false;
+        }
+    }
+
+    private Boolean checkIfUserExists(String username)
+    {
+        Boolean result = false;
+        String userExistsQuery = "SELECT userExists(?) as Exists_;";
+
+        try (Connection connection = getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(userExistsQuery))
+        {
+            preparedStatement.setString(1, username);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while (resultSet.next())
+            {
+                result = (resultSet.getInt("Exists_") == 1) ? true : false;
+            }
+        }
+        catch (SQLException ex)
+        {
+            System.out.println("checkIfUserExists query exception: " + ex.getMessage());
+        }
+        return result;
+    }
+
+    public Integer addFriend(String usernameToAdd)
+    {
+        String addFriendQuery = "INSERT INTO " + DB_NAME + ".friendship (Username1, Username2) VALUES (?, ?)";
+
+        if(!checkIfUserExists(usernameToAdd))
+        {
+            System.out.println("Non esiste");
+            return -1;
+        }
+
+        try (Connection connection = getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(addFriendQuery))
+        {
+            preparedStatement.setString(1, this.username);
+            preparedStatement.setString(2, usernameToAdd);
+            return (preparedStatement.executeUpdate() > 0) ? 1 : 0;
+        }
+        catch (SQLIntegrityConstraintViolationException ex) //Handle the Duplicate entry exception (ALREADY FRIEND)
+        {
+            System.out.println("addFriend query exception: già amici");
+            return 0;
+        }
+        catch (SQLException ex)
+        {
+            System.out.println("addFriend query exception: " + ex.getMessage());
+            return -1;
         }
     }
 

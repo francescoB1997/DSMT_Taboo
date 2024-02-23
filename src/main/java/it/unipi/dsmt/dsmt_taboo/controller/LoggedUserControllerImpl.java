@@ -129,5 +129,31 @@ public class LoggedUserControllerImpl implements LoggedUserControllerInterface
 
         return new ResponseEntity<>(removeFriendResponse, responseHttp);
     }
+
+    @PostMapping("/addFriend")
+    @Override
+    public ResponseEntity<ServerResponseDTO<Integer>> addFriend( @RequestBody FriendRequestDTO addFriendRequest)
+    {
+        ServerResponseDTO<Integer> addFriendResponse;
+        HttpStatus responseHttp;
+        boolean checkLogin = SessionManagement.getInstance().isUserLogged(addFriendRequest.getUsername());
+        if(checkLogin)
+        {
+            FriendDAO me = new FriendDAO(addFriendRequest.getUsername());
+            int friendRequestStatus = me.addFriend(addFriendRequest.getUsernameFriend());
+            addFriendResponse = new ServerResponseDTO<>(friendRequestStatus);
+            if(friendRequestStatus >= 0)
+                responseHttp = HttpStatus.OK;
+            else
+                responseHttp = HttpStatus.BAD_REQUEST;
+        }
+        else
+        {
+            System.out.println("\nLoggedUserController: addFriend request from a NonLogged user\n");
+            addFriendResponse = new ServerResponseDTO<>(-2);
+            responseHttp = HttpStatus.UNAUTHORIZED;
+        }
+        return new ResponseEntity<>(addFriendResponse, responseHttp);
+    }
 }
 

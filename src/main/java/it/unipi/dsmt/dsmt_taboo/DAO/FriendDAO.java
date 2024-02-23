@@ -77,9 +77,37 @@ public class FriendDAO extends BaseDAO
         }
     }
 
+    private Boolean checkIfUserExists(String username)
+    {
+        Boolean result = false;
+        String userExistsQuery = "SELECT userExists(?) as Exists_;";
+
+        try (Connection connection = getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(userExistsQuery))
+        {
+            preparedStatement.setString(1, username);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while (resultSet.next())
+            {
+                result = (resultSet.getInt("Exists_") == 1) ? true : false;
+            }
+        }
+        catch (SQLException ex)
+        {
+            System.out.println("checkIfUserExists query exception: " + ex.getMessage());
+        }
+        return result;
+    }
+
     public Integer addFriend(String usernameToAdd)
     {
         String addFriendQuery = "INSERT INTO " + DB_NAME + ".friendship (Username1, Username2) VALUES (?, ?)";
+
+        if(!checkIfUserExists(usernameToAdd))
+        {
+            System.out.println("Non esiste");
+            return -1;
+        }
 
         try (Connection connection = getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(addFriendQuery))

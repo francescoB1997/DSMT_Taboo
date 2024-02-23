@@ -100,3 +100,21 @@ LOCK TABLES `user` WRITE;
 INSERT INTO `user` VALUES ('gsf','Gaetano', 'Sferrazza', 'g'),('alex_cook','Alex','Cook','OceanWave456'),('amy_carter','Amy','Carter','Garden789'),('david_moore','David','Moore','Moonlight789'),('ella_miller','Ella','Miller','SweetDreams123'),('emma_taylor','Emma','Taylor','Butterfly123'),('grace_clark','Grace','Clark','PurpleRain123'),('jack_robinson','Jack','Robinson','CoffeeTime456'),('jackson84','Jackson','Smith','Secure123!'),('fra','Francesco','Bruno','f'),('lily22','Lily','Williams','Rainbow456'),('luke_smith','Luke','Smith','GoldenSun456'),('max_wilson','Max','Wilson','BlueSky123'),('mia_brown','Mia','Brown','HappyDay123'),('mike_jones','Mike','Jones','Summer2023!'),('noah_carter','Noah','Carter','SunnyDay789'),('olivia_white','Olivia','White','HappyPlace456'),('owen_hall','Owen','Hall','Starlight456'),('sophie_davis','Sophie','Davis','Sunflower456'),('user1','John','Doe','pass123'),('user10','Emma','Anderson','access'),('user123','Sarah','Johnson','P@ssw0rd123'),('user2','Alice','Smith','qwerty'),('user3','Bob','Johnson','secret'),('user4','Eva','Williams','mypassword'),('user5','Charlie','Brown','letmein'),('user6','Olivia','Davis','p@ssw0rd'),('user7','Michael','Miller','secure123'),('user8','Sophia','Moore','password123'),('user9','Liam','Taylor','123456'),('zoe_jenkins','Zoe','Jenkins','MountainView123');
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
+
+Use taboo;
+
+DROP FUNCTION IF EXISTS userExists;
+DELIMITER //
+CREATE FUNCTION userExists(username VARCHAR(45))
+    RETURNS BOOLEAN DETERMINISTIC
+BEGIN
+    DECLARE exists_ INT;
+
+    SELECT COUNT(*) INTO exists_
+    FROM user as U
+    WHERE U.username = username;
+
+    RETURN exists_ > 0;
+END//
+
+DELIMITER ;

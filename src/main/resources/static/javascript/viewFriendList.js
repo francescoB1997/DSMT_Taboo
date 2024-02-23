@@ -144,8 +144,8 @@ function emptyTable(table)
 function onClickListenerBtnRemoveFriends(button)
 {
     const usernameToRemove = button.id.toString().split('&')[1];
-    if (confirm("Sicuro di voler rimuovere " + usernameToRemove) + " dai tuoi amici?");
-    {
+    if (confirm("Sicuro di voler rimuovere " + usernameToRemove + " dai tuoi amici?")) {
+
         let removeFriendRequest = {
             username : username,
             usernameFriend : usernameToRemove
@@ -190,7 +190,13 @@ function onClickListenerBtnRemoveFriends(button)
 function onClickBtnSearchUser(event)
 {
     let usernameToSearch = document.getElementById("txtboxUserToSearch").value;
-    document.getElementById("txtboxUserToSearch").value = "";
+    if (usernameToSearch === "") {
+        alert("La TextBox di ricerca è vuota. Inserisci uno username")
+        return;
+    } else {
+        document.getElementById("txtboxUserToSearch").value = "";
+    }
+
     let userSearchRequestDTO = {
         requesterUsername : username,
         usernameToSearch : usernameToSearch

@@ -75,3 +75,11 @@ p
     visibility: visible;
     z-index: 10 ;
 }
+
+#imgHome
+{
+    width: 25px;
+    height: 25px;
+    margin-right: 10px;
+    margin-bottom: -5px;
+}

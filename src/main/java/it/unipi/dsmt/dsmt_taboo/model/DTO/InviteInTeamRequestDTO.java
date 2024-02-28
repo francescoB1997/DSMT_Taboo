@@ -7,19 +7,19 @@ import java.util.ArrayList;
 public class InviteInTeamRequestDTO {
 
     private String gameId;
-    private ArrayList<String> yourTeam = new ArrayList<>();
-    private ArrayList<Constant> roles = new ArrayList<>();
-    private String userInvite;
+    private ArrayList<String> yourTeam;
+    private ArrayList<Constant> roles;
+    private String userInviter;
 
     public InviteInTeamRequestDTO(){}
 
     public InviteInTeamRequestDTO(String gameId, ArrayList<String> yourTeam,
-                                  ArrayList<Constant> roles, String userInvite)
+                                  ArrayList<Constant> roles, String userInviter)
     {
         this.gameId = gameId;
         this.yourTeam = yourTeam;
         this.roles = roles;
-        this.userInvite = userInvite;
+        this.userInviter = userInviter;
     }
 
     public String getGameId() {
@@ -46,12 +46,12 @@ public class InviteInTeamRequestDTO {
         this.roles = roles;
     }
 
-    public String getUserInvite() {
-        return userInvite;
+    public String getUserInviter() {
+        return userInviter;
     }
 
-    public void setUserInvite(String userInvite)
+    public void setUserInviter(String userInviter)
     {
-        this.userInvite = userInvite;
+        this.userInviter = userInviter;
     }
 }

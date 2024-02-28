@@ -154,5 +154,7 @@ public class LoggedUserControllerImpl implements LoggedUserControllerInterface
         }
         return new ResponseEntity<>(addFriendResponse, responseHttp);
     }
+
+
 }
 

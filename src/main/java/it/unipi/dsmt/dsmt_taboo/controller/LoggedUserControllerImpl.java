@@ -47,34 +47,32 @@ public class LoggedUserControllerImpl implements LoggedUserControllerInterface
                             "[" + userSearchRequestDTO.getRequesterUsername() + "] -> " +
                             "Searching [" + userSearchRequestDTO.getUsernameToSearch() + "]" + "\n");
 
-        ServerResponseDTO<List<UserDTO>> userListResponse;
         HttpStatus responseHttp;
+        ServerResponseDTO<List<UserDTO>> userListResponse;
         boolean checkLogin = SessionManagement.getInstance().
-                                isUserLogged(userSearchRequestDTO.
-                                        getRequesterUsername());
+                             isUserLogged(userSearchRequestDTO.getRequesterUsername());
 
         if(checkLogin) //Check if requesterUsername is logged or Not.
         {
             UserDAO userDAO = new UserDAO();
-            List<UserDTO> userList = userDAO.globalSearchUser(userSearchRequestDTO.getUsernameToSearch());
-
-            if (userList.isEmpty()) {
+            List<UserDTO> userList = userDAO.globalSearchUser(userSearchRequestDTO.
+                                                                getUsernameToSearch());
+            if(userList.isEmpty())
+            {
                 System.out.println("\nLoggedUserController: - NOT FOUND - Database NOT contain the user: "
                                     + userSearchRequestDTO.getUsernameToSearch()+ "\n");
-
                 userListResponse = new ServerResponseDTO<>(null);
-                responseHttp = HttpStatus.OK;
-                return new ResponseEntity<>(userListResponse, responseHttp);
+
+            } else {
+                System.out.println("\nLoggedUserController: - OK - Database contain the user: "
+                                    + userSearchRequestDTO.getUsernameToSearch() + "\n");
+                userListResponse = new ServerResponseDTO<>(userList);
             }
 
-            System.out.println("\nLoggedUserController: - OK - Database contain the user: "
-                                + userSearchRequestDTO.getUsernameToSearch() + "\n");
-
-            userListResponse = new ServerResponseDTO<>(userList);
             responseHttp = HttpStatus.OK;
-        }
-        else
-        {
+            return new ResponseEntity<>(userListResponse, responseHttp);
+
+        } else {
             System.out.println("\nLoggedUserController: searchUser request from a NonLogged user\n");
             userListResponse = new ServerResponseDTO<>(null);
             responseHttp = HttpStatus.UNAUTHORIZED;
@@ -88,40 +86,41 @@ public class LoggedUserControllerImpl implements LoggedUserControllerInterface
     public ResponseEntity<ServerResponseDTO<Integer>>
     removeFriend(@RequestBody FriendRequestDTO requesterUsername)
     {
+        System.out.println("\nLoggedUserController: removeUser request from " +
+                "[" + requesterUsername.getUsername() + "] -> " +
+                "Removing [" + requesterUsername.getUsernameFriend() + "]" + "\n");
+
         HttpStatus responseHttp;
         ServerResponseDTO<Integer> removeFriendResponse;
-        boolean checkLogin = SessionManagement.getInstance().isUserLogged(requesterUsername.getUsername());
+        boolean checkLogin = SessionManagement.getInstance().
+                             isUserLogged(requesterUsername.getUsername());
         int requestStatus = 0;
 
         if(checkLogin)  //Check if that user is logged
         {
             FriendDAO friendDAO = new FriendDAO(requesterUsername.getUsername());
-            boolean removeOpStatus = friendDAO.removeFriendDB(requesterUsername.getUsernameFriend());
-
+            boolean removeOpStatus = friendDAO.removeFriendDB(requesterUsername.
+                                                                  getUsernameFriend());
             if(removeOpStatus)
             {
                 System.out.println("\nThe user "
                                         + requesterUsername.getUsernameFriend() +
-                                                            " has been successfully removed\n");
+                                        " has been successfully removed\n");
                 removeFriendResponse = new ServerResponseDTO<>(requestStatus);
                 responseHttp = HttpStatus.OK;
 
-                return new ResponseEntity<>(removeFriendResponse, responseHttp);
-            }
-            else
-            {
+            } else {
                 System.out.println("\nError occurred during remove operation." +
                                         requesterUsername.getUsernameFriend() +
-                                        " friend has NOT been removed from your friend list\n");
+                                        " has NOT been removed from your friend list\n");
                 requestStatus++;
                 removeFriendResponse = new ServerResponseDTO<>(requestStatus);
                 responseHttp = HttpStatus.BAD_REQUEST;
-
-                return new ResponseEntity<>(removeFriendResponse, responseHttp);
             }
-        }
-        else
-        {
+
+            return new ResponseEntity<>(removeFriendResponse, responseHttp);
+
+        } else {
             System.out.println("\nLoggedUserController: searchUser request from a NonLogged user\n");
             removeFriendResponse = new ServerResponseDTO<>(null);
             responseHttp = HttpStatus.UNAUTHORIZED;

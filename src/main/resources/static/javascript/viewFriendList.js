@@ -60,6 +60,10 @@ function onClickListenerBtnShowSearchFunctions()
 
 function ajaxGetFriendList()
 {
+    //Fare una chiamata asincrona AJAX per ottenere la lista degli amici, ossia un JSON con una lista di nomi
+    // e per ognuno, ci vede essere l'info se è Online o meno.
+    // Per ogni amico, va creato a runTime un elemento HTML per mostrarlo.
+
     $.ajax({
         url: "http://localhost:8080/getFriendList",
         type: "POST",
@@ -140,9 +144,8 @@ function emptyTable(table)
 function onClickListenerBtnRemoveFriends(button)
 {
     const usernameToRemove = button.id.toString().split('&')[1];
-    //if (confirm("Sicuro di voler rimuovere " + usernameToRemove) + " dai tuoi amici?");
-    if (confirm("Are you sure to remove " + usernameToRemove) + " from yours friends list?");
-    {
+    if (confirm("Sicuro di voler rimuovere " + usernameToRemove + " dai tuoi amici?")) {
+
         let removeFriendRequest = {
             username : username,
             usernameFriend : usernameToRemove
@@ -155,21 +158,23 @@ function onClickListenerBtnRemoveFriends(button)
             contentType: 'application/json',
             success: function (serverResponse)
             {
+
                 let removeOperation = serverResponse.responseMessage;
                 switch (removeOperation)
                 {
                     case 0:
-                        alert("The User " + usernameToRemove + " has been successfully removed");
+                        alert("The User " + usernameToRemove + " has been successfully removed.");
                         ajaxGetFriendList();
                         break;
                     case 1:
-                        alert("We're Sorry, an Error occurred during remove operation" +
+                        alert("We're Sorry, an Error occurred during remove operation." +
                             " The friend " + usernameToRemove + " has NOT been removed from your friend list");
                         break;
                     default:
                         //alert("Default: " + responseMessage);
                         break;
                 }
+
             },
             error: function (xhr)
             {
@@ -185,7 +190,13 @@ function onClickListenerBtnRemoveFriends(button)
 function onClickBtnSearchUser(event)
 {
     let usernameToSearch = document.getElementById("txtboxUserToSearch").value;
-    document.getElementById("txtboxUserToSearch").value = "";
+    if (usernameToSearch === "") {
+        alert("La TextBox di ricerca è vuota. Inserisci uno username")
+        return;
+    } else {
+        document.getElementById("txtboxUserToSearch").value = "";
+    }
+
     let userSearchRequestDTO = {
         requesterUsername : username,
         usernameToSearch : usernameToSearch
@@ -204,12 +215,11 @@ function onClickBtnSearchUser(event)
             let searchedUserList = serverResponse.responseMessage;
             if (searchedUserList)
             {
-                //alert("- OK - : L'utente ricercato è presente nel Database");
+                alert("- OK - : L'utente ricercato è presente nel Database");
                 createTableSearchedUserInHtml(searchedUserList);
             }
             else {
-                //alert("- NOT FOUND - : L'utente ricercato NON è presente nel Database")
-                alert("- NOT FOUND - :There is no user [" + userSearchRequestDTO.usernameToSearch + "]");
+                alert("- NOT FOUND - : L'utente ricercato NON è presente nel Database")
             }
         },
         error: function (serverResponse)

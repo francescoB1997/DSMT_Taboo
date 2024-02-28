@@ -7,7 +7,7 @@ public class UserDTO
     private String surname;
     private String password;
 
-    public UserDTO() {};
+    public UserDTO(){};
 
     public UserDTO(String username, String name, String surname, String password)
     {
@@ -16,7 +16,6 @@ public class UserDTO
         this.surname = surname;
         this.password = password;
     }
-
     public UserDTO(String username, String name, String surname)
         // This constructor is used by SearchUser functionality
     {

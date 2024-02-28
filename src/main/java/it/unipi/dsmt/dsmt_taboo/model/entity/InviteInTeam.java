@@ -8,15 +8,15 @@ import java.util.ArrayList;
 public class InviteInTeam {
 
     String id;
-    String userInvite;
-    private ArrayList<String> yourTeam = new ArrayList<>();
-    private ArrayList<Constant> roles = new ArrayList<>();
+    String userInviter;
+    private ArrayList<String> yourTeam;
+    private ArrayList<Constant> roles;
 
 
     public InviteInTeam(InviteInTeamRequestDTO inviteFriend)
     {
         this.id = inviteFriend.getGameId();
-        this.userInvite = inviteFriend.getUserInvite();
+        this.userInviter = inviteFriend.getUserInviter();
         this.yourTeam = inviteFriend.getYourTeam();
         this.roles = inviteFriend.getRoles();
     }
@@ -29,12 +29,12 @@ public class InviteInTeam {
         this.id = id;
     }
 
-    public String getUserInvite() {
-        return userInvite;
+    public String getUserInviter() {
+        return userInviter;
     }
 
-    public void setUserInvite(String userInvite) {
-        this.userInvite = userInvite;
+    public void setUserInviter(String userInviter) {
+        this.userInviter = userInviter;
     }
 
     public ArrayList<String> getYourTeam() {

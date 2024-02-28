@@ -51,6 +51,7 @@ function onClickListenerBtnCreateTeam()
 {
     //Contattare servlet per la creazione del team, oppure reindirizzare verso una createTeams.html
     //in cui selezionare da una lista di AMICI ONLINE quelli da inserire nella squadra (se è semplice, sarebbbe carino il drag and drop)
+    location.href = "../createTeamPage.html";
 }
 
 function onClickListenerBtnViewFriends()

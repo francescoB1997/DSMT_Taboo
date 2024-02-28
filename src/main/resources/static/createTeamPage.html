@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+      <meta charset="UTF-8">
+      <title>Create your Team</title>
+      <script src="https://code.jquery.com/jquery-3.4.0.min.js" type="text/javascript"></script>
+      <script src="./javascript/createTeamPage.js" type="text/javascript"></script>
+      <link rel="stylesheet" href="./css/createTeamPage.css">
+  </head>
+  <body>
+    <div class="containerTeams">
+        <div id="tableFriendContainer">
+            <h2>Your Friend List</h2>
+            <table id="tableFriend">
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+        <div>
+            <label for="txtboxFriendPlayer"> Friend Player
+            <input id="txtboxFriendPlayer" placeholder="Username"></label>
+            <label for="radioRolePrompter">Prompter</label>
+            <input class="radio" type="radio" id="radioRolePrompter" name="roleFriend" value="Prompter">
+            <label for="radioRoleGuesser">Guesser</label>
+            <input class="radio" type="radio" id="radioRoleGuesser" name="roleFriend" value="Guesser">
+        </div>
+        <div>
+            <img src="./img/versus.png" id="imgVersus" alt="versus img">
+        </div>
+        <div>
+            <label for="txtboxRival1">Choose your rival</label>
+            <input id="txtboxRival1" placeholder="Username">
+            <span class="tooltip-wrap">
+                <img src="./img/info.png" alt="Info Image" class="img"/>
+                <span class="tooltip-content">
+                    Your rival will create its team
+                </span>
+            </span>
+        </div>
+    </div>
+  </body>
+</html>

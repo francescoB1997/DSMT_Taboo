@@ -1,13 +1,16 @@
+body{
+    background: #f3f3f3;
+}
+
 .containerTeams
 {
-    align-items: center;
     display: flex;
     justify-content: center;
+    align-items: center;
     font-family: sans-serif;
     line-height: 1.5;
     min-height: 100vh;
-    background: #f3f3f3;
-    margin: 0;
+    margin-top: -100px;
 }
 
 .main
@@ -69,6 +72,11 @@ button
     background: #555;
 }
 
+tableFriendContainer
+{
+    text-align: center;
+}
+
 div
 {
     margin: 5px;
@@ -109,4 +117,23 @@ div
 }
 .tooltip-wrap:hover .tooltip-content {
     display: inline;
+}
+
+h2 p
+{
+    display: inline;
+    color: green;
+}
+
+.tdUsername
+{
+    width: 150px;
+    text-align: center;
+}
+
+#tableFriend
+{
+    overflow-y:scroll;
+    height:250px;
+    display:block;
 }

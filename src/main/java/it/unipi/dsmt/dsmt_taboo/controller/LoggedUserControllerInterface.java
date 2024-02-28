@@ -13,6 +13,7 @@ public interface LoggedUserControllerInterface
     public ResponseEntity<ServerResponseDTO<List<UserDTO>>> searchUser(UserSearchRequestDTO userSearchRequestDTO);
     public ResponseEntity<ServerResponseDTO<Integer>> removeFriend(FriendRequestDTO requesterUsername);
     public ResponseEntity<ServerResponseDTO<Integer>> addFriend( @RequestBody FriendRequestDTO addFriendRequest);
+    public ResponseEntity<ServerResponseDTO<Integer>> createMatch( @RequestBody InviteInTeamRequestDTO inviteRequest);
     public ResponseEntity<String> inviteFriendAsRival(@RequestBody InviteRivalRequestDTO request);
     public ResponseEntity<String> inviteFriendInTeam(@RequestBody InviteInTeamRequestDTO request);
 

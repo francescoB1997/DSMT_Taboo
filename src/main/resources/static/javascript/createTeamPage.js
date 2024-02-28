@@ -1,9 +1,11 @@
 const username = sessionStorage.getItem("userLog");
+const PERIOD = 5000;
 
 $(document).ready(function ()
 {
     checkLogin();
     ajaxGetFriendList();
+    setPeriodicRequest(PERIOD);
 });
 
 function checkLogin()
@@ -15,13 +17,22 @@ function checkLogin()
     }
 }
 
+function setPeriodicRequest(period)
+{
+    let intervalId = setInterval(function () {
+        ajaxGetFriendList();
+    }, period);
+}
+
 function loadFriendsInTable(friendList)
 {
     let tableFriends = document.getElementById("tableFriend");
     emptyTable(tableFriends);
     let friend;
-    while(friend = friendList.pop())
+    while( friend = friendList.pop() )
     {
+        if(!friend.logged)
+            continue;
         let trFriend = document.createElement("tr");
         trFriend.id = friend.username;
 
@@ -34,6 +45,7 @@ function loadFriendsInTable(friendList)
         trFriend.append(tdUserIcon);
 
         let tdUsername = document.createElement("td");
+        tdUsername.className = "tdUsername";
         tdUsername.id = friend.username;
         let pUsername = document.createElement("p");
         pUsername.innerText = friend.username;
@@ -44,10 +56,22 @@ function loadFriendsInTable(friendList)
         tdStatus.className = "";
         let imgUserState = document.createElement("img");
         imgUserState.className = "img";
-        imgUserState.src = (friend.logged) ? "../img/online.png" : "../img/offline.png";
+        imgUserState.src = "../img/online.png";
         imgUserState.alt = "img user state (online or offline)";
         tdStatus.append(imgUserState);
         trFriend.append(tdStatus);
+
+        let tdCheckbox = document.createElement("td");
+        let lblCheckboxFriend = document.createElement("label");
+        lblCheckboxFriend.innerText = "Select as Friend";
+        let checkboxFriend = document.createElement("input");
+        checkboxFriend.id = "check&" + friend.username;
+        lblCheckboxFriend.htmlFor = checkboxFriend.id;
+        checkboxFriend.setAttribute("type", "checkbox");
+
+        tdCheckbox.append(lblCheckboxFriend);
+        tdCheckbox.append(checkboxFriend);
+        trFriend.append(tdCheckbox);
 
         tableFriends.append(trFriend);
     }

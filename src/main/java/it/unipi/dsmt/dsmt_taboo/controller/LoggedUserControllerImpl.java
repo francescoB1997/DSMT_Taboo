@@ -44,7 +44,13 @@ public class LoggedUserControllerImpl implements LoggedUserControllerInterface
         return new ResponseEntity<>(getFriendListResponse, responseHttp);
     }
 
-
+    @PostMapping("/createMatch")
+    @Override
+    public ResponseEntity<ServerResponseDTO<Integer>> createMatch( @RequestBody InviteInTeamRequestDTO inviteRequest)
+    {
+        // TO DO
+        return null;
+    }
     @PostMapping("/searchUser")
     @Override
     public ResponseEntity<ServerResponseDTO<List<UserDTO>>>

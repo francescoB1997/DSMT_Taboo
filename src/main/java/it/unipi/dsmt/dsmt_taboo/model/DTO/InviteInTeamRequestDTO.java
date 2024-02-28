@@ -50,7 +50,8 @@ public class InviteInTeamRequestDTO {
         return userInvite;
     }
 
-    public void setUserInvite(String userInvite) {
+    public void setUserInvite(String userInvite)
+    {
         this.userInvite = userInvite;
     }
 }

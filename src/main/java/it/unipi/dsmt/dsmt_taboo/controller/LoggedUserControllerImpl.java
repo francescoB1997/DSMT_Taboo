@@ -3,12 +3,20 @@ package it.unipi.dsmt.dsmt_taboo.controller;
 import it.unipi.dsmt.dsmt_taboo.DAO.FriendDAO;
 import it.unipi.dsmt.dsmt_taboo.DAO.UserDAO;
 import it.unipi.dsmt.dsmt_taboo.model.DTO.*;
+import it.unipi.dsmt.dsmt_taboo.model.entity.InviteInTeam;
+import it.unipi.dsmt.dsmt_taboo.model.entity.InviteRival;
+import it.unipi.dsmt.dsmt_taboo.model.entity.TeamCreationWaiting;
+import it.unipi.dsmt.dsmt_taboo.model.entity.RivalWaiting;
+import it.unipi.dsmt.dsmt_taboo.service.UserService;
 import it.unipi.dsmt.dsmt_taboo.utility.SessionManagement;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Vector;
 
 @RestController
 public class LoggedUserControllerImpl implements LoggedUserControllerInterface
@@ -155,6 +163,44 @@ public class LoggedUserControllerImpl implements LoggedUserControllerInterface
         return new ResponseEntity<>(addFriendResponse, responseHttp);
     }
 
+    UserService userService = new UserService();
 
+    Vector<InviteInTeam> invitesForTeam = new Vector<>();
+    final HashMap<String, TeamCreationWaiting> yourTeamMap = new HashMap<>();
+    @Async
+    @PostMapping("/inviteInTeam")
+    @Override
+    public ResponseEntity<String>
+    inviteFriendInTeam(@RequestBody InviteInTeamRequestDTO request) {
+
+        invitesForTeam.add(new InviteInTeam(request));
+
+        synchronized (yourTeamMap)
+        {
+            TeamCreationWaiting playersWaiting =
+                    new TeamCreationWaiting(0, 0, 0);
+            yourTeamMap.put(request.getGameId(), playersWaiting);
+        }
+        return new ResponseEntity<>("correct invite", HttpStatus.OK);
+    }
+
+    Vector<InviteRival> invitesForRival = new Vector<>();
+    HashMap<String, RivalWaiting> rivalMap = new HashMap<>();
+    @Async
+    @PostMapping("/inviteRival")
+    @Override
+    public ResponseEntity<String>
+    inviteFriendAsRival(@RequestBody InviteRivalRequestDTO request) {
+        invitesForRival.add(new InviteRival(request));
+
+        synchronized (rivalMap)
+        {
+            RivalWaiting playersWaiting =
+                    new RivalWaiting(0);
+            rivalMap.put(request.getGameId(), playersWaiting);
+        }
+
+        return new ResponseEntity<>("correct invite", HttpStatus.OK);
+    }
 }
 

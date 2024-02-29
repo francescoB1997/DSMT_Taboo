@@ -1,27 +1,25 @@
-body{
-    background: #f3f3f3;
-}
-
-.containerTeams
-{
+body {
     display: flex;
-    justify-content: center;
     align-items: center;
+    justify-content: center;
     font-family: sans-serif;
     line-height: 1.5;
     min-height: 100vh;
-    margin-top: -100px;
+    background-color: black; /* background: #f3f3f3; */
+    flex-direction: column;
+    margin: 0;
 }
 
-.main
+
+.containerTeams
 {
     background-color: #fff;
     border-radius: 15px;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
     padding: 10px 20px;
     transition: transform 0.2s;
-    width: 500px;
     text-align: center;
+   width: 500px;
 }
 
 .flex
@@ -33,6 +31,7 @@ body{
 }
 
 h1 { color: #48054d; }
+h2 { display: inline; }
 h3 { color: #d44848; }
 
 label
@@ -48,7 +47,7 @@ button
 {
     padding: 15px;
     border-radius: 10px;
-    margin-top: 15px;
+    margin-top: 20px;
     margin-bottom: 15px;
     border: none;
     color: white;
@@ -104,7 +103,9 @@ div
 
 .tooltip-wrap {
     position: relative;
+    transition: transform 0.4s ease-in-out;
 }
+
 .tooltip-wrap .tooltip-content {
     display: none;
     position: absolute;
@@ -117,11 +118,31 @@ div
 }
 .tooltip-wrap:hover .tooltip-content {
     display: inline;
+    margin-left: 100px;
+}
+
+.tooltip-wrap .tooltip-content2 {
+    display: none;
+    position: absolute;
+    bottom: 5%;
+    left: 5%;
+    right: 5%;
+    background-color: #fff;
+    padding: .5em;
+    min-width: 10rem;
+}
+.tooltip-wrap:hover .tooltip-content2 {
+    display: inline;
+    margin-left: 40px;
+}
+
+p
+{
+    display: inline;
 }
 
 h2 p
 {
-    display: inline;
     color: green;
 }
 
@@ -136,4 +157,25 @@ h2 p
     overflow-y:scroll;
     height:250px;
     display:block;
+}
+
+#imgRefresh
+{
+    height: 35px;
+    width: 35px;
+    margin-left: 50px;
+    transition: all 0.4s ease-in-out;
+}
+
+#imgRefresh:hover
+{
+    transform: rotate(360deg) scale(1.2);
+}
+
+input[type="checkbox"]
+{
+    margin-left: 20px;
+    outline: 2px solid purple;
+    height: 15px;
+    width: 15px;
 }

@@ -177,8 +177,14 @@ public class LoggedUserControllerImpl implements LoggedUserControllerInterface
     @PostMapping("/inviteInTeam")
     @Override
     public ResponseEntity<String>
-    inviteFriendInTeam(@RequestBody InviteInTeamRequestDTO request) {
-
+    inviteFriendInTeam(@RequestBody InviteInTeamRequestDTO request)
+    {
+        System.out.println("Invito: Requester[" + request.getUserInviter() + "] , IDRequest[" + request.getGameId() + "]");
+        request.getYourTeam().forEach(friendUsername -> System.out.print("[" + friendUsername + "] "));
+        System.out.println();
+        request.getRoles().forEach(roleFriend -> System.out.print("[" + roleFriend + "] "));
+        System.out.println();
+        /*
         invitesForTeam.add(new InviteInTeam(request));
 
         synchronized (yourTeamMap)
@@ -187,6 +193,8 @@ public class LoggedUserControllerImpl implements LoggedUserControllerInterface
                     new TeamCreationWaiting(0, 0, 0);
             yourTeamMap.put(request.getGameId(), playersWaiting);
         }
+
+         */
         return new ResponseEntity<>("correct invite", HttpStatus.OK);
     }
 

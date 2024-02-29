@@ -191,18 +191,16 @@ function onClickBtnSearchUser(event)
 {
     let usernameToSearch = document.getElementById("txtboxUserToSearch").value;
     if (usernameToSearch === "") {
-        alert("La TextBox di ricerca è vuota. Inserisci uno username")
+        alert("Empty Field!");
         return;
-    } else {
-        document.getElementById("txtboxUserToSearch").value = "";
     }
-
+    document.getElementById("txtboxUserToSearch").value = "";
     let userSearchRequestDTO = {
         requesterUsername : username,
         usernameToSearch : usernameToSearch
     };
 
-    alert("userSearchRequestDTO: " + userSearchRequestDTO.requesterUsername + ", " + userSearchRequestDTO.usernameToSearch);
+    //alert("userSearchRequestDTO: " + userSearchRequestDTO.requesterUsername + ", " + userSearchRequestDTO.usernameToSearch);
     $.ajax({
         url: "http://localhost:8080/searchUser",
         type: "POST",
@@ -215,11 +213,11 @@ function onClickBtnSearchUser(event)
             let searchedUserList = serverResponse.responseMessage;
             if (searchedUserList)
             {
-                alert("- OK - : L'utente ricercato è presente nel Database");
+                //alert("- OK - : L'utente ricercato è presente nel Database");
                 createTableSearchedUserInHtml(searchedUserList);
             }
             else {
-                alert("- NOT FOUND - : L'utente ricercato NON è presente nel Database")
+                alert("- NOT FOUND - : No [" + usernameToSearch + "] found");
             }
         },
         error: function (serverResponse)

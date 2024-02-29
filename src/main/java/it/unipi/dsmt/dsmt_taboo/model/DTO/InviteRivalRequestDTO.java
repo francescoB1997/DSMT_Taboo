@@ -1,7 +1,7 @@
 package it.unipi.dsmt.dsmt_taboo.model.DTO;
 
-public class InviteRivalRequestDTO {
-
+public class InviteRivalRequestDTO
+{
     private String gameId;
     private String userInviter;
     private String userRival;

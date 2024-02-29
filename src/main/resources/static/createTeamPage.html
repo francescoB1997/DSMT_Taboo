@@ -11,18 +11,21 @@
     <div class="containerTeams">
         <div id="tableFriendContainer">
             <h2>Your <p class="green">Online</p> Friends</h2>
+            <span class="tooltip-wrap">
+                <img id="imgRefresh" src="./img/refresh.png" alt="refresh">
+                <span class="tooltip-content"> Refresh your online friends list</span>
+            </span>
             <table id="tableFriend">
                 <tbody>
                 </tbody>
             </table>
         </div>
         <div>
-            <label for="txtboxFriendPlayer"> Friend Player
-            <input id="txtboxFriendPlayer" placeholder="Username"></label>
-            <label for="radioRolePrompter">Prompter</label>
-            <input class="radio" type="radio" id="radioRolePrompter" name="roleFriend" value="Prompter">
-            <label for="radioRoleGuesser">Guesser</label>
-            <input class="radio" type="radio" id="radioRoleGuesser" name="roleFriend" value="Guesser">
+            <p> Choose your role </p>
+            <label for="radioPrompter">Prompter</label>
+            <input class="radio" type="radio" id="radioPrompter" name="myRole" value="Prompter" checked>
+            <label for="radioGuesser">Guesser</label>
+            <input class="radio" type="radio" id="radioGuesser" name="myRole" value="Guesser">
         </div>
         <div>
             <img src="./img/versus.png" id="imgVersus" alt="versus img">
@@ -32,11 +35,12 @@
             <input id="txtboxRival1" placeholder="Username">
             <span class="tooltip-wrap">
                 <img src="./img/info.png" alt="Info Image" class="img"/>
-                <span class="tooltip-content">
+                <span class="tooltip-content2">
                     Your rival will create its team
                 </span>
             </span>
         </div>
+        <button id="btnInvite"> Send Invite </button>
     </div>
   </body>
 </html>

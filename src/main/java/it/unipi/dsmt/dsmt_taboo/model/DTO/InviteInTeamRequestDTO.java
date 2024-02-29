@@ -2,27 +2,32 @@ package it.unipi.dsmt.dsmt_taboo.model.DTO;
 
 import it.unipi.dsmt.dsmt_taboo.utility.Constant;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 
-public class InviteInTeamRequestDTO {
-
+public class InviteInTeamRequestDTO
+{
     private String gameId;
     private ArrayList<String> yourTeam;
-    private ArrayList<Constant> roles;
+    private ArrayList<String> roles;
     private String userInviter;
 
-    public InviteInTeamRequestDTO(){}
+    public InviteInTeamRequestDTO() {}
 
     public InviteInTeamRequestDTO(String gameId, ArrayList<String> yourTeam,
-                                  ArrayList<Constant> roles, String userInviter)
+                                  ArrayList<String> roles, String userInviter)
     {
-        this.gameId = gameId;
+        this.gameId = this.getUniqueGameId();
         this.yourTeam = yourTeam;
         this.roles = roles;
         this.userInviter = userInviter;
     }
 
-    public String getGameId() {
+    public String getGameId()
+    {
+        if(gameId == "")
+            this.gameId = getUniqueGameId();
         return gameId;
     }
 
@@ -38,11 +43,11 @@ public class InviteInTeamRequestDTO {
         this.yourTeam = yourTeam;
     }
 
-    public ArrayList<Constant> getRoles() {
+    public ArrayList<String> getRoles() {
         return roles;
     }
 
-    public void setRoles(ArrayList<Constant> roles) {
+    public void setRoles(ArrayList<String> roles) {
         this.roles = roles;
     }
 
@@ -53,5 +58,12 @@ public class InviteInTeamRequestDTO {
     public void setUserInviter(String userInviter)
     {
         this.userInviter = userInviter;
+    }
+
+    private String getUniqueGameId()
+    {
+        Date date = new Date();
+        Timestamp timestamp = new Timestamp(date.getTime());
+        return timestamp.toString();
     }
 }

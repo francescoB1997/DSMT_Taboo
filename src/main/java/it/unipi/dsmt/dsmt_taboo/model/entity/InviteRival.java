@@ -4,23 +4,23 @@ import it.unipi.dsmt.dsmt_taboo.model.DTO.InviteRivalRequestDTO;
 
 public class InviteRival {
 
-    private String id;
+    private String gameId;
     private String userRival;
     private String userInviter;
 
     public InviteRival(InviteRivalRequestDTO inviteRival)
     {
-        this.id = inviteRival.getGameId();
+        this.gameId = inviteRival.getGameId();
         this.userInviter = inviteRival.getUserInviter();
         this.userRival = inviteRival.getUserRival();
     }
 
-    public String getId() {
-        return id;
+    public String getGameId() {
+        return this.gameId;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setGameId(String gameId) {
+        this.gameId = gameId;
     }
 
     public String getUserInviter() {

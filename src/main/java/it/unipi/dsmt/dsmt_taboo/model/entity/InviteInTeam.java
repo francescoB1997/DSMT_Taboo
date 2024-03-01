@@ -1,7 +1,6 @@
 package it.unipi.dsmt.dsmt_taboo.model.entity;
 
-import it.unipi.dsmt.dsmt_taboo.model.DTO.InviteInTeamRequestDTO;
-import it.unipi.dsmt.dsmt_taboo.utility.Constant;
+import it.unipi.dsmt.dsmt_taboo.model.DTO.InviteFriendRequestDTO;
 
 import java.util.ArrayList;
 
@@ -13,7 +12,7 @@ public class InviteInTeam {
     private ArrayList<String> roles;
 
 
-    public InviteInTeam(InviteInTeamRequestDTO inviteFriend)
+    public InviteInTeam(InviteFriendRequestDTO inviteFriend)
     {
         this.gameId = inviteFriend.getGameId();
         this.userInviter = inviteFriend.getUserInviter();

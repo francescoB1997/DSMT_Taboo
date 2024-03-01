@@ -1,0 +1,181 @@
+body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: sans-serif;
+    line-height: 1.5;
+    min-height: 100vh;
+    background-color: black; /* background: #f3f3f3; */
+    flex-direction: column;
+    margin: 0;
+}
+
+
+.containerTeams
+{
+    background-color: #fff;
+    border-radius: 15px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+    padding: 10px 20px;
+    transition: transform 0.2s;
+    text-align: center;
+   width: 500px;
+}
+
+.flex
+{
+    border-radius: 10px;
+    max-width: 100%;
+    height: 160px;
+    width: 160px;
+}
+
+h1 { color: #48054d; }
+h2 { display: inline; }
+h3 { color: #d44848; }
+
+label
+{
+    width: 100%;
+    margin-left: 20px;
+    text-align: left;
+    color: #555;
+    font-weight: bold;
+}
+
+button
+{
+    padding: 15px;
+    border-radius: 10px;
+    margin-top: 20px;
+    margin-bottom: 15px;
+    border: none;
+    color: white;
+    cursor: pointer;
+    background-color: #48054d;
+    width: 100%;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+::-webkit-scrollbar {
+    width: 5px;
+}
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+::-webkit-scrollbar-thumb {
+    background: #888;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+tableFriendContainer
+{
+    text-align: center;
+}
+
+div
+{
+    margin: 5px;
+    align-self:center;
+    flex-direction: column;
+}
+
+#imgVersus
+{
+    width: 90px;
+    height: 90px;
+}
+
+.img
+{
+    width: 25px;
+    height: 25px;
+}
+
+.imgUserIcon
+{
+    width: 50px;
+    height: 50px;
+}
+
+.tooltip-wrap {
+    position: relative;
+    transition: transform 0.4s ease-in-out;
+}
+
+.tooltip-wrap .tooltip-content {
+    display: none;
+    position: absolute;
+    bottom: 5%;
+    left: 5%;
+    right: 5%;
+    background-color: #fff;
+    padding: .5em;
+    min-width: 10rem;
+}
+.tooltip-wrap:hover .tooltip-content {
+    display: inline;
+    margin-left: 100px;
+}
+
+.tooltip-wrap .tooltip-content2 {
+    display: none;
+    position: absolute;
+    bottom: 5%;
+    left: 5%;
+    right: 5%;
+    background-color: #fff;
+    padding: .5em;
+    min-width: 10rem;
+}
+.tooltip-wrap:hover .tooltip-content2 {
+    display: inline;
+    margin-left: 40px;
+}
+
+p
+{
+    display: inline;
+}
+
+h2 p
+{
+    color: green;
+}
+
+.tdUsername
+{
+    width: 150px;
+    text-align: center;
+}
+
+#tableFriend
+{
+    overflow-y:scroll;
+    height:250px;
+    display:block;
+}
+
+#imgRefresh
+{
+    height: 35px;
+    width: 35px;
+    margin-left: 50px;
+    transition: all 0.4s ease-in-out;
+}
+
+#imgRefresh:hover
+{
+    transform: rotate(360deg) scale(1.2);
+}
+
+input[type="checkbox"]
+{
+    margin-left: 20px;
+    outline: 2px solid purple;
+    height: 15px;
+    width: 15px;
+}

@@ -1,27 +1,27 @@
 package it.unipi.dsmt.dsmt_taboo.model.DTO;
 
-import it.unipi.dsmt.dsmt_taboo.utility.Constant;
-
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 
-public class InviteInTeamRequestDTO
+public class InviteFriendRequestDTO
 {
     private String gameId;
     private ArrayList<String> yourTeam;
     private ArrayList<String> roles;
     private String userInviter;
+    private String userRival;
 
-    public InviteInTeamRequestDTO() {}
+    public InviteFriendRequestDTO() {}
 
-    public InviteInTeamRequestDTO(String gameId, ArrayList<String> yourTeam,
-                                  ArrayList<String> roles, String userInviter)
+    public InviteFriendRequestDTO(String gameId, ArrayList<String> yourTeam,
+                                  ArrayList<String> roles, String userInviter, String userRival)
     {
         this.gameId = this.getUniqueGameId();
         this.yourTeam = yourTeam;
         this.roles = roles;
         this.userInviter = userInviter;
+        this.userRival = userRival;
     }
 
     public String getGameId()
@@ -66,4 +66,8 @@ public class InviteInTeamRequestDTO
         Timestamp timestamp = new Timestamp(date.getTime());
         return timestamp.toString();
     }
+
+    public String getUserRival() { return this.userRival; }
+
+    public void setUserRival(String userRival) { this.userRival = userRival; }
 }

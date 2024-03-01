@@ -1,13 +1,15 @@
 const username = sessionStorage.getItem("userLog");
 let checkedCheckbox = [];
+let inviteFriendRequest;
 
 $(document).ready(function ()
 {
     checkLogin();
+    checkInviteRequest();
+    alert("CheckLogin & checkInvite: OK");
     ajaxGetFriendList();
     document.getElementById("btnInvite").onclick = function (e) { onClickListenerBtnInvite(); };
     document.getElementById("imgRefresh").onclick = function (e) { onClickImgRefresh(); };
-    sessionStorage.removeItem("inviteFriendRequest");
 });
 
 function checkLogin()
@@ -17,6 +19,18 @@ function checkLogin()
         alert("You're not logged");
         location.href = "../";
     }
+}
+
+function checkInviteRequest()
+{
+    if(!sessionStorage.getItem("inviteFriendRequest"))
+    {
+        alert("Create your team first!");
+        location.href = "../createTeamPage.html";
+        return;
+    }
+    inviteFriendRequest = JSON.parse(sessionStorage.getItem("inviteFriendRequest"));
+
 }
 
 function onClickImgRefresh()
@@ -106,56 +120,20 @@ function ajaxGetFriendList()
 
 function onClickListenerBtnInvite()
 {
-    let inviteFriendRequest =
-    {
-        gameId : "",
-        yourTeam : [],
-        roles: [],
-        userInviter : username,
-        userRival : ""
-    };
+    inviteFriendRequest.userRival = "DBG: da fare";
 
-    let checkboxes = document.querySelectorAll("input[type='checkbox']:checked");
-    inviteFriendRequest.yourTeam.push(username); // Push my username first
-    for (let i = 0 ; i < checkboxes.length; i++)
-        inviteFriendRequest.yourTeam.push(checkboxes[i].id.toString().split('&')[1]);
-
-    let myRole;
-    let radioList = document.querySelectorAll('input[name="myRole"]');
-    for(const radio of radioList)
-    {
-        if(radio.checked)
-        {
-            myRole = radio.value;
-            break;
+    $.ajax({
+        url: "http://localhost:8080/inviteInTeam",
+        type: "POST",
+        data: JSON.stringify(inviteFriendRequest),
+        contentType: 'application/json',
+        success: function (serverResponse) {
+            alert("OK");
+        },
+        error: function () {
+            alert("HTTP error");
+            //location.href = "../";
         }
-    }
-    inviteFriendRequest.roles.push(myRole); // Push my role first
-    for(let checkbox of checkboxes) // foreach checked friend, fill the roles array
-    {
-        inviteFriendRequest.roles.push("Guesser");
-    }
+    });
 
-    if(myRole !== "Prompter")// if me is not the Prompter, then it have to be randomly chosen from my friends
-    {
-        let maxIndex = checkboxes.length;
-        let randomPositionPrompter = getRandomInt(0, maxIndex);
-        inviteFriendRequest.roles[randomPositionPrompter] = "Prompter";
-    }
-
-    alert("Array: " + inviteFriendRequest.roles);
-    sessionStorage.setItem("inviteFriendRequest", JSON.stringify(inviteFriendRequest));
-    location.href = "../selectRivalPage.html";
-
-}
-
-function getRandomInt(min , max)
-{
-    let randomInt = 0;
-    while(randomInt === 0) {
-        min = Math.ceil(min);
-        max = Math.floor(max);
-        randomInt = Math.floor(Math.random() * (max - min + 1)) + min;
-    }
-    return randomInt;
 }

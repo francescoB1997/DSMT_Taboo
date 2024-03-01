@@ -1,11 +1,19 @@
 const username = sessionStorage.getItem("userLog");
-let checkedCheckbox = [];
 let inviteFriendRequest;
 
 $(document).ready(function ()
 {
-    checkLogin();
-    checkInviteRequest();
+    if(!checkLogin())
+    {
+        location.href = "../";
+        return;
+    }
+
+    if(!checkInviteRequest())
+    {
+        location.href = "../createTeamPage.html";
+        return;
+    }
     alert("CheckLogin & checkInvite: OK");
     ajaxGetFriendList();
     document.getElementById("btnInvite").onclick = function (e) { onClickListenerBtnInvite(); };
@@ -17,8 +25,9 @@ function checkLogin()
     if(!username)
     {
         alert("You're not logged");
-        location.href = "../";
+        return false;
     }
+    return true;
 }
 
 function checkInviteRequest()
@@ -26,11 +35,10 @@ function checkInviteRequest()
     if(!sessionStorage.getItem("inviteFriendRequest"))
     {
         alert("Create your team first!");
-        location.href = "../createTeamPage.html";
-        return;
+        return false;
     }
     inviteFriendRequest = JSON.parse(sessionStorage.getItem("inviteFriendRequest"));
-
+    return true;
 }
 
 function onClickImgRefresh()
@@ -47,7 +55,11 @@ function loadFriendsInTable(friendList)
     {
         if(!friend.logged)
             continue;
-        let trFriend = document.createElement("tr");
+
+        if(userIsInTeam(friend.username))
+            continue;
+
+        let trFriend= document.createElement("tr");
         trFriend.id = friend.username;
 
         let tdUserIcon = document.createElement("td");
@@ -75,20 +87,30 @@ function loadFriendsInTable(friendList)
         tdStatus.append(imgUserState);
         trFriend.append(tdStatus);
 
-        let tdCheckbox = document.createElement("td");
-        let lblCheckboxFriend = document.createElement("label");
-        lblCheckboxFriend.innerText = "Add in your Team ";
-        let checkboxFriend = document.createElement("input");
-        checkboxFriend.id = "check&" + friend.username;
-        lblCheckboxFriend.htmlFor = checkboxFriend.id;
-        checkboxFriend.setAttribute("type", "checkbox");
+        let tdRadio = document.createElement("td");
+        let lblRadioRival = document.createElement("label");
+        lblRadioRival.innerText = "Choose as Rival";
+        let radioRival = document.createElement("input");
+        radioRival.id = "radio&" + friend.username;
+        radioRival.setAttribute("type", "radio");
+        radioRival.setAttribute("name", "rival");
+        radioRival.setAttribute("value", radioRival.id);
+        lblRadioRival.htmlFor = radioRival.id;
 
-        tdCheckbox.append(checkboxFriend);
-        tdCheckbox.append(lblCheckboxFriend);
-        trFriend.append(tdCheckbox);
+        tdRadio.append(radioRival);
+        tdRadio.append(lblRadioRival);
+        trFriend.append(tdRadio);
 
         tableFriends.append(trFriend);
     }
+}
+
+function userIsInTeam(username)
+{
+    for(const userInTeam of inviteFriendRequest.yourTeam)
+        if(username === userInTeam)
+            return true;
+    return false;
 }
 
 function emptyTable(table)
@@ -120,14 +142,17 @@ function ajaxGetFriendList()
 
 function onClickListenerBtnInvite()
 {
-    inviteFriendRequest.userRival = "DBG: da fare";
+    const usernameRival = document.querySelector('input[name="rival"]:checked').id.toString().split('&')[1];
+    inviteFriendRequest.userRival = usernameRival;
 
     $.ajax({
         url: "http://localhost:8080/inviteInTeam",
         type: "POST",
         data: JSON.stringify(inviteFriendRequest),
         contentType: 'application/json',
-        success: function (serverResponse) {
+        success: function (serverResponse)
+        {
+            location.href = "../";
             alert("OK");
         },
         error: function () {

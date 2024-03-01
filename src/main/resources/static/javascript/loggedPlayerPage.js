@@ -2,7 +2,11 @@ const username = sessionStorage.getItem("userLog");
 
 $(document).ready(function ()
 {
-    checkLogin();
+    if(!checkLogin())
+    {
+        location.href = "../";
+        return;
+    }
     setWelcomeText();
     document.getElementById('logoutBtn').onclick = function (e) { onClickListenerBtnLogout(); };
     document.getElementById('createTeamBtn').onclick = function (e) { onClickListenerBtnCreateTeam(); };
@@ -14,8 +18,9 @@ function checkLogin()
     if(!username)
     {
         alert("You're not logged");
-        location.href = "../";
+        return false;
     }
+    return true;
 }
 
 function setWelcomeText()

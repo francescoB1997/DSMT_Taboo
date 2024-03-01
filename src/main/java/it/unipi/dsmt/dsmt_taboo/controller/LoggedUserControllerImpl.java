@@ -185,16 +185,15 @@ public class LoggedUserControllerImpl implements LoggedUserControllerInterface
         request.getRoles().forEach(roleFriend -> System.out.print("[" + roleFriend + "] "));
         System.out.println("Rival:[" + request.getUserRival() + "]");
 
-        /*
+        /* DA VERIFICARE COME PROCEDERE CON LA MEMORIZZAZIONE DEGLI UTENTI IN ATTESA */
         invitesForTeam.add(new InviteInTeam(request));
 
         synchronized (yourTeamMap)
         {
-            TeamCreationWaiting playersWaiting =
-                    new TeamCreationWaiting(0, 0, 0);
+            TeamCreationWaiting playersWaiting = new TeamCreationWaiting(0, 0, 0);
             yourTeamMap.put(request.getGameId(), playersWaiting);
         }
-        */
+
         return new ResponseEntity<>("correct invite", HttpStatus.OK);
     }
 

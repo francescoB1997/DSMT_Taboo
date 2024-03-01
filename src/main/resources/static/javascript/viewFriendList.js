@@ -3,7 +3,11 @@ let showFriendList = true;
 
 $(document).ready(function ()
 {
-    checkLogin();
+    if(!checkLogin())
+    {
+        location.href = "../";
+        return;
+    }
     ajaxGetFriendList();
     document.getElementById("btnShowSearchUser").onclick = function (e) { onClickListenerBtnShowSearchFunctions(); };
     document.getElementById("btnSearchUser").onclick = function (e) { onClickBtnSearchUser(e); };
@@ -15,8 +19,9 @@ function checkLogin()
     if(!username)
     {
         alert("You're not logged");
-        location.href = "../";
+        return false;
     }
+    return true;
 }
 
 /* -------------------------- Friend User Management -------------------------- */

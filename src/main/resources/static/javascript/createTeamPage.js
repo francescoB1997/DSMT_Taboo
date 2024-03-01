@@ -3,7 +3,11 @@ let checkedCheckbox = [];
 
 $(document).ready(function ()
 {
-    checkLogin();
+    if(!checkLogin())
+    {
+        location.href = "../";
+        return;
+    }
     ajaxGetFriendList();
     document.getElementById("btnInvite").onclick = function (e) { onClickListenerBtnInvite(); };
     document.getElementById("imgRefresh").onclick = function (e) { onClickImgRefresh(); };
@@ -15,8 +19,9 @@ function checkLogin()
     if(!username)
     {
         alert("You're not logged");
-        location.href = "../";
+        return false;
     }
+    return true;
 }
 
 function onClickImgRefresh()

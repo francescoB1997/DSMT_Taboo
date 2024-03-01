@@ -7,7 +7,6 @@ public class TeamCreationWaiting {
     int numPrompters = 0;
     int numGuessers = 0;
     int numControllers = 0;
-
     ArrayList<String> usernamePrompters;
     ArrayList<String> usernameGuesser;
     ArrayList<String> usernameControllers;

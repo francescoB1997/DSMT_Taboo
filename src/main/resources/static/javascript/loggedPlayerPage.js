@@ -9,7 +9,7 @@ $(document).ready(function ()
     }
     setWelcomeText();
     document.getElementById('logoutBtn').onclick = function (e) { onClickListenerBtnLogout(); };
-    document.getElementById('createTeamBtn').onclick = function (e) { onClickListenerBtnCreateTeam(); };
+    document.getElementById('startMathBtn').onclick = function (e) { onClickListenerBtnStartMatch(); };
     document.getElementById('viewFriendsBtn').onclick = function (e) { onClickListenerBtnViewFriends(); };
 });
 
@@ -52,11 +52,11 @@ function onClickListenerBtnLogout()
     });
 }
 
-function onClickListenerBtnCreateTeam()
+function onClickListenerBtnStartMatch()
 {
     //Contattare servlet per la creazione del team, oppure reindirizzare verso una createTeams.html
     //in cui selezionare da una lista di AMICI ONLINE quelli da inserire nella squadra (se è semplice, sarebbbe carino il drag and drop)
-    location.href = "../createTeamPage.html";
+    location.href = "../startMatchPage.html";
 }
 
 function onClickListenerBtnViewFriends()

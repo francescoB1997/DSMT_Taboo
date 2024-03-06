@@ -4,20 +4,22 @@ import it.unipi.dsmt.dsmt_taboo.model.DTO.InviteFriendRequestDTO;
 
 import java.util.ArrayList;
 
-public class InviteInTeam {
+public class InviteFriends {
 
     String gameId;
     String userInviter;
     private ArrayList<String> yourTeam;
     private ArrayList<String> roles;
+    private ArrayList<String> rivals;
 
 
-    public InviteInTeam(InviteFriendRequestDTO inviteFriend)
+    public InviteFriends(InviteFriendRequestDTO inviteFriend)
     {
         this.gameId = inviteFriend.getGameId();
         this.userInviter = inviteFriend.getUserInviter();
         this.yourTeam = inviteFriend.getYourTeam();
         this.roles = inviteFriend.getRoles();
+        this.rivals = inviteFriend.getRivals();
     }
 
     public String getGameId() { return this.gameId; }
@@ -49,4 +51,8 @@ public class InviteInTeam {
     public void setRoles(ArrayList<String> roles) {
         this.roles = roles;
     }
+
+    public ArrayList<String> getRivals() {return this.rivals; }
+
+    public void setRivals(ArrayList<String> rivals) { this.rivals = rivals; }
 }

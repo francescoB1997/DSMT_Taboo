@@ -117,7 +117,7 @@ function onClickListenerBtnInvite()
         yourTeam : [],
         roles: [],
         userInviter : username,
-        userRival : ""
+        rivals : []
     };
 
     let checkboxes = document.querySelectorAll("input[type='checkbox']:checked");

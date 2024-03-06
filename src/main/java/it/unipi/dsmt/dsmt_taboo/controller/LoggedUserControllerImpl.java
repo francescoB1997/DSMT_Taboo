@@ -3,7 +3,7 @@ package it.unipi.dsmt.dsmt_taboo.controller;
 import it.unipi.dsmt.dsmt_taboo.DAO.FriendDAO;
 import it.unipi.dsmt.dsmt_taboo.DAO.UserDAO;
 import it.unipi.dsmt.dsmt_taboo.model.DTO.*;
-import it.unipi.dsmt.dsmt_taboo.model.entity.InviteInTeam;
+import it.unipi.dsmt.dsmt_taboo.model.entity.InviteFriends;
 import it.unipi.dsmt.dsmt_taboo.model.entity.InviteRival;
 import it.unipi.dsmt.dsmt_taboo.model.entity.TeamCreationWaiting;
 import it.unipi.dsmt.dsmt_taboo.model.entity.RivalWaiting;
@@ -98,7 +98,7 @@ public class LoggedUserControllerImpl implements LoggedUserControllerInterface
     @PostMapping("/removeFriend")
     @Override
     public ResponseEntity<ServerResponseDTO<Integer>>
-    removeFriend(@RequestBody FriendRequestDTO requesterUsername)
+    removeFriend(@RequestBody FriendshipRequestDTO requesterUsername)
     {
         System.out.println("\nLoggedUserController: removeUser request from " +
                 "[" + requesterUsername.getUsername() + "] -> " +
@@ -145,7 +145,7 @@ public class LoggedUserControllerImpl implements LoggedUserControllerInterface
 
     @PostMapping("/addFriend")
     @Override
-    public ResponseEntity<ServerResponseDTO<Integer>> addFriend( @RequestBody FriendRequestDTO addFriendRequest)
+    public ResponseEntity<ServerResponseDTO<Integer>> addFriend( @RequestBody FriendshipRequestDTO addFriendRequest)
     {
         ServerResponseDTO<Integer> addFriendResponse;
         HttpStatus responseHttp;
@@ -171,30 +171,42 @@ public class LoggedUserControllerImpl implements LoggedUserControllerInterface
 
     UserService userService = new UserService();
 
-    Vector<InviteInTeam> invitesForTeam = new Vector<>();
+    Vector<InviteFriends> invites = new Vector<>();
     final HashMap<String, TeamCreationWaiting> yourTeamMap = new HashMap<>();
     @Async
-    @PostMapping("/inviteInTeam")
+    @PostMapping("/inviteFriends")
     @Override
-    public ResponseEntity<String>
-    inviteFriendInTeam(@RequestBody InviteFriendRequestDTO request)
+    public ResponseEntity<ServerResponseDTO<String>> inviteFriendInTeam(@RequestBody InviteFriendRequestDTO request)
     {
-        System.out.println("Invito: Requester[" + request.getUserInviter() + "] , IDRequest[" + request.getGameId() + "]");
-        request.getYourTeam().forEach(friendUsername -> System.out.print("[" + friendUsername + "] "));
-        System.out.println();
-        request.getRoles().forEach(roleFriend -> System.out.print("[" + roleFriend + "] "));
-        System.out.println("Rival:[" + request.getUserRival() + "]");
-
-        /* DA VERIFICARE COME PROCEDERE CON LA MEMORIZZAZIONE DEGLI UTENTI IN ATTESA */
-        invitesForTeam.add(new InviteInTeam(request));
-
-        synchronized (yourTeamMap)
+        ServerResponseDTO<String> responseMessage = null;
+        HttpStatus responseHttp;
+        boolean checkLogin = SessionManagement.getInstance().isUserLogged(request.getUserInviter());
+        if(checkLogin)
         {
-            TeamCreationWaiting playersWaiting = new TeamCreationWaiting(0, 0, 0);
-            yourTeamMap.put(request.getGameId(), playersWaiting);
-        }
+            System.out.println("Invito: Requester[" + request.getUserInviter() + "] , IDRequest[" + request.getGameId() + "]");
+            request.getYourTeam().forEach(friendUsername -> System.out.print("[" + friendUsername + "] "));
+            System.out.println();
+            request.getRoles().forEach(roleFriend -> System.out.print("[" + roleFriend + "] "));
+            System.out.println("Rival:[" + request.getRivals().get(0) + "]");
 
-        return new ResponseEntity<>("correct invite", HttpStatus.OK);
+            /* DA VERIFICARE COME PROCEDERE CON LA MEMORIZZAZIONE DEGLI UTENTI IN ATTESA */
+            invites.add(new InviteFriends(request));
+
+            synchronized (yourTeamMap)
+            {
+                TeamCreationWaiting playersWaiting = new TeamCreationWaiting(0, 0, 0);
+                yourTeamMap.put(request.getGameId(), playersWaiting);
+            }
+
+            responseMessage = new ServerResponseDTO<>("correct invite");
+            responseHttp = HttpStatus.OK;
+        }
+        else
+        {
+            System.out.println("\nLoggedUserController: addFriend request from a NonLogged user\n");
+            responseHttp = HttpStatus.UNAUTHORIZED;
+        }
+        return new ResponseEntity<>(responseMessage, responseHttp);
     }
 
     Vector<InviteRival> invitesForRival = new Vector<>();
@@ -203,7 +215,8 @@ public class LoggedUserControllerImpl implements LoggedUserControllerInterface
     @PostMapping("/inviteRival")
     @Override
     public ResponseEntity<String>
-    inviteFriendAsRival(@RequestBody InviteRivalRequestDTO request) {
+    inviteFriendAsRival(@RequestBody InviteRivalRequestDTO request)
+    {
         invitesForRival.add(new InviteRival(request));
 
         synchronized (rivalMap)
@@ -211,9 +224,56 @@ public class LoggedUserControllerImpl implements LoggedUserControllerInterface
             RivalWaiting playersWaiting =
                     new RivalWaiting(0);
             rivalMap.put(request.getGameId(), playersWaiting);
+
         }
 
         return new ResponseEntity<>("correct invite", HttpStatus.OK);
     }
+
+    /*
+        Gestire l'invito con due classi separate, ci obbliga poi a dover effettuare un doppio checkInvite,
+        uno per gli inviteFriend e inviteRival. Quindi se abbiamo ricevuto entrambi, quale dei due proponiamo prima?
+        Inoltre, bisogna anche specificare qual è il tipo di ritorno dell'invito -> Quindi o facciamo un tipo generico
+        con cui rispondere dall'endpoint 'checkReceivedInvite', oppure possiamo fare due endPoint diversi per controllare
+        i due inviti (FriendInvite e RivalInvite).
+*/
+
+    @Async
+    @PostMapping("/checkInvite")
+    @Override public ResponseEntity<ServerResponseDTO<InviteFriends>>checkInvite(@RequestBody String usernameRequester)
+    {
+        ServerResponseDTO<InviteFriends> receivedInvite = null;
+        HttpStatus httpStatus = HttpStatus.OK;
+        boolean checkLogin = SessionManagement.getInstance().isUserLogged(usernameRequester);
+        if(checkLogin)
+        {
+            for (InviteFriends invite : invites) // Search for any invite (inTeam or Rival)
+            {
+                if(usernameRequester.equals(invite.getRivals().get(0)))
+                {
+                    receivedInvite = new ServerResponseDTO<>(invite);
+                    break;
+                }
+
+                for(String usernameInTeam : invite.getYourTeam())
+                {
+                    receivedInvite = new ServerResponseDTO<>(invite);
+                    break;
+                }
+            }
+        }
+        else
+            httpStatus = HttpStatus.UNAUTHORIZED;
+
+        if(receivedInvite == null && (httpStatus != HttpStatus.UNAUTHORIZED))
+            System.out.println("No Inviti per [" + usernameRequester + "]");
+        else
+            System.out.println("Invito per [" + usernameRequester + "] ricevuto da [" + receivedInvite.getResponseMessage().getUserInviter() + "]");
+
+
+        return new ResponseEntity<>(receivedInvite, httpStatus);
+    }
+
+
 }
 

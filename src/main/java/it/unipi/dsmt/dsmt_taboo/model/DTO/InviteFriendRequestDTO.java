@@ -4,24 +4,24 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 
-public class InviteFriendRequestDTO
+public class InviteFriendRequestDTO //InviteFriendRequestDTO
 {
     private String gameId;
     private ArrayList<String> yourTeam;
     private ArrayList<String> roles;
     private String userInviter;
-    private String userRival;
+    private ArrayList<String> rivals;
 
     public InviteFriendRequestDTO() {}
 
     public InviteFriendRequestDTO(String gameId, ArrayList<String> yourTeam,
-                                  ArrayList<String> roles, String userInviter, String userRival)
+                                  ArrayList<String> roles, String userInviter,  ArrayList<String> userRival)
     {
         this.gameId = this.getUniqueGameId();
         this.yourTeam = yourTeam;
         this.roles = roles;
         this.userInviter = userInviter;
-        this.userRival = userRival;
+        this.rivals = userRival;
     }
 
     public String getGameId()
@@ -67,7 +67,7 @@ public class InviteFriendRequestDTO
         return timestamp.toString();
     }
 
-    public String getUserRival() { return this.userRival; }
+    public ArrayList<String> getRivals() { return this.rivals; }
 
-    public void setUserRival(String userRival) { this.userRival = userRival; }
+    public void setRivals( ArrayList<String> rivals) { this.rivals = rivals; }
 }

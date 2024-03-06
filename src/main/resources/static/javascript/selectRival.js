@@ -143,16 +143,16 @@ function ajaxGetFriendList()
 function onClickListenerBtnInvite()
 {
     const usernameRival = document.querySelector('input[name="rival"]:checked').id.toString().split('&')[1];
-    inviteFriendRequest.userRival = usernameRival;
+    inviteFriendRequest.rivals.push(usernameRival);
 
     $.ajax({
-        url: "http://localhost:8080/inviteInTeam",
+        url: "http://localhost:8080/inviteFriends",
         type: "POST",
         data: JSON.stringify(inviteFriendRequest),
         contentType: 'application/json',
         success: function (serverResponse)
         {
-            location.href = "../";
+            location.href = "../loggedPlayerPage.html";
             alert("OK");
         },
         error: function () {

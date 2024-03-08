@@ -160,5 +160,5 @@ function onClickListenerBtnInvite()
             //location.href = "../";
         }
     });
-
+    sessionStorage.removeItem("inviteFriendRequest");
 }

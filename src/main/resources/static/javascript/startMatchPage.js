@@ -32,14 +32,40 @@ function onClickListenerBtnCheckInvite()
             let invite = serverResponse.responseMessage;
             if(invite === undefined) {
                 alert("Nessun invito");
+                sessionStorage.setItem("rivalTeam", null);
                 return;
             }
 
-            if(invite.rivals.pop() === username)
-                alert("io sono uno dei rivali di " + invite.userInviter);
-            else
-                alert("io sono in squadra con " + invite.userInviter)
-        },
+            if(invite.rivals[0] === username)   // Check if this user is the first Rival, that has the power to Create its (Rival)Team
+            {
+                const inviteResponse = confirm("You've been invited from " + invite.userInviter + "as Rival. Accept to create your Rival Team");
+                if (inviteResponse) {
+                    sessionStorage.setItem("invite", JSON.stringify(invite));
+                    location.href = "../createRivalTeamPage.html";
+                } else {
+                    sessionStorage.setItem("invite", null);
+                    ajaxSendRefusedInvitation();
+                }
+            }
+
+            for(let i = 1; i < invite.rivals.length; i++) // this for MUST start at 1. Check if the user has been invited in RivalTeam
+            {
+                if (invite.rivals[i] === username)
+                {
+                    alert("Sei nella squadra dei rivali");
+                    return; //Here there is the return because has no sense to continue with other foreach
+                }
+            }
+
+            for(let inTeamFriend of invite.yourTeam)    // check if this user has been invited in FriendTeam
+            {
+                if(inTeamFriend === username)
+                {
+                    alert("io sono in squadra con " + invite.userInviter);
+                    break;
+                }
+            }
+       },
         error: function ()
         {
             alert("Unauthorized Request!");
@@ -58,4 +84,23 @@ function getRandomInt(min , max)
         randomInt = Math.floor(Math.random() * (max - min + 1)) + min;
     }
     return randomInt;
+}
+
+function ajaxSendRefusedInvitation()
+{
+    $.ajax({
+        url: "http://localhost:8080/refuseInvite",
+        type: "POST",
+        data: username,
+        contentType: 'application/json',
+        success: function (serverResponse)
+        {
+            alert("Invito rifiutato ACK");
+        },
+        error: function ()
+        {
+            alert("Unauthorized Request!");
+            location.href = "../";
+        }
+    });
 }

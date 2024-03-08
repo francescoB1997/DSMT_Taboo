@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+      <meta charset="UTF-8">
+      <title> Create your Rival Team </title>
+      <script src="https://code.jquery.com/jquery-3.4.0.min.js" type="text/javascript"></script>
+      <script src="./javascript/createRivalTeamPage.js" type="text/javascript"></script>
+      <link rel="stylesheet" href="./css/createRivalTeamPage.css">
+  </head>
+  <body>
+    <div class="containerTeams">
+        <div id="tableFriendContainer">
+            <h2>Create your <p> Rival </p> Team</h2>
+            <span class="tooltip-wrap">
+                <img id="imgRefresh" src="./img/refresh.png" alt="refresh">
+                <span class="tooltip-content"> Refresh your online friends list</span>
+            </span>
+            <table id="tableFriend"> <!-- Here there will be the friends of the invited rival -->
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+        <img id="imgVersus" src="./img/versus.png">
+        <div>
+            <h3><p> Adversary Team </p></h3>
+            <div class="center"> <!-- Here there will be the team member of the Inviter -->
+                <table id="inviterFriendsTable">
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <button id="btnInvite"> Confirm your Rival Team </button>
+    </div>
+  </body>
+</html>

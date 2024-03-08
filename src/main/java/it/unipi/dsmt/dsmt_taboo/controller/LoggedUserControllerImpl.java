@@ -170,7 +170,6 @@ public class LoggedUserControllerImpl implements LoggedUserControllerInterface
     }
 
     UserService userService = new UserService();
-
     Vector<InviteFriends> invites = new Vector<>();
     final HashMap<String, TeamCreationWaiting> yourTeamMap = new HashMap<>();
     @Async
@@ -183,23 +182,34 @@ public class LoggedUserControllerImpl implements LoggedUserControllerInterface
         boolean checkLogin = SessionManagement.getInstance().isUserLogged(request.getUserInviter());
         if(checkLogin)
         {
-            System.out.println("Invito: Requester[" + request.getUserInviter() + "] , IDRequest[" + request.getGameId() + "]");
-            request.getYourTeam().forEach(friendUsername -> System.out.print("[" + friendUsername + "] "));
-            System.out.println();
-            request.getRoles().forEach(roleFriend -> System.out.print("[" + roleFriend + "] "));
-            System.out.println("Rival:[" + request.getRivals().get(0) + "]");
-
-            /* DA VERIFICARE COME PROCEDERE CON LA MEMORIZZAZIONE DEGLI UTENTI IN ATTESA */
-            invites.add(new InviteFriends(request));
-
-            synchronized (yourTeamMap)
+            if(request.getGameId().isEmpty()) // If it is first time that i receive that invite...
             {
-                TeamCreationWaiting playersWaiting = new TeamCreationWaiting(0, 0, 0);
-                yourTeamMap.put(request.getGameId(), playersWaiting);
-            }
+                request.setAutoGameId();
+                /* DA VERIFICARE COME PROCEDERE CON LA MEMORIZZAZIONE DEGLI UTENTI IN ATTESA */
+                invites.add(new InviteFriends(request));
 
-            responseMessage = new ServerResponseDTO<>("correct invite");
-            responseHttp = HttpStatus.OK;
+                synchronized (yourTeamMap) {
+                    TeamCreationWaiting playersWaiting = new TeamCreationWaiting(0, 0, 0);
+                    yourTeamMap.put(request.getGameId(), playersWaiting);
+                }
+
+                responseMessage = new ServerResponseDTO<>("correct invite");
+                responseHttp = HttpStatus.OK;
+            }
+            else // Else, if the gameId is already setted, then it means the Rival sent this POST
+            {
+                System.out.print("<R> ");
+                responseMessage = new ServerResponseDTO<>("correct rival invite");
+                invites.removeIf((invite ->  invite.getGameId().equals(request.getGameId()))); // remove the incomplete invite
+                invites.forEach(invites ->
+                {
+                    if(invites.getGameId().equals(request.getGameId()))
+                        System.out.println("La removeIf non ha funzionato");
+                });
+                invites.add(new InviteFriends(request)); //add the complete invite (with rivals list)
+                responseHttp = HttpStatus.OK;
+            }
+            request.printInfoInvite();
         }
         else
         {
@@ -230,14 +240,6 @@ public class LoggedUserControllerImpl implements LoggedUserControllerInterface
         return new ResponseEntity<>("correct invite", HttpStatus.OK);
     }
 
-    /*
-        Gestire l'invito con due classi separate, ci obbliga poi a dover effettuare un doppio checkInvite,
-        uno per gli inviteFriend e inviteRival. Quindi se abbiamo ricevuto entrambi, quale dei due proponiamo prima?
-        Inoltre, bisogna anche specificare qual è il tipo di ritorno dell'invito -> Quindi o facciamo un tipo generico
-        con cui rispondere dall'endpoint 'checkReceivedInvite', oppure possiamo fare due endPoint diversi per controllare
-        i due inviti (FriendInvite e RivalInvite).
-*/
-
     @Async
     @PostMapping("/checkInvite")
     @Override public ResponseEntity<ServerResponseDTO<InviteFriends>>checkInvite(@RequestBody String usernameRequester)
@@ -249,16 +251,24 @@ public class LoggedUserControllerImpl implements LoggedUserControllerInterface
         {
             for (InviteFriends invite : invites) // Search for any invite (inTeam or Rival)
             {
-                if(usernameRequester.equals(invite.getRivals().get(0)))
+                for(String usernameRival : invite.getRivals())
                 {
-                    receivedInvite = new ServerResponseDTO<>(invite);
-                    break;
+                    if(usernameRequester.equals(usernameRival))
+                    {
+                        receivedInvite = new ServerResponseDTO<>(invite);
+                        //System.out.println("True in if RIVAL");
+                        break;
+                    }
                 }
 
                 for(String usernameInTeam : invite.getYourTeam())
                 {
-                    receivedInvite = new ServerResponseDTO<>(invite);
-                    break;
+                    if(usernameInTeam.equals(usernameRequester))
+                    {
+                        receivedInvite = new ServerResponseDTO<>(invite);
+                        //System.out.println("True in if IN_TEAM");
+                        break;
+                    }
                 }
             }
         }
@@ -266,14 +276,37 @@ public class LoggedUserControllerImpl implements LoggedUserControllerInterface
             httpStatus = HttpStatus.UNAUTHORIZED;
 
         if(receivedInvite == null && (httpStatus != HttpStatus.UNAUTHORIZED))
-            System.out.println("No Inviti per [" + usernameRequester + "]");
+            System.out.println("No Invite for [" + usernameRequester + "]");
         else
-            System.out.println("Invito per [" + usernameRequester + "] ricevuto da [" + receivedInvite.getResponseMessage().getUserInviter() + "]");
-
+            System.out.println("Invite found for [" + usernameRequester + "] received by [" + receivedInvite.getResponseMessage().getUserInviter() + "]");
 
         return new ResponseEntity<>(receivedInvite, httpStatus);
     }
-
-
 }
 
+/*
+    ************************************************ 08/03/2024 ********************************************************
+        PROGRESSI:
+            -] Creata e gestita la pagina che permette al primo Rival di crearsi il suo Team,
+               nascondendo gli utenti già invitati.
+            -] Il primo Rival può quindi creare il suo team esattamente nello stesso modo in cui lo ha fatto
+               l'Inviter.
+            -] L'invito fatto dall'Inviter viene correttamente aggiornato nell'istante in cui il (primo) rival
+               crea la sua squadra --> Ciò è necessario per informare lato Javascript e Java CHI sono questi rivali
+               e quindi renderli consci (quando eseguono la checkInvite) che sono stati invitati.
+               Ho sfruttato lo stesso endpoint /inviteFriend anche quando il Rival costruisce la propria
+               squadra, visto che per il rival è un invito che fa ai SUOI amici -> Vedi IF nel PostMapping.
+            -] Adesso, ogni giocatore che effettua la checkInvite, capisce perfettamente di essere stato invitato,
+               da chi, e se è in squadra Blu(dell'Inviter) o Rossa(del Rival) -> Gestito nel Javascript del checkInvite.
+
+        DA FARE:
+            -] Bisogna gestire il passo successivo, ossia l'attesa dei giocatori.
+            -] Aggiornare quindi i playersWaiting che "accettano" l'invito.
+            -] Direi di aggiungere un checkInvite anche se si clicca su CreateYourTeam in modo tale da dire
+               all'utente --> "Prima di crearti un tuo team, sei già stato invitato -> Che fai?"
+               obbligandolo quindi ad ACCETTARE o RIFIUTARE.
+               Perchè altrimenti questo utente potrebbe creare un invito che riguarda utenti già invitati ed in
+               attesa di altri -> creando inviti annidati! <(o_O)>
+            -] Gestire il rifiuto dell'invito lato Javascript e Java(PostMapping).
+  ****************************************** ****************************************** ********************************
+*/

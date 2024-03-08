@@ -8,9 +8,9 @@ public class InviteFriends {
 
     String gameId;
     String userInviter;
-    private ArrayList<String> yourTeam;
-    private ArrayList<String> roles;
-    private ArrayList<String> rivals;
+    private ArrayList<String> yourTeam; // This is the inviter team
+    private ArrayList<String> roles;    // This represents the inviter team roles
+    private ArrayList<String> rivals;   // This is the rivals team
 
 
     public InviteFriends(InviteFriendRequestDTO inviteFriend)

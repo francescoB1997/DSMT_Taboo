@@ -7,6 +7,7 @@ $(document).ready(function ()
         return;
     }
 
+    document.getElementById("btnCreateTeam").onclick = function (e) { onClickListenerBtnCreateTeam(); };
     document.getElementById("btnCheckInvite").onclick = function (e) { onClickListenerBtnCheckInvite(); };
 });
 
@@ -20,8 +21,24 @@ function checkLogin()
     return true;
 }
 
+function onClickListenerBtnCreateTeam()
+{
+    if(!checkLogin())
+    {
+        location.href = "../";
+        return;
+    }
+    location.href = "../createTeamPage.html";
+}
+
 function onClickListenerBtnCheckInvite()
 {
+    if(!checkLogin())
+    {
+        location.href = "../";
+        return;
+    }
+
     $.ajax({
         url: "http://localhost:8080/checkInvite",
         type: "POST",
@@ -32,28 +49,38 @@ function onClickListenerBtnCheckInvite()
             let invite = serverResponse.responseMessage;
             if(invite === undefined) {
                 alert("Nessun invito");
-                sessionStorage.setItem("rivalTeam", null);
+                sessionStorage.removeItem("invite");
                 return;
             }
 
             if(invite.rivals[0] === username)   // Check if this user is the first Rival, that has the power to Create its (Rival)Team
             {
-                const inviteResponse = confirm("You've been invited from " + invite.userInviter + "as Rival. Accept to create your Rival Team");
-                if (inviteResponse) {
+                const inviteResponse = window.confirm("You've been invited from [" + invite.userInviter + "] as RIVAL.\nAccept to create your Rival Team");
+                if (inviteResponse)
+                {
                     sessionStorage.setItem("invite", JSON.stringify(invite));
                     location.href = "../createRivalTeamPage.html";
-                } else {
-                    sessionStorage.setItem("invite", null);
-                    ajaxSendRefusedInvitation();
                 }
+                else
+                {
+                    storeInvitation(false, invite.gameId, false);
+                    sessionStorage.removeItem("invite");
+                }
+                return;
             }
 
-            for(let i = 1; i < invite.rivals.length; i++) // this for MUST start at 1. Check if the user has been invited in RivalTeam
+            for (let i = 1; i < invite.rivals.length; i++) // this loop MUST start at 1. Check if the user has been invited in RivalTeam
             {
                 if (invite.rivals[i] === username)
                 {
-                    alert("Sei nella squadra dei rivali");
-                    return; //Here there is the return because has no sense to continue with other foreach
+                    const inviteResponse = confirm("You've been invited from [" + invite.rivals[0] + "] as RIVAL of [" + invite.userInviter + "]\n" +
+                        "Do you accept the invite?");
+                    if(inviteResponse)
+                        sessionStorage.setItem("invite", JSON.stringify(invite));
+                    else
+                        sessionStorage.removeItem("invite");
+                    storeInvitation(inviteResponse, invite.gameId, false);
+                    return; //Here there is the return because has no sense to continue with other foreach loop
                 }
             }
 
@@ -61,7 +88,12 @@ function onClickListenerBtnCheckInvite()
             {
                 if(inTeamFriend === username)
                 {
-                    alert("io sono in squadra con " + invite.userInviter);
+                    const inviteResponse = confirm("You've been invited from [" + invite.userInviter + "] as FRIEND.\nDo you accept the invite?");
+                    if(inviteResponse)
+                        sessionStorage.setItem("invite", JSON.stringify(invite));
+                    else
+                        sessionStorage.removeItem("invite");
+                    storeInvitation(inviteResponse, invite.gameId, true);
                     break;
                 }
             }
@@ -72,35 +104,17 @@ function onClickListenerBtnCheckInvite()
             location.href = "../";
         }
     });
-
 }
 
-function getRandomInt(min , max)
+function storeInvitation(accepted, inviteId, invitedAsFriend)
 {
-    let randomInt = 0;
-    while(randomInt === 0) {
-        min = Math.ceil(min);
-        max = Math.floor(max);
-        randomInt = Math.floor(Math.random() * (max - min + 1)) + min;
-    }
-    return randomInt;
-}
-
-function ajaxSendRefusedInvitation()
-{
-    $.ajax({
-        url: "http://localhost:8080/refuseInvite",
-        type: "POST",
-        data: username,
-        contentType: 'application/json',
-        success: function (serverResponse)
+    let inviteReply =
         {
-            alert("Invito rifiutato ACK");
-        },
-        error: function ()
-        {
-            alert("Unauthorized Request!");
-            location.href = "../";
-        }
-    });
+            senderUsername: username,
+            gameId: inviteId,
+            inviteState: accepted,
+            invitedAsFriend: invitedAsFriend
+        };
+    sessionStorage.setItem("inviteReply", JSON.stringify(inviteReply));
+    location.href = "../waitingPage.html";
 }

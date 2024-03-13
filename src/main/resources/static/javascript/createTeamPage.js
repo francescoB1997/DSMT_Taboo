@@ -104,6 +104,7 @@ function ajaxGetFriendList()
         error: function ()
         {
             alert("Unauthorized Request!");
+            sessionStorage.removeItem("userLog");
             location.href = "../";
         }
     });

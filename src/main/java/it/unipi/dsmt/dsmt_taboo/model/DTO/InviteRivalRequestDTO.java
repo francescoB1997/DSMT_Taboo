@@ -1,6 +1,6 @@
 package it.unipi.dsmt.dsmt_taboo.model.DTO;
 
-public class InviteRivalRequestDTO
+public class InviteRivalRequestDTO  // Non utilizzata -> 08/03/2024
 {
     private String gameId;
     private String userInviter;

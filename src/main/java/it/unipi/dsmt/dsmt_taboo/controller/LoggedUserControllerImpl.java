@@ -3,10 +3,7 @@ package it.unipi.dsmt.dsmt_taboo.controller;
 import it.unipi.dsmt.dsmt_taboo.DAO.FriendDAO;
 import it.unipi.dsmt.dsmt_taboo.DAO.UserDAO;
 import it.unipi.dsmt.dsmt_taboo.model.DTO.*;
-import it.unipi.dsmt.dsmt_taboo.model.entity.InviteFriends;
-import it.unipi.dsmt.dsmt_taboo.model.entity.InviteRival;
-import it.unipi.dsmt.dsmt_taboo.model.entity.TeamCreationWaiting;
-import it.unipi.dsmt.dsmt_taboo.model.entity.RivalWaiting;
+import it.unipi.dsmt.dsmt_taboo.model.entity.*;
 import it.unipi.dsmt.dsmt_taboo.service.UserService;
 import it.unipi.dsmt.dsmt_taboo.utility.SessionManagement;
 import org.springframework.http.HttpStatus;
@@ -17,10 +14,12 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Vector;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 @RestController
 public class LoggedUserControllerImpl implements LoggedUserControllerInterface
-    // This class handle the action performed by a Logged User
+    // This class handle all the action performed by a Logged User
 {
     @PostMapping("/getFriendList")
     @Override
@@ -171,11 +170,13 @@ public class LoggedUserControllerImpl implements LoggedUserControllerInterface
 
     UserService userService = new UserService();
     Vector<InviteFriends> invites = new Vector<>();
-    final HashMap<String, TeamCreationWaiting> yourTeamMap = new HashMap<>();
+    final HashMap<String, TeamCreationWaiting> yourTeamMap = new HashMap<>(); // Da cancellare 11/3/2024
+
+    final ConcurrentHashMap<String, PendingMatch> pendingMatchMap = new ConcurrentHashMap<>();
     @Async
     @PostMapping("/inviteFriends")
     @Override
-    public ResponseEntity<ServerResponseDTO<String>> inviteFriendInTeam(@RequestBody InviteFriendRequestDTO request)
+    public ResponseEntity<ServerResponseDTO<String>> inviteFriends(@RequestBody InviteFriendRequestDTO request)
     {
         ServerResponseDTO<String> responseMessage = null;
         HttpStatus responseHttp;
@@ -185,16 +186,12 @@ public class LoggedUserControllerImpl implements LoggedUserControllerInterface
             if(request.getGameId().isEmpty()) // If it is first time that i receive that invite...
             {
                 request.setAutoGameId();
-                /* DA VERIFICARE COME PROCEDERE CON LA MEMORIZZAZIONE DEGLI UTENTI IN ATTESA */
                 invites.add(new InviteFriends(request));
 
-                synchronized (yourTeamMap) {
-                    TeamCreationWaiting playersWaiting = new TeamCreationWaiting(0, 0, 0);
-                    yourTeamMap.put(request.getGameId(), playersWaiting);
-                }
+                PendingMatch myPendingMatch = new PendingMatch();
+                pendingMatchMap.put(request.getGameId(), myPendingMatch);
 
-                responseMessage = new ServerResponseDTO<>("correct invite");
-                responseHttp = HttpStatus.OK;
+                responseMessage = new ServerResponseDTO<>(request.getGameId());
             }
             else // Else, if the gameId is already setted, then it means the Rival sent this POST
             {
@@ -203,13 +200,12 @@ public class LoggedUserControllerImpl implements LoggedUserControllerInterface
                 invites.removeIf((invite ->  invite.getGameId().equals(request.getGameId()))); // remove the incomplete invite
                 invites.forEach(invites ->
                 {
-                    if(invites.getGameId().equals(request.getGameId()))
-                        System.out.println("La removeIf non ha funzionato");
+                    assert(!invites.getGameId().equals(request.getGameId())); // DBG. Se va storto, la remove non funziona!
                 });
                 invites.add(new InviteFriends(request)); //add the complete invite (with rivals list)
-                responseHttp = HttpStatus.OK;
+                request.printInfoInvite();
             }
-            request.printInfoInvite();
+            responseHttp = HttpStatus.OK;
         }
         else
         {
@@ -221,6 +217,9 @@ public class LoggedUserControllerImpl implements LoggedUserControllerInterface
 
     Vector<InviteRival> invitesForRival = new Vector<>();
     HashMap<String, RivalWaiting> rivalMap = new HashMap<>();
+
+    /*
+        ****************************** Commentato il 08/03/2024
     @Async
     @PostMapping("/inviteRival")
     @Override
@@ -239,6 +238,8 @@ public class LoggedUserControllerImpl implements LoggedUserControllerInterface
 
         return new ResponseEntity<>("correct invite", HttpStatus.OK);
     }
+
+     */
 
     @Async
     @PostMapping("/checkInvite")
@@ -278,9 +279,44 @@ public class LoggedUserControllerImpl implements LoggedUserControllerInterface
         if(receivedInvite == null && (httpStatus != HttpStatus.UNAUTHORIZED))
             System.out.println("No Invite for [" + usernameRequester + "]");
         else
-            System.out.println("Invite found for [" + usernameRequester + "] received by [" + receivedInvite.getResponseMessage().getUserInviter() + "]");
+            System.out.println("Invite found for [" + usernameRequester + "] received by [" +
+                    receivedInvite.getResponseMessage().getUserInviter() + "]");
 
         return new ResponseEntity<>(receivedInvite, httpStatus);
+    }
+
+    @Async
+    @PostMapping("/replyInvite")
+    @Override
+    public ResponseEntity<ServerResponseDTO<String>> replyInvite(@RequestBody InviteReplyDTO replyInvite)
+        // This function handle the replyInvite. It necessary to know which is the Invite and who is the refuser
+    {
+        InviteFriends r =  invites.stream().filter(invite -> invite.getGameId().equals(replyInvite.getGameId())).toList().get(0);
+        if(!replyInvite.getInviteState())
+        {
+            System.out.println("replyInvite:  [" + replyInvite.getSenderUsername() + "] ha rifiutato l'invito di [" + r.getUserInviter() + "]");
+            //invites.removeIf(invite -> invite.getGameId().equals(replyInvite.getGameId()));
+            invites.remove(r);
+            invites.forEach(invites ->
+            {
+                assert(!invites.getGameId().equals(replyInvite.getGameId())); // DBG. Se va storto, la remove non funziona!
+            });
+
+        }
+        else
+        {
+            System.out.println("replyInvite:  [" + replyInvite.getSenderUsername() + "] ha accettato l'invito di [" + r.getUserInviter() + "]");
+
+            // Metto in attesa il replySender
+            if(replyInvite.getInvitedAsFriend())
+                pendingMatchMap.get(replyInvite.getGameId()).addWaitingFriend(replyInvite.getSenderUsername());
+            else
+                pendingMatchMap.get(replyInvite.getGameId()).addWaitingRival(replyInvite.getSenderUsername());
+
+            System.out.println("Sveglio");
+        }
+
+        return new ResponseEntity<>(new ServerResponseDTO<>("OK"), HttpStatus.OK);
     }
 }
 
@@ -300,13 +336,83 @@ public class LoggedUserControllerImpl implements LoggedUserControllerInterface
                da chi, e se è in squadra Blu(dell'Inviter) o Rossa(del Rival) -> Gestito nel Javascript del checkInvite.
 
         DA FARE:
-            -] Bisogna gestire il passo successivo, ossia l'attesa dei giocatori.
-            -] Aggiornare quindi i playersWaiting che "accettano" l'invito.
+            -] Gestire il rifiuto dell'invito lato Javascript e Java(PostMapping).    --------->    FATTO il 10/03/2024
+            -] Bisogna gestire il passo successivo, ossia l'attesa dei giocatori.     --------->    FATTO il 11/03/2024
+            -] Aggiornare quindi i playersWaiting che "accettano" l'invito.           --------->    FATTO il 11/03/2024
             -] Direi di aggiungere un checkInvite anche se si clicca su CreateYourTeam in modo tale da dire
                all'utente --> "Prima di crearti un tuo team, sei già stato invitato -> Che fai?"
                obbligandolo quindi ad ACCETTARE o RIFIUTARE.
                Perchè altrimenti questo utente potrebbe creare un invito che riguarda utenti già invitati ed in
                attesa di altri -> creando inviti annidati! <(o_O)>
-            -] Gestire il rifiuto dell'invito lato Javascript e Java(PostMapping).
   ****************************************** ****************************************** ********************************
+
+
+  ************************************************** 10/03/2024 ********************************************************
+        PROGRESSI:
+            -] PROPOSTA DI MODIFICA: Cambiare il nome 'gameId' con 'inviteId'
+            -] Aggiunto l'endpoint /replyInvite per gestire le richieste di Accettazione o Rifiuto di inviti.
+            -] Aggiunta la classe InviteReplyDTO per rappresentare la richiesta di accettazione/rifiuto di un invito.
+               Quando un utente rifiuta l'invito, esso viene cancellato dalla memoria del server
+
+        DA FARE:
+            -] Scegliere un numero costante di giocatori che possono comporre una squadra? Oppure dedurlo da quanti
+               amici invita l'Inviter? ( -> Più realistico ma è fattibile lato Erlang?)
+               Limitare di conseguenza il Rival quando crea la sua squadra.
+
+  ****************************************** ***************************************** *********************************
+
+  ************************************************** 11/03/2024 ********************************************************
+    PROGRESSI:
+            -] Cambiato il tipo della classe Hashmap in ConcurrentHashMap, perchè la classe HashMap non è ThreadSafe,
+               quindi i blocchi synchronized{...} non servono più. -> Cancellare le HashMap non ThreadSafe.
+            -] Creata la classe PendingMatch come sostituta delle classi RivalWaiting e TeamCreationWaiting.
+               La classe contiene la lista degli utenti che hanno accettato l'invito e che quindi sono in attesa.
+            -] Creata la pagina di waiting, in cui viene SEMBRA venga mostrata solo la clessidra, con stile e JS.
+            -] Gestita l'attesa degli utenti che accettano l'invito con LATCH all'interno della classe PendingMatch.
+               Per adesso il Latch è inizializzato a 4 --> OBBLIGATORO AVERE 2 SQUADRE DA 2!
+               La gestione del countdown() viene fatta dai due metodi pubblici.
+            -] Modificato l'invio della risposta dell'invito.
+               Adesso l'invito (accettato o meno) viene eseguito nella pagina di waiting.
+
+    DA FARE - RIEPILOGO PER GAETANO:
+            -] Proseguire con la pagina di gioco vera e propria, quindi quella che si interfaccia con Erlang.
+            -] Scegliere un numero costante di giocatori (SEMPLIFICAZIONE) -> 3 -> Controllo in Javascript.
+            -] Gestire il riufiuto di un invito, adesso che c'è il latch. -> Posso usare la notifyAll() per svegliare
+               in modo forzato tutti i thread?
+            -] Direi di aggiungere un checkInvite anche se si clicca su CreateYourTeam in modo tale da dire
+               all'utente --> "Prima di crearti un tuo team, sei già stato invitato -> Che fai?"
+               obbligandolo quindi ad ACCETTARE o RIFIUTARE.
+               Perchè altrimenti questo utente potrebbe creare un invito che riguarda utenti già invitati ed in
+               attesa di altri -> creando inviti annidati! <(o_O)>
+            -] Tutto l'ADMIN
+  ****************************************** ***************************************** *********************************
 */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

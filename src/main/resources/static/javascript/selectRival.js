@@ -14,7 +14,7 @@ $(document).ready(function ()
         location.href = "../createTeamPage.html";
         return;
     }
-    alert("CheckLogin & checkInvite: OK");
+    //alert("CheckLogin & checkInvite: OK");
     ajaxGetFriendList();
     document.getElementById("btnInvite").onclick = function (e) { onClickListenerBtnInvite(); };
     document.getElementById("imgRefresh").onclick = function (e) { onClickImgRefresh(); };
@@ -152,8 +152,8 @@ function onClickListenerBtnInvite()
         contentType: 'application/json',
         success: function (serverResponse)
         {
-            location.href = "../loggedPlayerPage.html";
-            alert("OK");
+            let gameId = serverResponse.responseMessage;
+            storeInvitation(true, gameId, true);
         },
         error: function () {
             alert("HTTP error");
@@ -161,4 +161,17 @@ function onClickListenerBtnInvite()
         }
     });
     sessionStorage.removeItem("inviteFriendRequest");
+}
+
+function storeInvitation(accepted, inviteId, invitedAsFriend)
+{
+    let inviteReply =
+        {
+            senderUsername: username,
+            gameId: inviteId,
+            inviteState: accepted,
+            invitedAsFriend: invitedAsFriend
+        };
+    sessionStorage.setItem("inviteReply", JSON.stringify(inviteReply));
+    location.href = "../waitingPage.html";
 }

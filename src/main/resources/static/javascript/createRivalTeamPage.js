@@ -38,6 +38,66 @@ function onClickImgRefresh()
     ajaxGetFriendList();
 }
 
+function onClickListenerBtnInvite()
+{
+    let checkboxes = document.querySelectorAll("input[type='checkbox']:checked");
+    for (let i = 0; i < checkboxes.length; i++)
+        invite.rivals.push(checkboxes[i].id.toString().split('&')[1]);
+
+    //alert("Rivals: " + invite.rivals);
+    $.ajax({
+        url: "http://localhost:8080/inviteFriends",
+        type: "POST",
+        data: JSON.stringify(invite),
+        contentType: 'application/json',
+        success: function (serverResponse)
+        {
+            //alert("OK -> Rivali ricevuti -> Rendirizzamento a Game-Attesa");
+            storeInvitation(true, invite.gameId, false);
+        },
+        error: function ()
+        {
+            alert("HTTP error");
+            location.href = "../";
+        }
+    });
+
+}
+
+function storeInvitation(accepted, inviteId, invitedAsFriend)
+{
+    let inviteReply =
+        {
+            senderUsername: username,
+            gameId: inviteId,
+            inviteState: accepted,
+            invitedAsFriend: invitedAsFriend
+        };
+    sessionStorage.setItem("inviteReply", JSON.stringify(inviteReply));
+    location.href = "../waitingPage.html";
+}
+
+function ajaxGetFriendList()
+{
+    $.ajax({
+        url: "http://localhost:8080/getFriendList",
+        type: "POST",
+        data: username,
+        contentType: 'application/json',
+        success: function (serverResponse)
+        {
+            let friendDTOList = serverResponse.responseMessage;
+            if(friendDTOList)
+                loadRivalFriendsInTable(friendDTOList);
+        },
+        error: function ()
+        {
+            alert("Unauthorized Request!");
+            location.href = "../";
+        }
+    });
+}
+
 function loadRivalFriendsInTable(friendList)
 {
     let tableFriends = document.getElementById("tableFriend");
@@ -109,27 +169,6 @@ function userAlreadyInTeam(username)
     return false;
 }
 
-function ajaxGetFriendList()
-{
-    $.ajax({
-        url: "http://localhost:8080/getFriendList",
-        type: "POST",
-        data: username,
-        contentType: 'application/json',
-        success: function (serverResponse)
-        {
-            let friendDTOList = serverResponse.responseMessage;
-            if(friendDTOList)
-                loadRivalFriendsInTable(friendDTOList);
-        },
-        error: function ()
-        {
-            alert("Unauthorized Request!");
-            location.href = "../";
-        }
-    });
-}
-
 function loadInviterTeam()
 {
     let inviterFriendsTable = document.getElementById("inviterFriendsTable");
@@ -167,39 +206,4 @@ function loadInviterTeam()
 
         inviterFriendsTable.append(trInviterFriend);
     })
-}
-
-function onClickListenerBtnInvite()
-{
-    let checkboxes = document.querySelectorAll("input[type='checkbox']:checked");
-    for (let i = 0 ; i < checkboxes.length; i++)
-        invite.rivals.push(checkboxes[i].id.toString().split('&')[1]);
-
-    alert("Rivals: " + invite.rivals);
-    $.ajax({
-        url: "http://localhost:8080/inviteFriends",
-        type: "POST",
-        data: JSON.stringify(invite),
-        contentType: 'application/json',
-        success: function (serverResponse)
-        {
-            alert("OK -> Rivali ricevuti -> Rendirizzamento a Game-Attesa");
-        },
-        error: function () {
-            alert("HTTP error");
-            //location.href = "../";
-        }
-    });
-
-}
-
-function getRandomInt(min , max)
-{
-    let randomInt = 0;
-    while(randomInt === 0) {
-        min = Math.ceil(min);
-        max = Math.floor(max);
-        randomInt = Math.floor(Math.random() * (max - min + 1)) + min;
-    }
-    return randomInt;
 }

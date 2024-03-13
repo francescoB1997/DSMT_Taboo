@@ -14,8 +14,6 @@ public interface LoggedUserControllerInterface
     public ResponseEntity<ServerResponseDTO<Integer>> removeFriend(FriendshipRequestDTO requesterUsername);
     public ResponseEntity<ServerResponseDTO<Integer>> addFriend( @RequestBody FriendshipRequestDTO addFriendRequest);
     public ResponseEntity<ServerResponseDTO<Integer>> createMatch( @RequestBody InviteFriendRequestDTO inviteRequest);
-
-    // public ResponseEntity<String> inviteFriendAsRival(@RequestBody InviteRivalRequestDTO request); // Commentato il 08/03/2024
     public ResponseEntity<ServerResponseDTO<String>> inviteFriends(@RequestBody InviteFriendRequestDTO request);
     public ResponseEntity<ServerResponseDTO<InviteFriends>> checkInvite(@RequestBody String usernameRequester);
 

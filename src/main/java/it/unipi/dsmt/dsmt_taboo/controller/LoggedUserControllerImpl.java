@@ -170,9 +170,8 @@ public class LoggedUserControllerImpl implements LoggedUserControllerInterface
 
     UserService userService = new UserService();
     Vector<InviteFriends> invites = new Vector<>();
-    final HashMap<String, TeamCreationWaiting> yourTeamMap = new HashMap<>(); // Da cancellare 11/3/2024
-
     final ConcurrentHashMap<String, PendingMatch> pendingMatchMap = new ConcurrentHashMap<>();
+
     @Async
     @PostMapping("/inviteFriends")
     @Override
@@ -215,32 +214,6 @@ public class LoggedUserControllerImpl implements LoggedUserControllerInterface
         return new ResponseEntity<>(responseMessage, responseHttp);
     }
 
-    Vector<InviteRival> invitesForRival = new Vector<>();
-    HashMap<String, RivalWaiting> rivalMap = new HashMap<>();
-
-    /*
-        ****************************** Commentato il 08/03/2024
-    @Async
-    @PostMapping("/inviteRival")
-    @Override
-    public ResponseEntity<String>
-    inviteFriendAsRival(@RequestBody InviteRivalRequestDTO request)
-    {
-        invitesForRival.add(new InviteRival(request));
-
-        synchronized (rivalMap)
-        {
-            RivalWaiting playersWaiting =
-                    new RivalWaiting(0);
-            rivalMap.put(request.getGameId(), playersWaiting);
-
-        }
-
-        return new ResponseEntity<>("correct invite", HttpStatus.OK);
-    }
-
-     */
-
     @Async
     @PostMapping("/checkInvite")
     @Override public ResponseEntity<ServerResponseDTO<InviteFriends>>checkInvite(@RequestBody String usernameRequester)
@@ -267,7 +240,6 @@ public class LoggedUserControllerImpl implements LoggedUserControllerInterface
                     if(usernameInTeam.equals(usernameRequester))
                     {
                         receivedInvite = new ServerResponseDTO<>(invite);
-                        //System.out.println("True in if IN_TEAM");
                         break;
                     }
                 }
@@ -291,8 +263,10 @@ public class LoggedUserControllerImpl implements LoggedUserControllerInterface
     public ResponseEntity<ServerResponseDTO<String>> replyInvite(@RequestBody InviteReplyDTO replyInvite)
         // This function handle the replyInvite. It necessary to know which is the Invite and who is the refuser
     {
+        ServerResponseDTO<String> response = null;
+        HttpStatus httpStatus = HttpStatus.OK;
         InviteFriends r =  invites.stream().filter(invite -> invite.getGameId().equals(replyInvite.getGameId())).toList().get(0);
-        if(!replyInvite.getInviteState())
+        if(!replyInvite.getInviteState()) // If the invite has been refused...
         {
             System.out.println("replyInvite:  [" + replyInvite.getSenderUsername() + "] ha rifiutato l'invito di [" + r.getUserInviter() + "]");
             //invites.removeIf(invite -> invite.getGameId().equals(replyInvite.getGameId()));
@@ -302,6 +276,9 @@ public class LoggedUserControllerImpl implements LoggedUserControllerInterface
                 assert(!invites.getGameId().equals(replyInvite.getGameId())); // DBG. Se va storto, la remove non funziona!
             });
 
+            pendingMatchMap.get(replyInvite.getGameId()).setRefusedInvite(true);
+            pendingMatchMap.get(replyInvite.getGameId()).wakeUpAllThreads();
+            response = new ServerResponseDTO<>("refused invite");
         }
         else
         {
@@ -313,10 +290,18 @@ public class LoggedUserControllerImpl implements LoggedUserControllerInterface
             else
                 pendingMatchMap.get(replyInvite.getGameId()).addWaitingRival(replyInvite.getSenderUsername());
 
-            System.out.println("Sveglio");
+            if(pendingMatchMap.get(replyInvite.getGameId()).getRefusedInvite()) // check if this thread has been wakedUp in forced Way
+            {
+                System.out.println("Invito rifiutato");
+                response = new ServerResponseDTO<>("refused invite");
+            }
+            else
+            {
+                response = new ServerResponseDTO<>("Tutti hanno accettato");
+            }
         }
 
-        return new ResponseEntity<>(new ServerResponseDTO<>("OK"), HttpStatus.OK);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }
 

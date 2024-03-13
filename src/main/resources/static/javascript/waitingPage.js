@@ -38,7 +38,8 @@ function ajaxSendReplyInvitation()
         contentType: 'application/json',
         success: function (serverResponse)
         {
-            alert("[DBG] Tutti hanno accettato.\nIl gioco può iniziare");
+            alert("Risposta: " + serverResponse.responseMessage);
+            //alert("[DBG] Tutti hanno accettato.\nIl gioco può iniziare");
 
         },
         error: function ()

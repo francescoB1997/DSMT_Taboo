@@ -39,6 +39,7 @@ function ajaxSendReplyInvitation()
         success: function (serverResponse)
         {
             alert("Risposta: " + serverResponse.responseMessage);
+            // se rifiutato => href a startAMatch
             //alert("[DBG] Tutti hanno accettato.\nIl gioco può iniziare");
 
         },

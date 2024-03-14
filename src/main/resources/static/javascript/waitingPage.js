@@ -38,9 +38,13 @@ function ajaxSendReplyInvitation()
         contentType: 'application/json',
         success: function (serverResponse)
         {
-            alert("Risposta: " + serverResponse.responseMessage);
             // se rifiutato => href a startAMatch
-            //alert("[DBG] Tutti hanno accettato.\nIl gioco può iniziare");
+            if(serverResponse.responseMessage === "refused invite"){
+                alert("Risposta: " + serverResponse.responseMessage);
+                location.href = "../createTeamPage.html";
+            }
+            else
+                alert("[DBG] Tutti hanno accettato.\nIl gioco può iniziare");
 
         },
         error: function ()

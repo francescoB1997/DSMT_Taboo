@@ -38,7 +38,12 @@ function onClickListenerBtnCheckInvite()
         location.href = "../";
         return;
     }
+    ajaxCheckInvite();
 
+}
+
+function ajaxCheckInvite()
+{
     $.ajax({
         url: "http://localhost:8080/checkInvite",
         type: "POST",
@@ -48,14 +53,15 @@ function onClickListenerBtnCheckInvite()
         {
             let invite = serverResponse.responseMessage;
             if(invite === undefined) {
-                alert("Nessun invito");
+                alert("No invite");
                 sessionStorage.removeItem("invite");
                 return;
             }
 
             if(invite.rivals[0] === username)   // Check if this user is the first Rival, that has the power to Create its (Rival)Team
             {
-                const inviteResponse = window.confirm("You've been invited from [" + invite.userInviter + "] as RIVAL.\nAccept to create your Rival Team");
+                let msgToShow = "You've been invited from [" + invite.userInviter + "] as RIVAL.\nAccept to create your Rival Team";
+                const inviteResponse = window.confirm(msgToShow);
                 if (inviteResponse)
                 {
                     sessionStorage.setItem("invite", JSON.stringify(invite));
@@ -73,8 +79,9 @@ function onClickListenerBtnCheckInvite()
             {
                 if (invite.rivals[i] === username)
                 {
-                    const inviteResponse = confirm("You've been invited from [" + invite.rivals[0] + "] as RIVAL of [" + invite.userInviter + "]\n" +
-                        "Do you accept the invite?");
+                    let msgToShow = "You've been invited from [" + invite.rivals[0] + "] as RIVAL of [" + invite.userInviter + "]\n" +
+                        "Do you accept the invite?";
+                    const inviteResponse = window.confirm(msgToShow);
                     if(inviteResponse)
                         sessionStorage.setItem("invite", JSON.stringify(invite));
                     else
@@ -97,7 +104,7 @@ function onClickListenerBtnCheckInvite()
                     break;
                 }
             }
-       },
+        },
         error: function ()
         {
             alert("Unauthorized Request!");
@@ -105,6 +112,7 @@ function onClickListenerBtnCheckInvite()
         }
     });
 }
+
 
 function storeInvitation(accepted, inviteId, invitedAsFriend)
 {

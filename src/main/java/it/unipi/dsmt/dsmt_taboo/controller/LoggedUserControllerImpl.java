@@ -248,11 +248,16 @@ public class LoggedUserControllerImpl implements LoggedUserControllerInterface
         else
             httpStatus = HttpStatus.UNAUTHORIZED;
 
-        if(receivedInvite == null && (httpStatus != HttpStatus.UNAUTHORIZED))
-            System.out.println("No Invite for [" + usernameRequester + "]");
-        else
+        // -------------------- ONLY FOR DEBUG --------------------
+        if( (receivedInvite != null) && (httpStatus == HttpStatus.OK))
+        {
             System.out.println("Invite found for [" + usernameRequester + "] received by [" +
                     receivedInvite.getResponseMessage().getUserInviter() + "]");
+        }
+        else if(httpStatus == HttpStatus.UNAUTHORIZED)
+            System.out.println("No logged user");
+        else
+            System.out.println("No invite found for [" + usernameRequester + "]");
 
         return new ResponseEntity<>(receivedInvite, httpStatus);
     }

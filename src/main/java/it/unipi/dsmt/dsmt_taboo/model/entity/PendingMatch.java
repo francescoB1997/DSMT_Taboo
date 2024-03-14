@@ -24,18 +24,14 @@ public class PendingMatch
     {
         if (this.rivalsTeamWaiting.stream().filter(rivalWaiting -> rivalWaiting.equals(usernameRival)).toList().isEmpty())
         {
-            System.out.println("[R] CountDown: " + this.latch.getCount());
             this.rivalsTeamWaiting.add(usernameRival);
             this.latch.countDown();
-
-            try { this.latch.await(); }
-            catch (Exception e) { System.out.println("Errore eccezione await() [R] -> " + e.getMessage()); }
-
+            System.out.println("[R] CountDown: " + this.latch.getCount());
         }
-        else {
-            System.out.println("Situazione anomala Pending Match [R]");
-        }
-        //System.out.println("[R] Sveglio");
+        try { this.latch.await(); }
+        catch (Exception e) { System.out.println("Errore eccezione await() [R] -> " + e.getMessage()); }
+
+        //Modificato come addWaitingFriend per gestione navigazione tra pagine ed eventuali problemi di aggiornamento del counter
     }
 
     public void addWaitingFriend(String usernameFriend)

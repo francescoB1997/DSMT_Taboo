@@ -220,7 +220,7 @@ public class LoggedUserControllerImpl implements LoggedUserControllerInterface
     {
         ServerResponseDTO<InviteFriends> receivedInvite = null;
         HttpStatus httpStatus = HttpStatus.OK;
-        boolean checkLogin = SessionManagement.getInstance().isUserLogged(usernameRequester);
+        Boolean checkLogin = SessionManagement.getInstance().isUserLogged(usernameRequester);
         if(checkLogin)
         {
             for (InviteFriends invite : invites) // Search for any invite (inTeam or Rival)
@@ -265,10 +265,10 @@ public class LoggedUserControllerImpl implements LoggedUserControllerInterface
     @Async
     @PostMapping("/replyInvite")
     @Override
-    public ResponseEntity<ServerResponseDTO<String>> replyInvite(@RequestBody InviteReplyDTO replyInvite)
+    public ResponseEntity<ServerResponseDTO<Integer>> replyInvite(@RequestBody InviteReplyDTO replyInvite)
         // This function handle the replyInvite. It necessary to know which is the Invite and who is the refuser
     {
-        ServerResponseDTO<String> response = null;
+        ServerResponseDTO<Integer> response = null;
         HttpStatus httpStatus = HttpStatus.OK;
         InviteFriends r =  invites.stream().filter(invite -> invite.getGameId().equals(replyInvite.getGameId())).toList().get(0);
         if(!replyInvite.getInviteState()) // If the invite has been refused...
@@ -283,7 +283,7 @@ public class LoggedUserControllerImpl implements LoggedUserControllerInterface
 
             pendingMatchMap.get(replyInvite.getGameId()).setRefusedInvite(true);
             pendingMatchMap.get(replyInvite.getGameId()).wakeUpAllThreads();
-            response = new ServerResponseDTO<>("refused invite");
+            response = new ServerResponseDTO<>(0); // The 0, means that someone have refused the invite
         }
         else
         {
@@ -297,13 +297,11 @@ public class LoggedUserControllerImpl implements LoggedUserControllerInterface
 
             if(pendingMatchMap.get(replyInvite.getGameId()).getRefusedInvite()) // check if this thread has been wakedUp in forced Way
             {
-                System.out.println("Invito rifiutato");
-                response = new ServerResponseDTO<>("refused invite");
+                System.out.println("Thread svegliato: Invito rifiutato");
+                response = new ServerResponseDTO<>(0); // The 0, means that someone have refused the invite
             }
             else
-            {
-                response = new ServerResponseDTO<>("Tutti hanno accettato");
-            }
+                response = new ServerResponseDTO<>(1); // The 1, means that all of users have accepted the invite
         }
 
         return new ResponseEntity<>(response, HttpStatus.OK);
@@ -367,13 +365,6 @@ public class LoggedUserControllerImpl implements LoggedUserControllerInterface
     DA FARE - RIEPILOGO PER GAETANO:
             -] Proseguire con la pagina di gioco vera e propria, quindi quella che si interfaccia con Erlang.
             -] Scegliere un numero costante di giocatori (SEMPLIFICAZIONE) -> 3 -> Controllo in Javascript.
-            -] Gestire il riufiuto di un invito, adesso che c'è il latch. -> Posso usare la notifyAll() per svegliare
-               in modo forzato tutti i thread?
-            -] Direi di aggiungere un checkInvite anche se si clicca su CreateYourTeam in modo tale da dire
-               all'utente --> "Prima di crearti un tuo team, sei già stato invitato -> Che fai?"
-               obbligandolo quindi ad ACCETTARE o RIFIUTARE.
-               Perchè altrimenti questo utente potrebbe creare un invito che riguarda utenti già invitati ed in
-               attesa di altri -> creando inviti annidati! <(o_O)>
             -] Tutto l'ADMIN
   ****************************************** ***************************************** *********************************
 */

@@ -17,6 +17,6 @@ public interface LoggedUserControllerInterface
     public ResponseEntity<ServerResponseDTO<String>> inviteFriends(@RequestBody InviteFriendRequestDTO request);
     public ResponseEntity<ServerResponseDTO<InviteFriends>> checkInvite(@RequestBody String usernameRequester);
 
-    public ResponseEntity<ServerResponseDTO<String>> replyInvite(@RequestBody InviteReplyDTO refusedInvite);
+    public ResponseEntity<ServerResponseDTO<Integer>> replyInvite(@RequestBody InviteReplyDTO refusedInvite);
 
 }

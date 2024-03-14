@@ -26,7 +26,7 @@ function ajaxSendReplyInvitation()
     const inviteReplyJSON = sessionStorage.getItem("inviteReply");
     if(!inviteReplyJSON)
     {
-        alert("No inviteReply object in SessionStorgare!");
+        alert("No invite to wait");
         location.href = "../createTeamPage.html";
         return;
     }
@@ -38,13 +38,17 @@ function ajaxSendReplyInvitation()
         contentType: 'application/json',
         success: function (serverResponse)
         {
-            // se rifiutato => href a startAMatch
-            if(serverResponse.responseMessage === "refused invite"){
-                alert("Risposta: " + serverResponse.responseMessage);
-                location.href = "../createTeamPage.html";
+            if(serverResponse.responseMessage === 1) // If 1 ==> All the users have accepted the invite
+            {
+                alert("Tutti hanno accettato");
+                // redirect alla pagina di gioco
             }
             else
-                alert("[DBG] Tutti hanno accettato.\nIl gioco può iniziare");
+            {
+                alert("Qualcuno ha rifiutato");
+                location.href = "../startMatchPage.html";
+            }
+            sessionStorage.removeItem("inviteReply");
 
         },
         error: function ()

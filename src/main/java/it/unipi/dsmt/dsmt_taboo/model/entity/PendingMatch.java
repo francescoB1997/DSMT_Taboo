@@ -11,14 +11,12 @@ public class PendingMatch
     private CountDownLatch latch;
     private ArrayList<String> inviterTeamWaiting;
     private ArrayList<String> rivalsTeamWaiting;
-    private Boolean refusedInvite;
 
     public PendingMatch()
     {
         this.rivalsTeamWaiting = new ArrayList<>();
         this.inviterTeamWaiting = new ArrayList<>();
         latch = new CountDownLatch( Constant.NUMBER_OF_PLAYERS_FOR_MATCH );
-        this.refusedInvite = false;
     }
     public void addWaitingRival(String usernameRival)
     // This function add a new RivalWaiting only if it does not waiting yet
@@ -53,8 +51,4 @@ public class PendingMatch
         for(long i = 0; i < round; i++)
             this.latch.countDown();
     }
-
-    public Boolean getRefusedInvite() { return this.refusedInvite; }
-
-    public void setRefusedInvite(Boolean refusedInvite) { this.refusedInvite = refusedInvite; }
 }

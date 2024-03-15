@@ -29,7 +29,7 @@ function onClickListenerBtnCreateTeam()
         return;
     }
 
-    ajaxCheckInvite(true)
+    ajaxCheckInvite(true);
 }
 
 function onClickListenerBtnCheckInvite()
@@ -42,8 +42,8 @@ function onClickListenerBtnCheckInvite()
     ajaxCheckInvite();
 }
 
-function ajaxCheckInvite(isCreatYourTeamBtn){
-
+function ajaxCheckInvite(isCreatYourTeamBtn)
+{
     $.ajax({
         url: "http://localhost:8080/checkInvite",
         type: "POST",
@@ -52,11 +52,13 @@ function ajaxCheckInvite(isCreatYourTeamBtn){
         success: function (serverResponse)
         {
             let invite = serverResponse.responseMessage;
-            if(invite === undefined && isCreatYourTeamBtn === true) {
+            if( (invite === undefined) && (isCreatYourTeamBtn === true))
+            {
                 sessionStorage.removeItem("invite");
                 location.href = "../createTeamPage.html";
                 return;
-            } else if (invite === undefined) {
+            } else if (invite === undefined)
+            {
                 alert("Nessun invito");
                 sessionStorage.removeItem("invite");
                 return;

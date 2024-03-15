@@ -281,9 +281,9 @@ public class LoggedUserControllerImpl implements LoggedUserControllerInterface
                 assert(!invites.getGameId().equals(replyInvite.getGameId())); // DBG. Se va storto, la remove non funziona!
             });
 
-            pendingMatchMap.get(replyInvite.getGameId()).setRefusedInvite(true);
             pendingMatchMap.get(replyInvite.getGameId()).wakeUpAllThreads();
             response = new ServerResponseDTO<>(0); // The 0, means that someone have refused the invite
+            pendingMatchMap.remove(replyInvite.getGameId()); // Free the memory for the old pendingMatch
         }
         else
         {
@@ -295,13 +295,15 @@ public class LoggedUserControllerImpl implements LoggedUserControllerInterface
             else
                 pendingMatchMap.get(replyInvite.getGameId()).addWaitingRival(replyInvite.getSenderUsername());
 
-            if(pendingMatchMap.get(replyInvite.getGameId()).getRefusedInvite()) // check if this thread has been wakedUp in forced Way
+            PendingMatch pendingMatch = pendingMatchMap.get(replyInvite.getGameId());
+            if(pendingMatch != null)
+                response = new ServerResponseDTO<>(1); // The 1, means that all of users have accepted the invite
+
+            else // The else means that, someone of the invited user has refused the invite"
             {
-                System.out.println("Thread svegliato: Invito rifiutato");
+                System.out.println("Invito rifiutato");
                 response = new ServerResponseDTO<>(0); // The 0, means that someone have refused the invite
             }
-            else
-                response = new ServerResponseDTO<>(1); // The 1, means that all of users have accepted the invite
         }
 
         return new ResponseEntity<>(response, HttpStatus.OK);

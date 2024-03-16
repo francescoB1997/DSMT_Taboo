@@ -4,7 +4,6 @@ import it.unipi.dsmt.dsmt_taboo.model.DTO.MatchDTO;
 
 public class MatchDAO extends BaseDAO
 {
-
     public MatchDAO() { }
 
     public void addNewMatch()

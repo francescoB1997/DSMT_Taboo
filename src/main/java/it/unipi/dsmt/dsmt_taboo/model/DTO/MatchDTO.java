@@ -1,5 +1,7 @@
 package it.unipi.dsmt.dsmt_taboo.model.DTO;
 
+import it.unipi.dsmt.dsmt_taboo.model.entity.PendingMatch;
+
 import java.util.ArrayList;
 
 public class MatchDTO
@@ -21,6 +23,16 @@ public class MatchDTO
         this.team1 = team2;
         this.scoreTeam1 = scoreTeam1;
         this.scoreTeam2 = scoreTeam2;
+    }
+
+    public MatchDTO(String matchId,
+                    ArrayList<String> team1, ArrayList<String> team2)
+    {
+        this.matchId = matchId;
+        this.team1 = team1;
+        this.team1 = team2;
+        this.scoreTeam1 = 0;
+        this.scoreTeam2 = 0;
     }
 
     public String getMatchId() { return this.matchId; }

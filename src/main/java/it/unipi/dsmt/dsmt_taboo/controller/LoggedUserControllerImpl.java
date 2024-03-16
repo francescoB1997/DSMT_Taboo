@@ -171,6 +171,7 @@ public class LoggedUserControllerImpl implements LoggedUserControllerInterface
     UserService userService = new UserService();
     Vector<InviteFriends> invites = new Vector<>();
     final ConcurrentHashMap<String, PendingMatch> pendingMatchMap = new ConcurrentHashMap<>();
+    final ConcurrentHashMap<String, MatchDTO> runningMatch = new ConcurrentHashMap<>();
 
     @Async
     @PostMapping("/inviteFriends")
@@ -258,7 +259,7 @@ public class LoggedUserControllerImpl implements LoggedUserControllerInterface
             System.out.println("No logged user");
         else
             System.out.println("No invite found for [" + usernameRequester + "]");
-
+        // ----------------------------------------------------------
         return new ResponseEntity<>(receivedInvite, httpStatus);
     }
 
@@ -276,11 +277,12 @@ public class LoggedUserControllerImpl implements LoggedUserControllerInterface
             System.out.println("replyInvite:  [" + replyInvite.getSenderUsername() + "] ha rifiutato l'invito di [" + r.getUserInviter() + "]");
             //invites.removeIf(invite -> invite.getGameId().equals(replyInvite.getGameId()));
             invites.remove(r);
+            // -------------------- ONLY FOR DEBUG --------------------
             invites.forEach(invites ->
             {
                 assert(!invites.getGameId().equals(replyInvite.getGameId())); // DBG. Se va storto, la remove non funziona!
             });
-
+            // ----------------------------------------------------------
             pendingMatchMap.get(replyInvite.getGameId()).wakeUpAllThreads();
             response = new ServerResponseDTO<>(0); // The 0, means that someone have refused the invite
             pendingMatchMap.remove(replyInvite.getGameId()); // Free the memory for the old pendingMatch
@@ -297,8 +299,20 @@ public class LoggedUserControllerImpl implements LoggedUserControllerInterface
 
             PendingMatch pendingMatch = pendingMatchMap.get(replyInvite.getGameId());
             if(pendingMatch != null)
+            {
                 response = new ServerResponseDTO<>(1); // The 1, means that all of users have accepted the invite
+                // Il returned è solo per DGB
+                MatchDTO returned = runningMatch.putIfAbsent(replyInvite.getGameId(),
+                        new MatchDTO(replyInvite.getGameId(), pendingMatch.getInviterTeamMember(),
+                                pendingMatch.getRivalsTeamMember()));
+                // -------------------- ONLY FOR DEBUG --------------------
+                if(returned != null)
+                    System.out.println("Thread: esisteva già il MatchDTO nei runningMatch");
+                else
+                    System.out.println("THread: *** questo messaggio dovrei vederla una volta ***");
+                // ----------------------------------------------------------
 
+            }
             else // The else means that, someone of the invited user has refused the invite"
             {
                 System.out.println("Invito rifiutato");

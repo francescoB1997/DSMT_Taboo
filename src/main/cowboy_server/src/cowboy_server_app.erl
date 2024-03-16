@@ -11,7 +11,7 @@
 
 start(_StartType, _StartArgs) ->
 		Dispatch = cowboy_router:compile([
-				{'_', [{"/", server_handler, []},
+				{'_', [{"/erlServer", server_handler, []},
 				       {"/exit", player_handler, []}
 				      ]}]
 		),

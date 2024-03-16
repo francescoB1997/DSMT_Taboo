@@ -1,4 +1,4 @@
--module(exit_handler).
+-module(player_handler).
 -export([init/2]).
 
 init (Req, State) ->
@@ -7,3 +7,7 @@ init (Req, State) ->
 			<<"<h1>Pagina web EXIT Erlang & Cowboy </h1>">>,
 			Req),
 		{ok, Resp, State}.
+
+login (DecodedJson, State) ->
+
+

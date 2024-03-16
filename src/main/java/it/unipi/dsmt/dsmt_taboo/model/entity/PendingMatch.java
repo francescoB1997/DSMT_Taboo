@@ -43,12 +43,16 @@ public class PendingMatch
         }
         try { this.latch.await(); }
         catch (Exception e) { System.out.println("Errore eccezione await() [F] -> " + e.getMessage()); }
-
     }
+
     public void wakeUpAllThreads()
     {
         long round = this.latch.getCount();
         for(long i = 0; i < round; i++)
             this.latch.countDown();
     }
+
+    public ArrayList<String> getInviterTeamMember() { return this.inviterTeamWaiting; }
+
+    public ArrayList<String> getRivalsTeamMember() { return this.rivalsTeamWaiting; }
 }

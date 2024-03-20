@@ -3,8 +3,46 @@
     <head>
         <meta charset="UTF-8">
         <title>Taboo Game Page</title>
+        <script src="https://code.jquery.com/jquery-3.4.0.min.js" type="text/javascript"></script>
+        <script src="./javascript/tabooGamePage.js" type="text/javascript"></script>
+        <link rel="stylesheet" href="./css/tabooGamePage.css">
     </head>
     <body>
+        <div id="mainContainer">
+            <h2>Pagina di gioco</h2>
+            <div id="containerInfoMatch">
+                    <span>
+                        Timer
+                        <img id="hourglassIcon" src="img/hourglass.gif" alt="hourglass icon">
+                    </span>
+                <span>
+                        Username
+                    </span>
+            </div>
+            <div id="gameContainer" >
+
+                <div id="containerTableFriend">
+                    <h2> Friends </h2>
+                    <table id="tableFriend">
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+                <div id="containerGameArea">
+                    Area di gioco<br>ciao<br>sono
+                </div>
+                <div id="conatinerTableRival">
+                    <h2> Rivals </h2>
+                    <table id="tableRival">
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <input type="text" class="textboxWordToGuess" placeholder="Insert the word to Guess">
+            <button id="btnGuess">Indovina</button>
+            <button><img src="./img/taboo_text_logo.png" id="img_taboo_text" alt="taboo text"></button>
+        </div>
 
     </body>
 </html>

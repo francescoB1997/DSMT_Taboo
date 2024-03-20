@@ -9,7 +9,7 @@ $(document).ready(function ()
         return;
     }
 
-    if(!checkInviteRequest())
+    if(!checkInviteInSessionStorage())
     {
         location.href = "../createTeamPage.html";
         return;
@@ -30,7 +30,7 @@ function checkLogin()
     return true;
 }
 
-function checkInviteRequest()
+function checkInviteInSessionStorage()
 {
     if(!sessionStorage.getItem("inviteFriendRequest"))
     {
@@ -144,7 +144,7 @@ function onClickListenerBtnInvite()
 {
     const usernameRival = document.querySelector('input[name="rival"]:checked').id.toString().split('&')[1];
     inviteFriendRequest.rivals.push(usernameRival);
-
+    sessionStorage.setItem("myRole", inviteFriendRequest.roles[0]);
     $.ajax({
         url: "http://localhost:8080/inviteFriends",
         type: "POST",

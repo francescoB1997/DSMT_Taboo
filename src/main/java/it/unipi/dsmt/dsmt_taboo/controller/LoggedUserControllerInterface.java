@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
+import java.util.Map;
 
 public interface LoggedUserControllerInterface
 {
@@ -17,6 +18,6 @@ public interface LoggedUserControllerInterface
     public ResponseEntity<ServerResponseDTO<String>> inviteFriends(@RequestBody InviteFriendRequestDTO request);
     public ResponseEntity<ServerResponseDTO<InviteFriends>> checkInvite(@RequestBody String usernameRequester);
 
-    public ResponseEntity<ServerResponseDTO<Integer>> replyInvite(@RequestBody InviteReplyDTO refusedInvite);
+    public ResponseEntity<ServerResponseDTO<MatchDTO>> replyInvite(@RequestBody InviteReplyDTO refusedInvite);
 
 }

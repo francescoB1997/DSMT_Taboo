@@ -55,19 +55,21 @@ function ajaxCheckInvite(isCreatYourTeamBtn)
             if( (invite === undefined) && (isCreatYourTeamBtn === true))
             {
                 sessionStorage.removeItem("invite");
+                sessionStorage.removeItem("myRole");
                 location.href = "../createTeamPage.html";
                 return;
             } else if (invite === undefined)
             {
                 alert("Nessun invito");
                 sessionStorage.removeItem("invite");
+                sessionStorage.removeItem("myRole");
                 return;
             }
 
             if(invite.rivals[0] === username)   // Check if this user is the first Rival, that has the power to Create its (Rival)Team
             {
                 let msgForCreateTeamBtn = (isCreatYourTeamBtn === true) ? "Notification: Before Create Your team must know that " : "";
-
+                sessionStorage.setItem("myRole", "rival1"); // Role 'rival1' will create its team
                 let msgToShow = msgForCreateTeamBtn + "You've been invited from [" + invite.userInviter + "] as RIVAL.\nAccept to create your Rival Team";
                 const inviteResponse = window.confirm(msgToShow);
                 if (inviteResponse)
@@ -79,6 +81,7 @@ function ajaxCheckInvite(isCreatYourTeamBtn)
                 {
                     storeInvitation(false, invite.gameId, false);
                     sessionStorage.removeItem("invite");
+                    sessionStorage.removeItem("myRole");
                 }
                 return;
             }
@@ -88,31 +91,36 @@ function ajaxCheckInvite(isCreatYourTeamBtn)
                 if (invite.rivals[i] === username)
                 {
                     let msgForCreateTeamBtn = (isCreatYourTeamBtn === true) ? "Notification: Before Create Your team must know that " : "";
-
+                    sessionStorage.setItem("myRole", "rival2");
                     let msgToShow = msgForCreateTeamBtn + "You've been invited from [" + invite.rivals[0] + "] as RIVAL of [" + invite.userInviter + "]\n" +
                         "Do you accept the invite?";
                     const inviteResponse = confirm(msgToShow);
                     if(inviteResponse)
                         sessionStorage.setItem("invite", JSON.stringify(invite));
-                    else
+                    else {
                         sessionStorage.removeItem("invite");
+                        sessionStorage.removeItem("myRole");
+                    }
                     storeInvitation(inviteResponse, invite.gameId, false);
                     return; //Here there is the return because has no sense to continue with other foreach loop
                 }
             }
 
-            for(let inTeamFriend of invite.yourTeam)    // check if this user has been invited in FriendTeam
+            for (let i = 0; i < invite.yourTeam.length; i++)
+            //for(let inTeamFriend of invite.yourTeam)    // check if this user has been invited in FriendTeam
             {
-                if(inTeamFriend === username)
+                if(invite.yourTeam[i] === username)
                 {
                     let msgForCreateTeamBtn = (isCreatYourTeamBtn === true) ? "Notification: Before Create Your team must know that " : "";
-
+                    sessionStorage.setItem("myRole", invite.roles[i]);
                     let msgToShow = msgForCreateTeamBtn + "You've been invited from [" + invite.userInviter + "] as FRIEND.\nDo you accept the invite?";
                     const inviteResponse = confirm(msgToShow);
                     if(inviteResponse)
                         sessionStorage.setItem("invite", JSON.stringify(invite));
-                    else
+                    else {
                         sessionStorage.removeItem("invite");
+                        sessionStorage.removeItem("myRole");
+                    }
                     storeInvitation(inviteResponse, invite.gameId, true);
                     break;
                 }

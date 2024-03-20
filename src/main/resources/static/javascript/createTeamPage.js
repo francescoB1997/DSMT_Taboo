@@ -149,7 +149,7 @@ function onClickListenerBtnInvite()
         inviteFriendRequest.roles[randomPositionPrompter] = "Prompter";
     }
 
-    alert("Array: " + inviteFriendRequest.roles);
+    //alert("Array: " + inviteFriendRequest.roles);
     sessionStorage.setItem("inviteFriendRequest", JSON.stringify(inviteFriendRequest));
     location.href = "../selectRivalPage.html";
 

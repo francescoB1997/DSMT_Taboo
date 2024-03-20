@@ -38,14 +38,17 @@ function ajaxSendReplyInvitation()
         contentType: 'application/json',
         success: function (serverResponse)
         {
-            if(serverResponse.responseMessage === 1) // If 1 ==> All the users have accepted the invite
+            if(serverResponse.responseMessage != undefined) // If 1 ==> All the users have accepted the invite
             {
-                alert("Tutti hanno accettato");
+                //alert("Tutti hanno accettato");
+                sessionStorage.setItem("match", JSON.stringify(serverResponse.responseMessage));
+                location.href = "../tabooGamePage.html";
                 // redirect alla pagina di gioco
             }
             else
             {
                 alert("Qualcuno ha rifiutato");
+                sessionStorage.removeItem("myRole");
                 location.href = "../startMatchPage.html";
             }
             sessionStorage.removeItem("inviteReply");

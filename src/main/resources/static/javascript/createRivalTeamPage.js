@@ -41,8 +41,35 @@ function onClickImgRefresh()
 function onClickListenerBtnInvite()
 {
     let checkboxes = document.querySelectorAll("input[type='checkbox']:checked");
+    invite.yourTeam.push(username); // Push my username first
+    for (let i = 0 ; i < checkboxes.length; i++)
+        invite.yourTeam.push(checkboxes[i].id.toString().split('&')[1]);
 
-    chooseMyRole(checkboxes);
+    let myRole;
+    let radioList = document.querySelectorAll('input[name="myRole"]');
+    for(const radio of radioList)
+    {
+        if(radio.checked)
+        {
+            myRole = radio.value;
+            break;
+        }
+    }
+    invite.roles.push(myRole); // Push my role first
+    for(let checkbox of checkboxes) // foreach checked friend, fill the roles array
+    {
+        invite.roles.push("Guesser");
+    }
+
+    if(myRole !== "Prompter")// if me is not the Prompter, then it have to be randomly chosen from my friends
+    {
+        let maxIndex = checkboxes.length;
+        let randomPositionPrompter = getRandomInt(0, maxIndex);
+        invite.roles[randomPositionPrompter] = "Prompter";
+    }
+
+    //alert("Array: " + inviteFriendRequest.roles);
+    //sessionStorage.setItem("inviteFriendRequest", JSON.stringify(invite));
 
     //alert("Rivals: " + invite.rivals);
     $.ajax({
@@ -64,37 +91,6 @@ function onClickListenerBtnInvite()
 
 }
 
-function chooseMyRole(checkboxes)
-{
-    for (let i = 0; i < checkboxes.length; i++)
-        invite.rivals.push(checkboxes[i].id.toString().split('&')[1]);
-
-    let myRole;
-    let radioList = document.querySelectorAll('input[name="myRole"]');
-    for(const radio of radioList)
-    {
-        if(radio.checked)
-        {
-            myRole = radio.value;
-            break;
-        }
-    }
-    inviteFriendRequest.roles.push(myRole); // Push my role first
-    for(let checkbox of checkboxes) // foreach checked friend, fill the roles array
-    {
-        inviteFriendRequest.roles.push("Guesser");
-    }
-
-    if(myRole !== "Prompter")// if me is not the Prompter, then it have to be randomly chosen from my friends
-    {
-        let maxIndex = checkboxes.length;
-        let randomPositionPrompter = getRandomInt(0, maxIndex);
-        inviteFriendRequest.roles[randomPositionPrompter] = "Prompter";
-    }
-
-    //alert("Array: " + inviteFriendRequest.roles);
-    sessionStorage.setItem("inviteFriendRequest", JSON.stringify(inviteFriendRequest));
-}
 
 function storeInvitation(accepted, inviteId, invitedAsFriend)
 {

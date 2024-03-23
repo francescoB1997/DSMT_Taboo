@@ -20,7 +20,13 @@ websocket_handle(Frame = {text, JsonMsg}, State = {Username, Role, FriendList, G
 
             UserAction == <<"send_msg_to_friends">> ->
                 S = player_handler:send_msg_to_friends(DecodedJson, State),
-                {Frame, S}
+                {Frame, S};
+
+            UserAction == <<"wait">> ->
+                %% Defininire la waitFunction
+                %%{Frame, S};
+
+
         end,
             %true -> io:format("[Taboo WebSocket Handler]: UserAction non riconosciuta -> ~p~n", [UserAction])
 		%%	UserAction == <<"word">> ->
@@ -36,5 +42,5 @@ websocket_handle(Frame = {text, JsonMsg}, State = {Username, Role, FriendList, G
 
 
 	websocket_info( {msgFromFriend, MsgFromFriend}, State) ->
-    	JsonMessage = jsx:encode([{<<"type">>, msgFromFriend}, {<<"msg">>, MsgFromFriend}]),
+    	JsonMessage = jsx:encode([{<<"action">>, msgFromFriend}, {<<"msg">>, MsgFromFriend}]),
     	{[{text, JsonMessage}], State}.

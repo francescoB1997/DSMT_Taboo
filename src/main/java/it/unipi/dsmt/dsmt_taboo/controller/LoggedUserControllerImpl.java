@@ -197,7 +197,7 @@ public class LoggedUserControllerImpl implements LoggedUserControllerInterface
             else // Else, if the gameId is already setted, then it means the Rival sent this POST
             {
                 System.out.print("<R> ");
-                responseMessage = new ServerResponseDTO<>("correct rival invite");
+                responseMessage = new ServerResponseDTO<>(request.getGameId());
                 invites.removeIf((invite ->  invite.getGameId().equals(request.getGameId()))); // remove the incomplete invite
                 invites.forEach(invites ->
                 {
@@ -301,11 +301,14 @@ public class LoggedUserControllerImpl implements LoggedUserControllerInterface
             PendingMatch pendingMatch = pendingMatchMap.get(replyInvite.getGameId());
             if(pendingMatch != null)
             {
-                MatchDTO matchDTO = new MatchDTO(replyInvite.getGameId(), pendingMatch.getInviterTeamMember(),
-                        pendingMatch.getRivalsTeamMember());
+                MatchDTO matchDTO = new MatchDTO(replyInvite.getGameId(),
+                        pendingMatch.getInviterTeamMember(), r.getRoles(),
+                        pendingMatch.getRivalsTeamMember(), r.getRivalsRoles());
 
-                System.out.println("matchDTO = { InviterTeam = [ " + pendingMatch.getInviterTeamMember() + " ] \nRivalTeam = [ " + pendingMatch.getRivalsTeamMember() + " ]}");
-
+                System.out.println("matchDTO = { InviterTeam = [ " + matchDTO.getInviterTeam() + " ]\n" +
+                        "InviterTeamRoles=" + matchDTO.getRolesInviterTeam() + "]\n" +
+                        "RivalTeam = [ " + matchDTO.getRivalTeam() +
+                        "RivalTeamRoles= [ " + matchDTO.getRolesRivalTeam() + " ]}");
                 MatchDTO returned = runningMatch.putIfAbsent(replyInvite.getGameId(), matchDTO); // Il returned è solo per DGB
 
                 // -------------------- ONLY FOR DEBUG --------------------

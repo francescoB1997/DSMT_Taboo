@@ -38,14 +38,14 @@ function sendInitMsg()
 
     let myRole = sessionStorage.getItem("myRole");
     let matchJSON = sessionStorage.getItem("match");
-    //alert("matchJSON = " + matchJSON );~
     let match = JSON.parse(matchJSON);
 
-    let myTeam = extractMyTeam(match);
-    if(myTeam != null) {
+    let friendList = extractMyTeam(myRole, match);
+    if (friendList != null)
+    {
         let startMsg = {
             action: "start",
-            friendList: myTeam,
+            friendList: friendList,
             role: myRole
         };
         socket.send(JSON.stringify(startMsg));
@@ -54,16 +54,60 @@ function sendInitMsg()
 
 function msgOnSocketRecevedListener (event)
 {
-    alert("Ho ricevuto: " + event.data);
+    //alert("Ho ricevuto: " + event.data);
+    objectFromErlang = JSON.parse(event.data);
+    switch(objectFromErlang.action)
+    {
+        case "msgFromFriend":
+            alert("Message from friend: " + objectFromErlang.msg);
+            startWait();
+            break;
+        case "tabooCard":
+            alert("Ricevuta tabooCard: " + objectFromErlang.msg);
+            startWait();
+            break;
+        default:
+            break;
+    }
+
+
+
 }
 
-function extractMyTeam(match)
+function extractMyTeam(myRole, match)
 {
-    if(match.inviterTeam[0] === username)
-        return match.inviterTeam.filter( (friendUsername) => friendUsername !== username);
+    for(const user of match.inviterTeam )
+    {
+        if (user === username)
+        {
+            if (myRole === "Guesser")
+            {
+                let indexPrompter;
+                for (indexPrompter = 0; indexPrompter < match.rolesInviterTeam.length; indexPrompter++)
+                    if (match.rolesInviterTeam[indexPrompter] === "Prompter")
+                        break;
 
-    if(match.rivalTeam[0] === username)
-        return match.rivalTeam.filter( (friendUsername) => friendUsername !== username);
+                return [match.inviterTeam[indexPrompter]];
+            }
+            else
+                return match.inviterTeam.filter((friendUsername) => friendUsername !== username);
+        }
+    }
+
+    for(const user of match.rivalTeam )
+    {
+        if (user === username) {
+            if (myRole === "Guesser") {
+                let indexPrompter;
+                for (indexPrompter = 0; indexPrompter < match.rolesRivalTeam.length; indexPrompter++)
+                    if (match.rolesRivalTeam[indexPrompter] === "Prompter")
+                        break;
+
+                return [match.rivalTeam[indexPrompter]];
+            } else
+                return match.rivalTeam.filter((friendUsername) => friendUsername !== username);
+        }
+    }
 
     return null;
 }
@@ -80,4 +124,15 @@ function onClickListenerBtnSendMsg()
             msg : genericMsg
         }
     socket.send(JSON.stringify(actionGenericMsg));
+}
+
+function startWait()
+{
+    let waitMessage = {
+        action : "wait"
+    };
+    if (socket.readyState === WebSocket.OPEN)
+        socket.send(JSON.stringify(waitMessage));
+    else
+        console.error("Connessione WebSocket non aperta.");
 }

@@ -4,17 +4,21 @@ let checkedCheckbox = [];
 
 $(document).ready(function ()
 {
+
     if(!checkLogin())
     {
         location.href = "../";
         return;
     }
+
+
     if(!sessionStorage.getItem("invite"))
     {
         alert("invite object non è in SessionStorage -> Non sei stato invitato ma vuoi fare il furbo!");
         location.href = "../";
         return;
     }
+
     invite = JSON.parse(sessionStorage.getItem("invite"));
     ajaxGetFriendList();
     loadInviterTeam();
@@ -40,10 +44,11 @@ function onClickImgRefresh()
 
 function onClickListenerBtnInvite()
 {
+    invite.rivalsRoles = [];
     let checkboxes = document.querySelectorAll("input[type='checkbox']:checked");
-    invite.yourTeam.push(username); // Push my username first
+    //invite.rivals.push(username); // Push my username first
     for (let i = 0 ; i < checkboxes.length; i++)
-        invite.yourTeam.push(checkboxes[i].id.toString().split('&')[1]);
+        invite.rivals.push(checkboxes[i].id.toString().split('&')[1]);
 
     let myRole;
     let radioList = document.querySelectorAll('input[name="myRole"]');
@@ -55,18 +60,20 @@ function onClickListenerBtnInvite()
             break;
         }
     }
-    invite.roles.push(myRole); // Push my role first
+    sessionStorage.setItem("myRole", myRole);
+    invite.rivalsRoles.push(myRole); // Push my role first
     for(let checkbox of checkboxes) // foreach checked friend, fill the roles array
     {
-        invite.roles.push("Guesser");
+        invite.rivalsRoles.push("Guesser");
     }
 
     if(myRole !== "Prompter")// if me is not the Prompter, then it have to be randomly chosen from my friends
     {
         let maxIndex = checkboxes.length;
         let randomPositionPrompter = getRandomInt(0, maxIndex);
-        invite.roles[randomPositionPrompter] = "Prompter";
+        invite.rivalsRoles[randomPositionPrompter] = "Prompter";
     }
+    alert("invite: " + JSON.stringify(invite));
 
     //alert("Array: " + inviteFriendRequest.roles);
     //sessionStorage.setItem("inviteFriendRequest", JSON.stringify(invite));
@@ -234,4 +241,15 @@ function loadInviterTeam()
 
         inviterFriendsTable.append(trInviterFriend);
     })
+}
+
+function getRandomInt(min , max)
+{
+    let randomInt = 0;
+    while(randomInt === 0) {
+        min = Math.ceil(min);
+        max = Math.floor(max);
+        randomInt = Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+    return randomInt;
 }

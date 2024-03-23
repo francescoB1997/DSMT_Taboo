@@ -17,7 +17,7 @@ login (DecodedJson, State = {User, Role, Friends, GenericMessage, TabooWord}) ->
 start (DecodedJson, State = {Username, MyRole, Friends, GenericMessage, TabooCardEmpty}) ->
     FriendList = maps:get(<<"friendList">>, DecodedJson),
     Role = maps:get(<<"role">>, DecodedJson),
-    {Resp, TabooCard} = getRandomTabooCard(),
+    {Resp, TabooCard} = getUpdatedState(Role),
     io:format("PlayerHandler: Username=~p Role=~p FriendList=[~p] TabooCard=[~p] ~n", [Username, Role, FriendList, TabooCard]),
     {Resp, {Username, Role, FriendList, GenericMessage, TabooCard} }.
 
@@ -28,20 +28,15 @@ send_msg_to_friends( DecodedJson, State = {Username, Role, FriendList, GenericMe
     io:format("send_msg_to_friends Prompter ~p~n", [FriendList]),
     {Username, Role, FriendList, GenericMessage, TabooCard}; % aggiungere nello stato anche il Taboo
 
-send_msg_to_friends( DecodedJson, State = {Username, Role, PrompterFriend, GenericMessage, TabooCard} ) when Role == <<"Guesser">> ->
+send_msg_to_friends( DecodedJson, State = {Username, Role, [PrompterFriend | _], GenericMessage, TabooCard} ) when Role == <<"Guesser">> ->
     %% if the GenericMessage came from Guesser, then the Msg must be unicasted to the PrompterFriend
     MessageToFriend = maps:get(<<"msg">>, DecodedJson),
     send_msg(MessageToFriend, PrompterFriend),
     io:format("send_msg_to_friends Guesser ~n"),
-    {Username, Role, PrompterFriend, GenericMessage, TabooCard};
-
-send_msg_to_friends( DecodedJson, State = {Username, MyRole, FriendList, GenericMessage, TabooCard} ) ->
-    io:format("******************************** send_msg_to_friends ALTERNATIVA -> [~p] ~n", [MyRole]),
-    {Username, MyRole, FriendList, GenericMessage, TabooCard}.
-
+    {Username, Role, PrompterFriend, GenericMessage, TabooCard}.
 
 send_msg(Msg, Friend) ->
-    io:format("send_msg(~p, ~p)", [Msg, Friend]),
+    io:format("send_msg(~p, ~p) --> ", [Msg, Friend]),
     PidFriend = global:whereis_name(Friend),
     case(is_pid(PidFriend)) of
         true ->
@@ -49,10 +44,16 @@ send_msg(Msg, Friend) ->
             io:format(" PID_AMICO = ~p~n", [PidFriend]),
             send_ok;
         false ->
+            io:format("Ramo false send_msg  ~n"),
             send_no
     end.
 
+getUpdatedState(MyRole) when MyRole == <<"Prompter">> ->
+    getRandomTabooCard();
 
+getUpdatedState(_) ->
+    JsonMessage = jsx:encode([{<<"action">>, ignore}, {<<"msg">>, ""}]),
+    { {text, JsonMessage} , []}.
 
 getRandomTabooCard() ->
     TabooCard = [
@@ -63,7 +64,7 @@ getRandomTabooCard() ->
         [<<"Camera">>, <<"Photos">>, <<"Pictures">>, <<"Snapshot">>, <<"Travel">>, <<"Memories">>]
     ],
     RandomIndex = getRandomInt(length(TabooCard)),
-    JsonMessage = jsx:encode([{<<"type">>, tabooCard}, {<<"tabooCard">>, lists:nth(RandomIndex, TabooCard)}]),
+    JsonMessage = jsx:encode([{<<"action">>, tabooCard}, {<<"msg">>, lists:nth(RandomIndex, TabooCard)}]),
     { {text, JsonMessage} , TabooCard }.
 
 getRandomInt(Max) ->

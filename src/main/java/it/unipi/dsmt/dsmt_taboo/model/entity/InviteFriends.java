@@ -11,7 +11,7 @@ public class InviteFriends {
     private ArrayList<String> yourTeam; // This is the inviter team
     private ArrayList<String> roles;    // This represents the inviter team roles
     private ArrayList<String> rivals;   // This is the rivals team
-
+    private ArrayList<String> rivalsRoles;
 
     public InviteFriends(InviteFriendRequestDTO inviteFriend)
     {
@@ -20,6 +20,7 @@ public class InviteFriends {
         this.yourTeam = inviteFriend.getYourTeam();
         this.roles = inviteFriend.getRoles();
         this.rivals = inviteFriend.getRivals();
+        this.rivalsRoles = inviteFriend.getRivalsRoles();
     }
 
     public String getGameId() { return this.gameId; }
@@ -55,4 +56,12 @@ public class InviteFriends {
     public ArrayList<String> getRivals() {return this.rivals; }
 
     public void setRivals(ArrayList<String> rivals) { this.rivals = rivals; }
+
+    public ArrayList<String> getRivalsRoles() {
+        return this.rivalsRoles;
+    }
+
+    public void setRivalsRoles(ArrayList<String> rivalsRoles) {
+        this.rivalsRoles = rivalsRoles;
+    }
 }

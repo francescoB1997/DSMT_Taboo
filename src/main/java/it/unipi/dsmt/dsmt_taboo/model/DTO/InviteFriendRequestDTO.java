@@ -11,17 +11,19 @@ public class InviteFriendRequestDTO //InviteFriendRequestDTO
     private ArrayList<String> roles;
     private String userInviter;
     private ArrayList<String> rivals;
-
+    private ArrayList<String> rivalsRoles;
     public InviteFriendRequestDTO() {}
 
     public InviteFriendRequestDTO(String gameId, ArrayList<String> yourTeam,
-                                  ArrayList<String> roles, String userInviter,  ArrayList<String> userRival)
+                                  ArrayList<String> roles, String userInviter,
+                                  ArrayList<String> userRival, ArrayList<String> rivalsRoles)
     {
         this.gameId = gameId;
         this.yourTeam = yourTeam;
         this.roles = roles;
         this.userInviter = userInviter;
         this.rivals = userRival;
+        this.rivalsRoles = rivalsRoles;
     }
 
     public String getGameId() { return this.gameId;}
@@ -37,7 +39,7 @@ public class InviteFriendRequestDTO //InviteFriendRequestDTO
     }
 
     public ArrayList<String> getYourTeam() {
-        return yourTeam;
+        return this.yourTeam;
     }
 
     public void setYourTeam(ArrayList<String> yourTeam) {
@@ -80,6 +82,16 @@ public class InviteFriendRequestDTO //InviteFriendRequestDTO
         System.out.println(" }");
         System.out.print("Team Red { ");
         this.rivals.forEach(rivalUsername -> System.out.print("[" + rivalUsername + "] "));
+        System.out.println();
+        this.rivalsRoles.forEach(rivalRole -> System.out.print("[" + rivalRole + "]"));
         System.out.println(" }");
+    }
+
+    public ArrayList<String> getRivalsRoles() {
+        return this.rivalsRoles;
+    }
+
+    public void setRivalsRoles(ArrayList<String> rivalsRoles) {
+        this.rivalsRoles = rivalsRoles;
     }
 }

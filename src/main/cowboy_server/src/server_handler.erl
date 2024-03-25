@@ -23,9 +23,15 @@ websocket_handle(Frame = {text, JsonMsg}, State = {Username, Role, FriendList, G
                 {Frame, S};
 
             UserAction == <<"wait">> ->
-                %% Defininire la waitFunction
-                %%{Frame, S};
+                player_handler:startWait(State);
+                %% Bisogna bloccare i processi Erlang in delle receive, altrimenti vengono terminati da Cowboy encode
+                %% quindi quando poi il Prompter tenta di inviare un messaggio in broadcast, NON ci riesce, perchè
+                %% gli fallisce la where_is,e quindi la send non funzionerà.encode
+                %% Se invece si fa in modo che i processi erlang vengano "bloccati" in delle receive, il processo
+                %% dovrebbe rimanere in vita, e quindi, poterà poi essere raggiungibile da chiunque gli fa una send !
 
+            UserAction == <<"keepAlive">> ->
+                {Frame, State}
 
         end,
             %true -> io:format("[Taboo WebSocket Handler]: UserAction non riconosciuta -> ~p~n", [UserAction])
@@ -43,4 +49,8 @@ websocket_handle(Frame = {text, JsonMsg}, State = {Username, Role, FriendList, G
 
 	websocket_info( {msgFromFriend, MsgFromFriend}, State) ->
     	JsonMessage = jsx:encode([{<<"action">>, msgFromFriend}, {<<"msg">>, MsgFromFriend}]),
-    	{[{text, JsonMessage}], State}.
+    	{[{text, JsonMessage}], State};
+
+    websocket_info(Info, State) ->
+    	io:format("Taboo:websocket_info(Info, State) => Received info ~p~n", [Info]),
+    	{ok, State}.

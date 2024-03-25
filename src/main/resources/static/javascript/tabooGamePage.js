@@ -10,13 +10,23 @@ $(document).ready(function ()
         return;
     }
 
-    socket = new WebSocket("ws://" + IP_SERVER_ERLANG + "/erlServer");
-    socket.addEventListener("open", (event) => { sendInitMsg(); });
-    socket.addEventListener("message", (event) => { msgOnSocketRecevedListener(event); });
+    initAndConfigureSocket(undefined);
 
     document.getElementById("btnSendMsg").onclick = function (e ) { onClickListenerBtnSendMsg(); }
 
 });
+
+function initAndConfigureSocket(event)
+{
+    socket = new WebSocket("ws://" + IP_SERVER_ERLANG + "/erlServer");
+    socket.addEventListener("open", (event) => { sendInitMsg(); });
+    socket.addEventListener("message", (event) => { msgOnSocketRecevedListener(event); });
+
+    socket.addEventListener("close", (event) => {
+        console.log("socket chiuso, riapro");
+        initAndConfigureSocket(event);
+    });
+}
 
 function checkLogin()
 {
@@ -50,6 +60,8 @@ function sendInitMsg()
         };
         socket.send(JSON.stringify(startMsg));
     }
+//    if(myRole === "Guesser")
+//        startWait();
 }
 
 function msgOnSocketRecevedListener (event)
@@ -60,21 +72,23 @@ function msgOnSocketRecevedListener (event)
     {
         case "msgFromFriend":
             alert("Message from friend: " + objectFromErlang.msg);
-            startWait();
+            //startWait();
             break;
         case "tabooCard":
             alert("Ricevuta tabooCard: " + objectFromErlang.msg);
-            startWait();
+            //startWait();
+            break;
+        case "keepAlive":
+            console.log("Ho ricevuto un ACK keepAlive");
             break;
         default:
             break;
     }
-
-
-
 }
 
 function extractMyTeam(myRole, match)
+// This function returns the teamMembers of this user. In details filters-out this user from its own team, beacuse
+// this information is used by ErlangServer to know the friend in team in order to send they one message of this user.
 {
     for(const user of match.inviterTeam )
     {
@@ -131,8 +145,10 @@ function startWait()
     let waitMessage = {
         action : "wait"
     };
-    if (socket.readyState === WebSocket.OPEN)
+    if (socket.readyState === WebSocket.OPEN) {
         socket.send(JSON.stringify(waitMessage));
+        console.log("Send wait OK");
+    }
     else
-        console.error("Connessione WebSocket non aperta.");
+        alert("Connessione WebSocket non aperta.");
 }

@@ -1,5 +1,5 @@
 -module(player_handler).
--export([login/2, start/2, send_msg_to_friends/2]).
+-export([login/2, start/2, send_msg_to_friends/2, startWait/1]).
 
 login (DecodedJson, State = {User, Role, Friends, GenericMessage, TabooWord}) ->
     Username = maps:get(<<"username">>, DecodedJson),
@@ -46,6 +46,14 @@ send_msg(Msg, Friend) ->
         false ->
             io:format("Ramo false send_msg  ~n"),
             send_no
+    end.
+
+startWait(State = { Username, Role, FriendList, GenericMessage, TabooCard }) ->
+    receive
+      { msgFromFriend, MsgFromFriend} ->
+          io:format("receive di [~p]: msgFromFriend [~p]~n", [Username, MsgFromFriend]),
+          JsonMessage = jsx:encode([{<<"action">>, msgFromFriend}, {<<"msg">>, MsgFromFriend}]),
+          {{text, JsonMessage}, State}
     end.
 
 getUpdatedState(MyRole) when MyRole == <<"Prompter">> ->

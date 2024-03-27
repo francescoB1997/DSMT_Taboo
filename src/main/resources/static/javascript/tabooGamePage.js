@@ -220,8 +220,8 @@ function changeRoles()
 
         sessionStorage.setItem("myRole", myRole);
     }
-    else
-    {
+    else {
+
         const posPrompter = match.rivalTeam.findIndex(role => role === 'Prompter');
 
         if (posPrompter !== -1)

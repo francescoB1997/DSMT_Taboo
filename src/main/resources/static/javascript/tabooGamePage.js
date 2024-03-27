@@ -26,6 +26,7 @@ function initAndConfigureSocket(event)
 
     socket.addEventListener("close", (event) => {
         console.log("socket chiuso, riapro");
+        changeRoles();
         initAndConfigureSocket(event);
     });
 }
@@ -194,5 +195,44 @@ function findMyPrompter()
                 return [match.rivalTeam[indexPrompter]];
             }
         }
+    }
+}
+
+function changeRoles()
+{
+    sessionStorage.removeItem("myRole");
+    let matchJSON = sessionStorage.getItem("match");
+    let match = JSON.parse(matchJSON);
+    let myTeam = sessionStorage.getItem("myTeam");
+
+    if(myTeam === "inviterTeam"){
+
+        const posPrompter = match.rolesInviterTeam.findIndex(role => role === 'Prompter');
+
+        if (posPrompter !== -1)
+        {
+            const newPosPrompter = (posPrompter + 1) % match.rolesInviterTeam.length;
+            match.rolesInviterTeam[posPrompter] = 'Guesser';
+            match.rolesInviterTeam[newPosPrompter] = 'Prompter';
+        }
+        const myPosInTeam = match.inviterTeam.findIndex(name => name === username);
+        myRole =  match.rolesInviterTeam[myPosInTeam];
+
+        sessionStorage.setItem("myRole", myRole);
+    }
+    else
+    {
+        const posPrompter = match.rivalTeam.findIndex(role => role === 'Prompter');
+
+        if (posPrompter !== -1)
+        {
+            const newPosPrompter = (posPrompter + 1) % match.rivalTeam.length;
+            match.rivalTeam[posPrompter] = 'Guesser';
+            match.rivalTeam[newPosPrompter] = 'Prompter';
+        }
+        const myPosInTeam = match.rivalTeam.findIndex(name => name === username);
+        myRole =  match.rivalTeam[myPosInTeam];
+
+        sessionStorage.setItem("myRole", myRole);
     }
 }

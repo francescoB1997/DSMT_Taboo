@@ -1,6 +1,7 @@
 const username = sessionStorage.getItem("userLog");
 const IP_SERVER_ERLANG = "127.0.0.1:8090";
 let socket;
+let myRole;
 
 $(document).ready(function ()
 {
@@ -13,6 +14,7 @@ $(document).ready(function ()
     initAndConfigureSocket(undefined);
 
     document.getElementById("btnSendMsg").onclick = function (e ) { onClickListenerBtnSendMsg(); }
+    document.getElementById("btnGuess").onclick = function (e ) { onClickListenerBtnGuess(); }
 
 });
 
@@ -46,7 +48,7 @@ function sendInitMsg()
     };
     socket.send(JSON.stringify(loginMsg));
 
-    let myRole = sessionStorage.getItem("myRole");
+    myRole = sessionStorage.getItem("myRole");
     let matchJSON = sessionStorage.getItem("match");
     let match = JSON.parse(matchJSON);
 
@@ -60,8 +62,6 @@ function sendInitMsg()
         };
         socket.send(JSON.stringify(startMsg));
     }
-//    if(myRole === "Guesser")
-//        startWait();
 }
 
 function msgOnSocketRecevedListener (event)
@@ -72,14 +72,13 @@ function msgOnSocketRecevedListener (event)
     {
         case "msgFromFriend":
             alert("Message from friend: " + objectFromErlang.msg);
-            //startWait();
             break;
         case "tabooCard":
             alert("Ricevuta tabooCard: " + objectFromErlang.msg);
-            //startWait();
             break;
-        case "keepAlive":
-            console.log("Ho ricevuto un ACK keepAlive");
+        case "attemptGuessWord":
+            if(myRole==="Guesser")
+                alert("Il Prompter mi ha detto: " + ((objectFromErlang.msg===true) ? "Indovinato" : "Sbagliato"));
             break;
         default:
             break;
@@ -94,7 +93,7 @@ function extractMyTeam(myRole, match)
     {
         if (user === username)
         {
-            if (myRole === "Guesser")
+            /*if (myRole === "Guesser")
             {
                 let indexPrompter;
                 for (indexPrompter = 0; indexPrompter < match.rolesInviterTeam.length; indexPrompter++)
@@ -103,7 +102,7 @@ function extractMyTeam(myRole, match)
 
                 return [match.inviterTeam[indexPrompter]];
             }
-            else
+            else*/
                 return match.inviterTeam.filter((friendUsername) => friendUsername !== username);
         }
     }
@@ -111,6 +110,7 @@ function extractMyTeam(myRole, match)
     for(const user of match.rivalTeam )
     {
         if (user === username) {
+            /*
             if (myRole === "Guesser") {
                 let indexPrompter;
                 for (indexPrompter = 0; indexPrompter < match.rolesRivalTeam.length; indexPrompter++)
@@ -118,7 +118,7 @@ function extractMyTeam(myRole, match)
                         break;
 
                 return [match.rivalTeam[indexPrompter]];
-            } else
+            } else*/
                 return match.rivalTeam.filter((friendUsername) => friendUsername !== username);
         }
     }
@@ -136,19 +136,63 @@ function onClickListenerBtnSendMsg()
         {
             action : "send_msg_to_friends",
             msg : genericMsg
-        }
+        };
     socket.send(JSON.stringify(actionGenericMsg));
 }
 
-function startWait()
+function onClickListenerBtnGuess()
 {
-    let waitMessage = {
-        action : "wait"
-    };
-    if (socket.readyState === WebSocket.OPEN) {
-        socket.send(JSON.stringify(waitMessage));
-        console.log("Send wait OK");
+    let attemptedWord = document.getElementById("txtboxGenericMsg").value;
+    if(attemptedWord === "")
+        return;
+
+    if(attemptedWord.includes(" "))
+    {
+        document.getElementById("txtboxGenericMsg").value = "";
+        alert("WARNING\nYou can only send one word");
+        return;
     }
-    else
-        alert("Connessione WebSocket non aperta.");
+
+    let actionGuess =
+        {
+            action : "attemptGuessWord",
+            word : attemptedWord
+        };
+    socket.send(JSON.stringify(actionGuess));
+}
+
+function findMyPrompter()
+{
+    //let myRole = sessionStorage.getItem("myRole");
+    let matchJSON = sessionStorage.getItem("match");
+    let match = JSON.parse(matchJSON);
+    for(const user of match.inviterTeam )
+    {
+        if (user === username)
+        {
+            if (myRole === "Guesser")
+            {
+                let indexPrompter;
+                for (indexPrompter = 0; indexPrompter < match.rolesInviterTeam.length; indexPrompter++)
+                    if (match.rolesInviterTeam[indexPrompter] === "Prompter")
+                        break;
+
+                return [match.inviterTeam[indexPrompter]];
+            }
+        }
+    }
+
+    for(const user of match.rivalTeam ) {
+        if (user === username)
+        {
+            if (myRole === "Guesser") {
+                let indexPrompter;
+                for (indexPrompter = 0; indexPrompter < match.rolesRivalTeam.length; indexPrompter++)
+                    if (match.rolesRivalTeam[indexPrompter] === "Prompter")
+                        break;
+
+                return [match.rivalTeam[indexPrompter]];
+            }
+        }
+    }
 }

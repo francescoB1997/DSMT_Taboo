@@ -6,7 +6,7 @@ init (Req, State) -> { cowboy_websocket, Req, { "", "", [], "" , [] } }.
 
 
 websocket_handle(Frame = {text, JsonMsg}, State = {Username, Role, FriendList, GenericMessage, TabooCard}) ->
-	%io:format("[Taboo WebSocket Handler]: => Frame: ~p, State: ~p~n", [JsonMsg, State]),
+%io:format("[Taboo WebSocket Handler]: => Frame: ~p, State: ~p~n", [JsonMsg, State]),
 	DecodedJson = jsx:decode(JsonMsg),
 	UserAction = maps:get(<<"action">>, DecodedJson),
 	{Response, UpdatedState} =
@@ -22,16 +22,8 @@ websocket_handle(Frame = {text, JsonMsg}, State = {Username, Role, FriendList, G
                 S = player_handler:send_msg_to_friends(DecodedJson, State),
                 {Frame, S};
 
-            UserAction == <<"wait">> ->
-                player_handler:startWait(State);
-                %% Bisogna bloccare i processi Erlang in delle receive, altrimenti vengono terminati da Cowboy encode
-                %% quindi quando poi il Prompter tenta di inviare un messaggio in broadcast, NON ci riesce, perchè
-                %% gli fallisce la where_is,e quindi la send non funzionerà.encode
-                %% Se invece si fa in modo che i processi erlang vengano "bloccati" in delle receive, il processo
-                %% dovrebbe rimanere in vita, e quindi, poterà poi essere raggiungibile da chiunque gli fa una send !
-
-            UserAction == <<"keepAlive">> ->
-                {Frame, State}
+            UserAction == <<"attemptGuessWord">> ->
+                player_handler:attemptGuessWord(DecodedJson, State)
 
         end,
             %true -> io:format("[Taboo WebSocket Handler]: UserAction non riconosciuta -> ~p~n", [UserAction])
@@ -50,6 +42,20 @@ websocket_handle(Frame = {text, JsonMsg}, State = {Username, Role, FriendList, G
 	websocket_info( {msgFromFriend, MsgFromFriend}, State) ->
     	JsonMessage = jsx:encode([{<<"action">>, msgFromFriend}, {<<"msg">>, MsgFromFriend}]),
     	{[{text, JsonMessage}], State};
+
+    websocket_info( {attemptGuessWord, RequesterPID, AttemptedWord},
+                    State = {Username, Role, FriendList, GenericMessage, [AttemptedWord, TabooWord1, TabooWord2, TabooWord3, TabooWord4, TabooWord5]} ) ->
+        Result = true,
+        RequesterPID ! {resultAttemptGuessWord, Result},
+        JsonMessage = jsx:encode([{<<"action">>, attemptGuessWord}, {<<"msg">>, true}]),
+        {[{text, JsonMessage}], State};
+
+    websocket_info( {attemptGuessWord, RequesterPID, AttemptedWord},
+                    State = {Username, Role, FriendList, GenericMessage, [Word, TabooWord1, TabooWord2, TabooWord3, TabooWord4, TabooWord5]} ) ->
+        Result = false,
+        RequesterPID ! {resultAttemptGuessWord, Result},
+        JsonMessage = jsx:encode([{<<"action">>, attemptGuessWord}, {<<"msg">>, false}]),
+        {[{text, JsonMessage}], State};
 
     websocket_info(Info, State) ->
     	io:format("Taboo:websocket_info(Info, State) => Received info ~p~n", [Info]),

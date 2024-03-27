@@ -222,16 +222,16 @@ function changeRoles()
     }
     else {
 
-        const posPrompter = match.rivalTeam.findIndex(role => role === 'Prompter');
+        const posPrompter = match.rolesRivalTeam.findIndex(role => role === 'Prompter');
 
         if (posPrompter !== -1)
         {
-            const newPosPrompter = (posPrompter + 1) % match.rivalTeam.length;
-            match.rivalTeam[posPrompter] = 'Guesser';
-            match.rivalTeam[newPosPrompter] = 'Prompter';
+            const newPosPrompter = (posPrompter + 1) % match.rolesRivalTeam.length;
+            match.rolesRivalTeam[posPrompter] = 'Guesser';
+            match.rolesRivalTeam[newPosPrompter] = 'Prompter';
         }
         const myPosInTeam = match.rivalTeam.findIndex(name => name === username);
-        myRole =  match.rivalTeam[myPosInTeam];
+        myRole =  match.rolesRivalTeam[myPosInTeam];
 
         sessionStorage.setItem("myRole", myRole);
     }

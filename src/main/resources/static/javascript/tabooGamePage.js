@@ -53,7 +53,7 @@ function sendInitMsg()
     let matchJSON = sessionStorage.getItem("match");
     let match = JSON.parse(matchJSON);
 
-    let friendList = extractMyTeam(myRole, match);
+    let friendList = extractMyTeam(match);
     if (friendList != null)
     {
         let startMsg = {
@@ -86,7 +86,7 @@ function msgOnSocketRecevedListener (event)
     }
 }
 
-function extractMyTeam(myRole, match)
+function extractMyTeam(match)
 // This function returns the teamMembers of this user. In details filters-out this user from its own team, beacuse
 // this information is used by ErlangServer to know the friend in team in order to send they one message of this user.
 {
@@ -94,6 +94,7 @@ function extractMyTeam(myRole, match)
     {
         if (user === username)
         {
+            sessionStorage.setItem("myTeam", "inviterTeam");
             /*if (myRole === "Guesser")
             {
                 let indexPrompter;
@@ -110,7 +111,9 @@ function extractMyTeam(myRole, match)
 
     for(const user of match.rivalTeam )
     {
-        if (user === username) {
+        if (user === username)
+        {
+            sessionStorage.setItem("myTeam", "rivalTeam");
             /*
             if (myRole === "Guesser") {
                 let indexPrompter;

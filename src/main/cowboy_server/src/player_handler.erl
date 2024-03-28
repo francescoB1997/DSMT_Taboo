@@ -84,7 +84,7 @@ getRandomInt(Max) ->
 
 waitResult(MyPrompterPID, AttemptedWord) ->
     MyPrompterPID ! {attemptGuessWord, self(), AttemptedWord},
-    receive
+    receive % mettere una after
         {resultAttemptGuessWord, Result} ->
             io:format("checkWord result: ~p~n", [Result]),
             Result;

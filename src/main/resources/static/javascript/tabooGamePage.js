@@ -1,7 +1,8 @@
 const username = sessionStorage.getItem("userLog");
 const IP_SERVER_ERLANG = "127.0.0.1:8090";
+let myRole = sessionStorage.getItem("myRole");
 let socket;
-let myRole;
+
 
 $(document).ready(function ()
 {
@@ -14,8 +15,15 @@ $(document).ready(function ()
     initAndConfigureSocket(undefined);
 
     document.getElementById("btnSendMsg").onclick = function (e ) { onClickListenerBtnSendMsg(); }
-    document.getElementById("btnGuess").onclick = function (e ) { onClickListenerBtnGuess(); }
-
+    if(myRole === "Prompter")
+    {
+        document.getElementById("btnGuess").disabled = true;
+        // Aggiungere una classe particolare X alle classi del btnGuess.
+        // Ti aggiungi nel CSS quella classe X, per la quale il btn viene mostrato come viola scuro per indicare
+        // che non è cliccabile.
+    }
+    else
+        document.getElementById("btnGuess").onclick = function (e ) { onClickListenerBtnGuess(); }
 });
 
 function initAndConfigureSocket(event)
@@ -95,17 +103,7 @@ function extractMyTeam(match)
         if (user === username)
         {
             sessionStorage.setItem("myTeam", "inviterTeam");
-            /*if (myRole === "Guesser")
-            {
-                let indexPrompter;
-                for (indexPrompter = 0; indexPrompter < match.rolesInviterTeam.length; indexPrompter++)
-                    if (match.rolesInviterTeam[indexPrompter] === "Prompter")
-                        break;
-
-                return [match.inviterTeam[indexPrompter]];
-            }
-            else*/
-                return match.inviterTeam.filter((friendUsername) => friendUsername !== username);
+            return match.inviterTeam.filter((friendUsername) => friendUsername !== username);
         }
     }
 
@@ -114,16 +112,7 @@ function extractMyTeam(match)
         if (user === username)
         {
             sessionStorage.setItem("myTeam", "rivalTeam");
-            /*
-            if (myRole === "Guesser") {
-                let indexPrompter;
-                for (indexPrompter = 0; indexPrompter < match.rolesRivalTeam.length; indexPrompter++)
-                    if (match.rolesRivalTeam[indexPrompter] === "Prompter")
-                        break;
-
-                return [match.rivalTeam[indexPrompter]];
-            } else*/
-                return match.rivalTeam.filter((friendUsername) => friendUsername !== username);
+            return match.rivalTeam.filter((friendUsername) => friendUsername !== username);
         }
     }
 
@@ -164,43 +153,6 @@ function onClickListenerBtnGuess()
         };
     socket.send(JSON.stringify(actionGuess));
 }
-
-function findMyPrompter()
-{
-    //let myRole = sessionStorage.getItem("myRole");
-    let matchJSON = sessionStorage.getItem("match");
-    let match = JSON.parse(matchJSON);
-    for(const user of match.inviterTeam )
-    {
-        if (user === username)
-        {
-            if (myRole === "Guesser")
-            {
-                let indexPrompter;
-                for (indexPrompter = 0; indexPrompter < match.rolesInviterTeam.length; indexPrompter++)
-                    if (match.rolesInviterTeam[indexPrompter] === "Prompter")
-                        break;
-
-                return [match.inviterTeam[indexPrompter]];
-            }
-        }
-    }
-
-    for(const user of match.rivalTeam ) {
-        if (user === username)
-        {
-            if (myRole === "Guesser") {
-                let indexPrompter;
-                for (indexPrompter = 0; indexPrompter < match.rolesRivalTeam.length; indexPrompter++)
-                    if (match.rolesRivalTeam[indexPrompter] === "Prompter")
-                        break;
-
-                return [match.rivalTeam[indexPrompter]];
-            }
-        }
-    }
-}
-
 function changeRoles()
 {
     sessionStorage.removeItem("myRole");
@@ -208,8 +160,8 @@ function changeRoles()
     let match = JSON.parse(matchJSON);
     let myTeam = sessionStorage.getItem("myTeam");
 
-    if(myTeam === "inviterTeam"){
-
+    if(myTeam === "inviterTeam")
+    {
         const posPrompter = match.rolesInviterTeam.findIndex(role => role === 'Prompter');
 
         if (posPrompter !== -1)
@@ -219,9 +171,7 @@ function changeRoles()
             match.rolesInviterTeam[newPosPrompter] = 'Prompter';
         }
         const myPosInTeam = match.inviterTeam.findIndex(name => name === username);
-        myRole =  match.rolesInviterTeam[myPosInTeam];
-
-        sessionStorage.setItem("myRole", myRole);
+        myRole = match.rolesInviterTeam[myPosInTeam];
     }
     else {
 
@@ -235,7 +185,19 @@ function changeRoles()
         }
         const myPosInTeam = match.rivalTeam.findIndex(name => name === username);
         myRole =  match.rolesRivalTeam[myPosInTeam];
+    }
 
-        sessionStorage.setItem("myRole", myRole);
+    sessionStorage.setItem("myRole", myRole);
+    sessionStorage.setItem("match", JSON.stringify(match));
+
+    if(myRole === "Prompter")
+    {
+        document.getElementById("btnGuess").disabled = true;
+        document.getElementById("btnGuess").onclick = null;
+    }
+    else
+    {
+        document.getElementById("btnGuess").onclick = function (e ) { onClickListenerBtnGuess(); }
+        document.getElementById("btnGuess").disabled = false;
     }
 }

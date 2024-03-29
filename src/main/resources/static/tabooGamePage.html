@@ -10,15 +10,16 @@
     <body>
         <div id="mainContainer">
             <h2>Pagina di gioco</h2>
-            <div id="containerInfoMatch">
-                    <span>
-                        Timer
-                        <img id="hourglassIcon" src="img/hourglass.gif" alt="hourglass icon">
-                    </span>
-                <span>
-                        Username
-                    </span>
+
+            <div id="containerInfoMatch" class="info-match-container">
+                <div class="timer-container">
+                    <span class="timer-label">Timer</span>
+                    <div id="timer" class="timer-value">20</div>
+                    <img id="hourglassIcon" src="img/hourglass.gif" alt="hourglass icon" class="hourglass-icon">
+                </div>
+                <div class="username-container">Username</div>
             </div>
+
             <div id="gameContainer" >
 
                 <div id="containerTableFriend">
@@ -42,7 +43,16 @@
             <input type="text" id="txtboxGenericMsg" class="textboxWordToGuess" placeholder="Insert the word to Guess">
             <button id="btnSendMsg">Send a message</button>
             <button id="btnGuess">Indovina</button>
-            <button id="btnTabooWord"><img src="./img/taboo_text_logo.png" id="img_taboo_text" alt="taboo text"></button>
+            <button id="restart-button">Restart Game</button>
+            <div class="specialBtnContainer">
+                <div class="pass_btn-container">
+                    <button id="pass-button" class="passBtn"><img src="./img/pass.png" id="img_pass_card" alt="pass card"></button>
+                </div>
+                <div class="taboo_btn-container">
+                    <button id="btnTabooWord" class="tabooBtn"><img src="./img/taboo_text_logo.png" id="img_taboo_text" alt="taboo text"></button>
+                </div>
+            </div>
+
         </div>
 
 

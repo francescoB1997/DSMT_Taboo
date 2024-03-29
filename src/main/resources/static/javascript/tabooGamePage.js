@@ -20,11 +20,11 @@ $(document).ready(function ()
     document.getElementById("restart-button").onclick = function (e ) { restartGame(); }
     document.getElementById("btnTabooWord").onclick = function (e ) { }
 
+    document.getElementById("btnGuess").onclick = function (e) { onClickListenerBtnGuess(); }
+    document.getElementById("pass-button").onclick = function (e) { onClickListenerBtnPass(); }
+
     changeVisibilityBtn("btnGuess",myRole === 'Guesser');
     changeVisibilityBtn("pass-button",myRole === 'Prompter');
-
-    document.getElementById("btnGuess").onclick = function (e ) { onClickListenerBtnGuess(); }
-    document.getElementById("pass-button").onclick = function (e ) {onClickListenerBtnPass();}
 
     /*if(myRole === "Prompter")
     {
@@ -85,12 +85,18 @@ function changeVisibilityBtn (buttonId, visible)
     if(visible)
     {
         button.classList.replace("disabled", "enabled");
+        button.disable = false;
+        if(buttonId === "btnGuess")
+            button.onclick = function (e) { onClickListenerBtnGuess(); }
+        else
+            button.onclick = function (e) { onClickListenerBtnPass(); }
         //btnGuess.onclick = function (e ) { onClickListenerBtnGuess(); }
     }
     else
     {
-        //btnGuess.onclick = null;
+        button.onclick = null;
         button.classList.replace("enabled", "disabled");
+        button.disable = true;
     }
 }
 
@@ -180,7 +186,6 @@ function extractMyTeam(match)
             return match.rivalTeam.filter((friendUsername) => friendUsername !== username);
         }
     }
-
     return null;
 }
 
@@ -262,21 +267,4 @@ function changeRoles()
 
     changeVisibilityBtn("btnGuess",myRole === 'Guesser');
     changeVisibilityBtn("pass-button",myRole === 'Prompter');
-
-    /*if(myRole === "Prompter")
-    {
-        document.getElementById("btnGuess").disabled = true;
-        document.getElementById("btnGuess").classList.add("disabled-btn");
-        document.getElementById("pass-button").onclick = function (e ) {onClickListenerBtnPass();}
-        document.getElementById("pass-button").disabled = false;
-        //document.getElementById("btnGuess").onclick = null;
-    }
-    else
-    {
-        document.getElementById("btnGuess").disabled = false;
-        document.getElementById("btnGuess").onclick = function (e ) { onClickListenerBtnGuess(); }
-        document.getElementById("pass-button").disabled = true;
-        document.getElementById("pass-button").classList.add("disabled-btn");
-    }*/
-
 }

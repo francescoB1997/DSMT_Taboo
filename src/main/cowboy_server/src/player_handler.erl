@@ -62,7 +62,7 @@ getUpdatedState(MyRole) when MyRole == <<"Prompter">> ->
     getRandomTabooCard();
 
 getUpdatedState(_) ->
-    JsonMessage = jsx:encode([{<<"action">>, ignore}, {<<"msg">>, ""}]),
+    JsonMessage = jsx:encode([{<<"action">>, timerGuesser}, {<<"msg">>, ""}]),
     { {text, JsonMessage} , []}.
 
 getRandomTabooCard() ->

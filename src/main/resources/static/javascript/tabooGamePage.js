@@ -1,6 +1,8 @@
 const username = sessionStorage.getItem("userLog");
 const IP_SERVER_ERLANG = "127.0.0.1:8090";
 let myRole = sessionStorage.getItem("myRole");
+let timerInterval;
+var seconds = 20;
 let socket;
 
 
@@ -15,28 +17,62 @@ $(document).ready(function ()
     initAndConfigureSocket(undefined);
 
     document.getElementById("btnSendMsg").onclick = function (e ) { onClickListenerBtnSendMsg(); }
+    document.getElementById("restart-button").onclick = function (e ) { restartGame(); }
+    document.getElementById("btnTabooWord").onclick = function (e ) { }
+
+
     if(myRole === "Prompter")
     {
         document.getElementById("btnGuess").disabled = true;
+        document.getElementById("btnGuess").classList.add("disabled-btn");
+        document.getElementById("pass-button").disabled = false;
+        document.getElementById("pass-button").onclick = function (e ) {onClickListenerBtnPass();}
         // Aggiungere una classe particolare X alle classi del btnGuess.
         // Ti aggiungi nel CSS quella classe X, per la quale il btn viene mostrato come viola scuro per indicare
         // che non è cliccabile.
     }
     else
+    {
         document.getElementById("btnGuess").onclick = function (e ) { onClickListenerBtnGuess(); }
+        document.getElementById("pass-button").disabled = true;
+        document.getElementById("pass-button").classList.add("disabled-btn");
+    }
+
 });
 
 function initAndConfigureSocket(event)
 {
     socket = new WebSocket("ws://" + IP_SERVER_ERLANG + "/erlServer");
-    socket.addEventListener("open", (event) => { sendInitMsg(); });
-    socket.addEventListener("message", (event) => { msgOnSocketRecevedListener(event); });
+    socket.addEventListener("open", (event) => { sendInitMsg();});
+    socket.addEventListener("message", (event) => { msgOnSocketRecevedListener(event);});
 
     socket.addEventListener("close", (event) => {
         console.log("socket chiuso, riapro");
-        changeRoles();
         initAndConfigureSocket(event);
     });
+}
+
+function restartGame(){
+    socket.close();
+    initAndConfigureSocket(undefined);
+    window.location.reload();
+}
+
+function timerHandler()
+{
+    seconds -= 1;
+    document.getElementById("timer").textContent = seconds;
+    if(seconds <= 0) {
+        clearInterval(timerInterval);
+        changeRoles();
+        window.location.reload();
+    }
+}
+
+function onClickListenerBtnPass()
+{
+    alert("Comportamento cambio card con nuova parola da far indovinare");
+    return;
 }
 
 function checkLogin()
@@ -83,7 +119,11 @@ function msgOnSocketRecevedListener (event)
             alert("Message from friend: " + objectFromErlang.msg);
             break;
         case "tabooCard":
-            alert("Ricevuta tabooCard: " + objectFromErlang.msg);
+            //alert("Ricevuta tabooCard: " + objectFromErlang.msg);
+            timerInterval = setInterval(timerHandler, 1000);
+            break;
+        case "timerGuesser":
+            timerInterval = setInterval(timerHandler, 1000);
             break;
         case "attemptGuessWord":
             if(myRole==="Guesser")
@@ -122,8 +162,10 @@ function extractMyTeam(match)
 function onClickListenerBtnSendMsg()
 {
     let genericMsg = document.getElementById("txtboxGenericMsg").value;
-    if(genericMsg === "")
+    if(genericMsg === ""){
+        alert("WARNING\nThe text-box is empty");
         return;
+    }
 
     let actionGenericMsg =
         {
@@ -131,13 +173,16 @@ function onClickListenerBtnSendMsg()
             msg : genericMsg
         };
     socket.send(JSON.stringify(actionGenericMsg));
+    document.getElementById("txtboxGenericMsg").value = "";
 }
 
 function onClickListenerBtnGuess()
 {
     let attemptedWord = document.getElementById("txtboxGenericMsg").value;
-    if(attemptedWord === "")
+    if(attemptedWord === ""){
+        alert("WARNING\nThe text-box is empty");
         return;
+    }
 
     if(attemptedWord.includes(" "))
     {
@@ -152,6 +197,7 @@ function onClickListenerBtnGuess()
             word : attemptedWord
         };
     socket.send(JSON.stringify(actionGuess));
+    document.getElementById("txtboxGenericMsg").value = ""
 }
 function changeRoles()
 {
@@ -174,7 +220,6 @@ function changeRoles()
         myRole = match.rolesInviterTeam[myPosInTeam];
     }
     else {
-
         const posPrompter = match.rolesRivalTeam.findIndex(role => role === 'Prompter');
 
         if (posPrompter !== -1)
@@ -193,11 +238,17 @@ function changeRoles()
     if(myRole === "Prompter")
     {
         document.getElementById("btnGuess").disabled = true;
-        document.getElementById("btnGuess").onclick = null;
+        document.getElementById("btnGuess").classList.add("disabled-btn");
+        document.getElementById("pass-button").onclick = function (e ) {onClickListenerBtnPass();}
+        document.getElementById("pass-button").disabled = false;
+        //document.getElementById("btnGuess").onclick = null;
     }
     else
     {
-        document.getElementById("btnGuess").onclick = function (e ) { onClickListenerBtnGuess(); }
         document.getElementById("btnGuess").disabled = false;
+        document.getElementById("btnGuess").onclick = function (e ) { onClickListenerBtnGuess(); }
+        document.getElementById("pass-button").disabled = true;
+        document.getElementById("pass-button").classList.add("disabled-btn");
     }
+
 }

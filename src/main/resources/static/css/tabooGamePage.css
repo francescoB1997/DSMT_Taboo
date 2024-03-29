@@ -139,9 +139,16 @@ button
 
 }
 
-.disabled-btn {
+.disabled {
     opacity: 0.5; /* Opacità ridotta per il pulsante disabilitato */
     cursor: not-allowed; /* Cambia il cursore quando si passa sopra il pulsante disabilitato */
+    disabled: true;
+}
+
+.enabled {
+    opacity: 1; /* Opacità ripristinata per il pulsante disabilitato */
+    cursor: default; /* Cambia il cursore quando si passa sopra il pulsante disabilitato */
+    disabled: false;
 }
 
 #img_taboo_text

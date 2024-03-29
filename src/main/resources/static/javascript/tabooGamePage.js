@@ -20,23 +20,30 @@ $(document).ready(function ()
     document.getElementById("restart-button").onclick = function (e ) { restartGame(); }
     document.getElementById("btnTabooWord").onclick = function (e ) { }
 
+    changeVisibilityBtn("btnGuess",myRole === 'Guesser');
+    changeVisibilityBtn("pass-button",myRole === 'Prompter');
 
-    if(myRole === "Prompter")
+    document.getElementById("btnGuess").onclick = function (e ) { onClickListenerBtnGuess(); }
+    document.getElementById("pass-button").onclick = function (e ) {onClickListenerBtnPass();}
+
+    /*if(myRole === "Prompter")
     {
+
         document.getElementById("btnGuess").disabled = true;
         document.getElementById("btnGuess").classList.add("disabled-btn");
         document.getElementById("pass-button").disabled = false;
-        document.getElementById("pass-button").onclick = function (e ) {onClickListenerBtnPass();}
+
+        document.getElementById("pass-button").classList.remove("disabled-btn")
         // Aggiungere una classe particolare X alle classi del btnGuess.
         // Ti aggiungi nel CSS quella classe X, per la quale il btn viene mostrato come viola scuro per indicare
         // che non è cliccabile.
     }
     else
     {
-        document.getElementById("btnGuess").onclick = function (e ) { onClickListenerBtnGuess(); }
+        document.getElementById("btnGuess").classList.remove("disabled-btn")
         document.getElementById("pass-button").disabled = true;
         document.getElementById("pass-button").classList.add("disabled-btn");
-    }
+    }*/
 
 });
 
@@ -53,9 +60,10 @@ function initAndConfigureSocket(event)
 }
 
 function restartGame(){
+    changeRoles();
     socket.close();
-    initAndConfigureSocket(undefined);
-    window.location.reload();
+    //initAndConfigureSocket(undefined);
+    //window.location.reload();
 }
 
 function timerHandler()
@@ -63,9 +71,26 @@ function timerHandler()
     seconds -= 1;
     document.getElementById("timer").textContent = seconds;
     if(seconds <= 0) {
+        seconds = 20;
         clearInterval(timerInterval);
-        changeRoles();
-        window.location.reload();
+        restartGame();
+        //changeRoles();
+        //window.location.reload();
+    }
+}
+
+function changeVisibilityBtn (buttonId, visible)
+{
+    let button = document.getElementById(buttonId);
+    if(visible)
+    {
+        button.classList.replace("disabled", "enabled");
+        //btnGuess.onclick = function (e ) { onClickListenerBtnGuess(); }
+    }
+    else
+    {
+        //btnGuess.onclick = null;
+        button.classList.replace("enabled", "disabled");
     }
 }
 
@@ -235,7 +260,10 @@ function changeRoles()
     sessionStorage.setItem("myRole", myRole);
     sessionStorage.setItem("match", JSON.stringify(match));
 
-    if(myRole === "Prompter")
+    changeVisibilityBtn("btnGuess",myRole === 'Guesser');
+    changeVisibilityBtn("pass-button",myRole === 'Prompter');
+
+    /*if(myRole === "Prompter")
     {
         document.getElementById("btnGuess").disabled = true;
         document.getElementById("btnGuess").classList.add("disabled-btn");
@@ -249,6 +277,6 @@ function changeRoles()
         document.getElementById("btnGuess").onclick = function (e ) { onClickListenerBtnGuess(); }
         document.getElementById("pass-button").disabled = true;
         document.getElementById("pass-button").classList.add("disabled-btn");
-    }
+    }*/
 
 }

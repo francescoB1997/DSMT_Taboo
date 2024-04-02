@@ -2,7 +2,7 @@ const username = sessionStorage.getItem("userLog");
 const IP_SERVER_ERLANG = "127.0.0.1:8090";
 let myRole = sessionStorage.getItem("myRole");
 let timerInterval;
-var seconds = 20;
+var seconds = 80;
 let socket;
 
 
@@ -26,25 +26,6 @@ $(document).ready(function ()
     changeVisibilityBtn("btnGuess",myRole === 'Guesser');
     changeVisibilityBtn("pass-button",myRole === 'Prompter');
 
-    /*if(myRole === "Prompter")
-    {
-
-        document.getElementById("btnGuess").disabled = true;
-        document.getElementById("btnGuess").classList.add("disabled-btn");
-        document.getElementById("pass-button").disabled = false;
-
-        document.getElementById("pass-button").classList.remove("disabled-btn")
-        // Aggiungere una classe particolare X alle classi del btnGuess.
-        // Ti aggiungi nel CSS quella classe X, per la quale il btn viene mostrato come viola scuro per indicare
-        // che non è cliccabile.
-    }
-    else
-    {
-        document.getElementById("btnGuess").classList.remove("disabled-btn")
-        document.getElementById("pass-button").disabled = true;
-        document.getElementById("pass-button").classList.add("disabled-btn");
-    }*/
-
 });
 
 function initAndConfigureSocket(event)
@@ -62,8 +43,6 @@ function initAndConfigureSocket(event)
 function restartGame(){
     changeRoles();
     socket.close();
-    //initAndConfigureSocket(undefined);
-    //window.location.reload();
 }
 
 function timerHandler()
@@ -71,11 +50,9 @@ function timerHandler()
     seconds -= 1;
     document.getElementById("timer").textContent = seconds;
     if(seconds <= 0) {
-        seconds = 20;
         clearInterval(timerInterval);
+        seconds = 80;
         restartGame();
-        //changeRoles();
-        //window.location.reload();
     }
 }
 
@@ -151,9 +128,11 @@ function msgOnSocketRecevedListener (event)
             break;
         case "tabooCard":
             //alert("Ricevuta tabooCard: " + objectFromErlang.msg);
+            clearInterval(timerInterval);
             timerInterval = setInterval(timerHandler, 1000);
             break;
         case "timerGuesser":
+            clearInterval(timerInterval);
             timerInterval = setInterval(timerHandler, 1000);
             break;
         case "attemptGuessWord":

@@ -2,9 +2,9 @@ const username = sessionStorage.getItem("userLog");
 const IP_SERVER_ERLANG = "127.0.0.1:8090";
 let myRole = sessionStorage.getItem("myRole");
 let timerInterval;
-var seconds = 80;
+var seconds = 20;
+var stopCondition = 0;
 let socket;
-
 
 $(document).ready(function ()
 {
@@ -51,7 +51,7 @@ function timerHandler()
     document.getElementById("timer").textContent = seconds;
     if(seconds <= 0) {
         clearInterval(timerInterval);
-        seconds = 80;
+        seconds = 20;
         restartGame();
     }
 }
@@ -67,7 +67,6 @@ function changeVisibilityBtn (buttonId, visible)
             button.onclick = function (e) { onClickListenerBtnGuess(); }
         else
             button.onclick = function (e) { onClickListenerBtnPass(); }
-        //btnGuess.onclick = function (e ) { onClickListenerBtnGuess(); }
     }
     else
     {
@@ -208,6 +207,7 @@ function onClickListenerBtnGuess()
     socket.send(JSON.stringify(actionGuess));
     document.getElementById("txtboxGenericMsg").value = ""
 }
+
 function changeRoles()
 {
     sessionStorage.removeItem("myRole");
@@ -246,4 +246,48 @@ function changeRoles()
 
     changeVisibilityBtn("btnGuess",myRole === 'Guesser');
     changeVisibilityBtn("pass-button",myRole === 'Prompter');
+
+    stopCondition++;
+    if (stopCondition === match.rolesInviterTeam.length)
+    {
+        //Stop The Game and insert match into MySQL DB
+        if(myRole === "Prompter" && myTeam === "inviterTeam")
+            addNewMatch();
+        location.href = "../endGamePage.html";
+    }
+}
+
+function addNewMatch()
+{
+    let matchJSON = sessionStorage.getItem("match");
+    let match = JSON.parse(matchJSON);
+
+    $.ajax({
+        url : "http://localhost:8080/addNewMatch",
+        data : JSON.stringify(match),
+        type : "POST",
+        contentType: 'application/json',
+        success: function (serverResponse)
+        {
+            let addMatchOperation = serverResponse.responseMessage;
+            switch (addMatchOperation)
+            {
+                case 0:
+                    console.log("The match has been successfully added into DB.");
+                    break;
+                case 1:
+                    console.log("We're Sorry, an Error occurred during adding operation." +
+                        " The match has not been successfully added into DB");
+                    break;
+                default:
+                    //alert("Default: " + responseMessage);
+                    break;
+            }
+        },
+        error: function (xhr)
+        {
+            let responseMessage = xhr.responseText;
+            alert("Error: " + responseMessage);
+        }
+    });
 }

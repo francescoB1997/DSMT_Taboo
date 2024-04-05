@@ -76,4 +76,5 @@ public class MatchDTO
     public void setRolesRivalTeam(ArrayList<String> rolesRivalTeam) {
         this.rolesRivalTeam = rolesRivalTeam;
     }
+
 }

@@ -17,7 +17,7 @@ public interface LoggedUserControllerInterface
     public ResponseEntity<ServerResponseDTO<Integer>> createMatch( @RequestBody InviteFriendRequestDTO inviteRequest);
     public ResponseEntity<ServerResponseDTO<String>> inviteFriends(@RequestBody InviteFriendRequestDTO request);
     public ResponseEntity<ServerResponseDTO<InviteFriends>> checkInvite(@RequestBody String usernameRequester);
-
     public ResponseEntity<ServerResponseDTO<MatchDTO>> replyInvite(@RequestBody InviteReplyDTO refusedInvite);
+    public ResponseEntity<ServerResponseDTO<Integer>> addNewMatch(@RequestBody MatchDTO match);
 
 }

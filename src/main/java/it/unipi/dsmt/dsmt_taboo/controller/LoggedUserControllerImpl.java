@@ -1,6 +1,7 @@
 package it.unipi.dsmt.dsmt_taboo.controller;
 
 import it.unipi.dsmt.dsmt_taboo.DAO.FriendDAO;
+import it.unipi.dsmt.dsmt_taboo.DAO.MatchDAO;
 import it.unipi.dsmt.dsmt_taboo.DAO.UserDAO;
 import it.unipi.dsmt.dsmt_taboo.model.DTO.*;
 import it.unipi.dsmt.dsmt_taboo.model.entity.*;
@@ -311,6 +312,10 @@ public class LoggedUserControllerImpl implements LoggedUserControllerInterface
                         "RivalTeamRoles= [ " + matchDTO.getRolesRivalTeam() + " ]}");
                 MatchDTO returned = runningMatch.putIfAbsent(replyInvite.getGameId(), matchDTO); // Il returned è solo per DGB
 
+                // Even when they have accepted we remove invitations freeing memory
+                invites.remove(r);
+                // Clean up memory for runningMatch map
+                //runningMatch.remove(replyInvite.getGameId());
                 // -------------------- ONLY FOR DEBUG --------------------
                 if(returned != null)
                     System.out.println("Thread: esisteva già il MatchDTO nei runningMatch");
@@ -326,6 +331,34 @@ public class LoggedUserControllerImpl implements LoggedUserControllerInterface
         }
 
         return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @PostMapping("/addNewMatch")
+    @Override
+    public ResponseEntity<ServerResponseDTO<Integer>>
+    addNewMatch(@RequestBody MatchDTO match)
+    {
+        HttpStatus responseHttp;
+        ServerResponseDTO<Integer> addMatchResponse;
+        int requestStatus = 0;
+
+        MatchDAO matchDAO = new MatchDAO();
+        boolean addOpStatus = matchDAO.addNewMatch(match);
+        if(addOpStatus)
+        {
+            System.out.println("\nThe match has been successfully added into DB\n");
+            addMatchResponse = new ServerResponseDTO<>(requestStatus);
+            responseHttp = HttpStatus.OK;
+
+        } else {
+            System.out.println("\nError occurred during adding opration:" +
+                                "The match has NOT been added into DB\n");
+            requestStatus++;
+            addMatchResponse = new ServerResponseDTO<>(requestStatus);
+            responseHttp = HttpStatus.BAD_REQUEST;
+        }
+
+        return new ResponseEntity<>(addMatchResponse, responseHttp);
     }
 }
 

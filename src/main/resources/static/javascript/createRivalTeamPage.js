@@ -11,7 +11,6 @@ $(document).ready(function ()
         return;
     }
 
-
     if(!sessionStorage.getItem("invite"))
     {
         alert("invite object non è in SessionStorage -> Non sei stato invitato ma vuoi fare il furbo!");
@@ -97,7 +96,6 @@ function onClickListenerBtnInvite()
     });
 
 }
-
 
 function storeInvitation(accepted, inviteId, invitedAsFriend)
 {

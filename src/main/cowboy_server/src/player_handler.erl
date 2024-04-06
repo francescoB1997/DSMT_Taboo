@@ -1,7 +1,8 @@
 -module(player_handler).
--export([login/2, start/2, send_msg_to_friends/2, attemptGuessWord/2]).
+-export([login/2, send_msg_to_friends/2, attemptGuessWord/2, wakeUpAllGuessers/1, assignTabooCard/1, getRandomTabooCard/0]).
 
-login (DecodedJson, State = {User, Role, Friends, GenericMessage, TabooWord}) ->
+
+login (DecodedJson, State = {User, EmptyRole, Friends, GenericMessage, EmptyTabooCard}) ->
     Username = maps:get(<<"username">>, DecodedJson),
     PidPlayer = global:whereis_name(Username),
     case PidPlayer of
@@ -11,23 +12,54 @@ login (DecodedJson, State = {User, Role, Friends, GenericMessage, TabooWord}) ->
             global:unregister_name(Username),
             global:register_name(Username, self())
     end,
-    io:format("LOGIN: MyPID=~p login ~s~n", [self(), Username]),
-    {Username, Role, Friends, " ", TabooWord}.
-
-start (DecodedJson, State = {Username, MyRole, Friends, GenericMessage, TabooCardEmpty}) ->
     FriendList = maps:get(<<"friendList">>, DecodedJson),
     Role = maps:get(<<"role">>, DecodedJson),
-    {Resp, TabooCard} = getUpdatedState(Role),
-    io:format("START: Username=~p Role=~p FriendList=~p GenericMessage=~p TabooCard=~p ~n", [Username, Role, FriendList,GenericMessage, TabooCard]),
-    {Resp, {Username, Role, FriendList, GenericMessage, TabooCard} }.
+    io:format("LOGIN: MyPID=~p login ~s Role=~p FriendList=~p EmptyTabooCard=~p~n", [self(), Username, Role, FriendList, EmptyTabooCard]),
+    if
+        Role == <<"Guesser">> ->
+            io:format("Sono ~p, mi addormento ~n", [Username]),
+            receive
+                { start } ->
+                    io:format("Sono ~p, SVEGLIATO -> ricevuto start ~n", [Username]),
+                    JsonResponse = jsx:encode([{<<"action">>, wakeUpGuesser}])
+            end;
+        true ->
+            JsonResponse = jsx:encode([{<<"action">>, loginOk}])
+    end,
+    { {text, JsonResponse} , {Username, Role, FriendList, GenericMessage , EmptyTabooCard} }.
 
-send_msg_to_friends( DecodedJson, State = {Username, Role, FriendList, GenericMessage, TabooCard} ) ->
-    %% if the GenericMessage came from Prompter, then it must be broacasted to all FriendList
+
+%% when you are PROMPTER
+send_msg_to_friends( DecodedJson, State = {Username, Role, FriendList, GenericMessage, TabooCard} ) when Role == <<"Prompter">> ->
+    MessageToFriend = maps:get(<<"msg">>, DecodedJson),
+    io:format("send inviata da ~p, genericMess =~p~n", [Username, MessageToFriend]),
+    Result = checkTabooWords(MessageToFriend, TabooCard),
+    if
+        Result == [[],[],[],[],[],[]] ->
+            [ send_msg(MessageToFriend, Friend) || Friend <- FriendList ], % Foreach equivalent
+            io:format("Result è vuota! => send_msg_to_friends ~p~n", [FriendList]),
+            Error = false,
+            NewTabooCard = TabooCard;
+        true ->
+            Error = true,
+            NewTabooCard = getRandomTabooCard(),
+            [ send_msg(errorFromPrompter, Friend) || Friend <- FriendList ], % Foreach equivalent
+            io:format("Result è piena! => ~p~n *** NUOVA CARTA ~p~n", [Result, NewTabooCard])
+    end,
+    UpdateState = {Username, Role, FriendList, GenericMessage, NewTabooCard},
+    JsonResponse = jsx:encode([{<<"action">>, checkWordResult}, {<<"msg">>, Error}, {<<"newTabooCard">>, NewTabooCard}]),
+    { {text, JsonResponse} , UpdateState};
+
+
+%% when you are GUESSER
+send_msg_to_friends( DecodedJson, State = {Username, Role, FriendList, GenericMessage, TabooCard} ) when Role == <<"Guesser">> ->
     MessageToFriend = maps:get(<<"msg">>, DecodedJson),
     [ send_msg(MessageToFriend, Friend) || Friend <- FriendList ], % Foreach equivalent
-    io:format("send_msg_to_friends ~p~n", [FriendList]),
-    {Username, Role, FriendList, GenericMessage, TabooCard}.
+    JsonResponse = jsx:encode([{<<"action">>, ignore}]),
+    { {text, JsonResponse} , State}.
 
+
+% Only when you are GUESSER
 attemptGuessWord(DecodedJson, State = {Username, Role, [PrompterName | []], GenericMessage, TabooCard}) when Role == <<"Guesser">> ->
     %MyPrompterName = maps:get(<<"myPrompterName">>, DecodedJson),
     AttemptedWord = maps:get(<<"word">>, DecodedJson),
@@ -45,42 +77,54 @@ attemptGuessWord(DecodedJson, State = {Username, Role, [PrompterName | []], Gene
     JsonResponse = jsx:encode([{<<"action">>, attemptGuessWord}, {<<"msg">>, ResultAttempt}]),
     { {text, JsonResponse} , {Username, Role, [PrompterName | []], GenericMessage, TabooCard}}.
 
+
+% Only when you are PROMPTER
+assignTabooCard(State = {Username, Role, FriendList, GenericMessage, OldTabooCard} ) when Role == <<"Prompter">> ->
+    TabooCard = getRandomTabooCard(),
+    io:format("Sono ~p, assignTabooCard: Role=~p , NewTaboo = ~p~n", [Username, Role, TabooCard]),
+    JsonResponse = jsx:encode([{<<"action">>, tabooCard}, {<<"msg">>, TabooCard}]),
+    { { text, JsonResponse } , {Username, Role, FriendList, GenericMessage, TabooCard} }.
+
+
+% Only when you are PROMPTER
+wakeUpAllGuessers( State = {Username, Role, FriendList, GenericMessage, OldTabooCard} ) when Role == <<"Prompter">> ->
+    [ send_start_msg( Friend ) || Friend <- FriendList ],
+    State.
+
+
+send_start_msg(FriendName) ->
+    PidFriend = global:whereis_name(FriendName),
+    case(is_pid(PidFriend)) of
+        true ->
+            PidFriend ! { start },
+            io:format("Invio start a ~p, il suo PID è ~p~n", [FriendName, PidFriend]),
+            send_ok;
+        false ->
+            io:format("Invio start FALLITO per ~p~n", [FriendName]),
+            send_no
+    end.
+
+
 send_msg(Msg, Friend) ->
-    io:format("send_msg(~p, ~p) --> ", [Msg, Friend]),
+    %io:format("send_msg(~p, ~p) --> ", [Msg, Friend]),
     PidFriend = global:whereis_name(Friend),
     case(is_pid(PidFriend)) of
         true ->
             PidFriend ! {msgFromFriend, Msg},
-            io:format(" PID_AMICO = ~p~n", [PidFriend]),
+            io:format("Invio send_msg ok a ~p, il suo PID è ~p~n", [Friend, PidFriend]),
             send_ok;
         false ->
-            io:format("Ramo false send_msg  ~n"),
+            io:format("Invio send_msg FALLITO per ~p~n", [Friend]),
             send_no
     end.
 
-getUpdatedState(MyRole) when MyRole == <<"Prompter">> ->
-    getRandomTabooCard();
 
-getUpdatedState(_) ->
-    JsonMessage = jsx:encode([{<<"action">>, timerGuesser}, {<<"msg">>, ""}]),
-    { {text, JsonMessage} , []}.
+% [si, usa, per, bere] , [bicchiere, bibita, bere, mano, sete, acqua] -----------------------> [[],[],[],[bere],[],[]]
+checkTabooWords(WordList , TabooCard) ->
+    io:format("      checkTabooWords di ~p, ~p~n", [WordList, TabooCard]),
+    Result = [ [ Word || Word <- WordList , Word == TabooCardWord] || TabooCardWord <- TabooCard],
+    Result.
 
-getRandomTabooCard() ->
-    AllTabooCards = [
-        [<<"Car">>, <<"Driver">>, <<"Ride">>, <<"Transport">>, <<"Fast">>, <<"Travel">>],
-        [<<"Dance">>, <<"Shoes">>, <<"Romantic">>, <<"Music">>, <<"Sing">>, <<"Town Square">>],
-        [<<"Proud">>, <<"Feeling">>, <<"Accomplish">>, <<"Great">>, <<"Boast">>, <<"Humble">>],
-        [<<"Husband">>, <<"Wife">>, <<"Ring">>, <<"Marry">>, <<"Man">>, <<"Friend">>],
-        [<<"Camera">>, <<"Photos">>, <<"Pictures">>, <<"Snapshot">>, <<"Travel">>, <<"Memories">>]
-    ],
-    RandomIndex = getRandomInt(length(AllTabooCards)),
-    SelectedTabooCard = lists:nth(RandomIndex, AllTabooCards),
-    JsonMessage = jsx:encode([{<<"action">>, tabooCard}, {<<"msg">>, SelectedTabooCard}]),
-    { {text, JsonMessage} , SelectedTabooCard }.
-
-getRandomInt(Max) ->
-    RandomIndex = rand:uniform(Max),
-    RandomIndex.
 
 waitResult(MyPrompterPID, AttemptedWord) ->
     MyPrompterPID ! {attemptGuessWord, self(), AttemptedWord},
@@ -91,12 +135,27 @@ waitResult(MyPrompterPID, AttemptedWord) ->
         _ ->
             io:format("checkWord messaggio no sense ~n"),
             no
+    after
+        1500 ->
+            io:format("****************************** SVegliato waitResult : ~p~n", [AttemptedWord])
     end.
 
 
+getRandomTabooCard() ->
+    AllTabooCards = [
+        [<<"car">>, <<"driver">>, <<"ride">>, <<"transport">>, <<"fast">>, <<"travel">>],
+        [<<"dance">>, <<"shoes">>, <<"romantic">>, <<"music">>, <<"sing">>, <<"town square">>],
+        [<<"proud">>, <<"feeling">>, <<"accomplish">>, <<"great">>, <<"boast">>, <<"humble">>],
+        [<<"husband">>, <<"wife">>, <<"ring">>, <<"marry">>, <<"man">>, <<"friend">>],
+        [<<"camera">>, <<"photos">>, <<"pictures">>, <<"snapshot">>, <<"travel">>, <<"memories">>]
+    ],
+    RandomIndex = getRandomInt(length(AllTabooCards)),
+    SelectedTabooCard = lists:nth(RandomIndex, AllTabooCards),
+    SelectedTabooCard.
 
-
-
+getRandomInt(Max) ->
+    RandomIndex = rand:uniform(Max),
+    RandomIndex.
 
 
 

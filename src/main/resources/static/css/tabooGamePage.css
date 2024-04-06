@@ -11,6 +11,19 @@ body
     margin: 0;
 }
 
+::-webkit-scrollbar {
+    width: 5px;
+}
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+::-webkit-scrollbar-thumb {
+    background: #888;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
 #mainContainer
 {
     background-color: #fff;
@@ -26,13 +39,85 @@ body
 {
     display: flex;
     justify-content: space-between;
+    height: 350px;
 }
 
-#containerGameArea
+#gameArea
 {
+    display: inline-flex;
     width: 500px;
-    background-color: #8fd19e;
+    height: 350px;
+    background-color: green;
 }
+
+#tabooCardGameArea
+{
+    width: 50%;
+    height: 350px;
+    border-radius: 10px;
+    background-color: #02a089;
+}
+
+h1
+{
+    margin: 0;
+    padding: 20px 0 0;
+    color: #fff;
+    font-size: 28px;
+    font-weight: normal;
+    text-align: center;
+}
+
+#textChat
+{
+    display:block;
+    width: 50%;
+    height: 350px;
+    background-color: #7abaff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+h3
+{
+    margin: 0;
+    padding: 5px 0 0;
+    color: darkblue;
+    font-size: 20px;
+    font-weight: normal;
+    text-align: center;
+}
+
+#textChat
+{
+    width: 100%;
+    height: 315px;
+    background-color: #e83e8c;
+    text-align: center;
+    border-radius: 8px;
+    overflow-y: scroll;
+}
+
+.list
+{
+    background: #fff;
+    width: 80%;
+    height: 70%;
+    border-radius: 10px;
+    margin: auto;
+}
+
+ul
+{
+    list-style: none;
+}
+
+li
+{
+    margin-left: -50px;
+    padding-top: 20px;
+}
+
 
 .info-match-container {
     display: flex;
@@ -93,8 +178,8 @@ body
 
 #hourglassIcon
 {
-    width: 15px;
-    height: 15px;
+    width: 25px;
+    height: 25px;
 }
 
 .flex

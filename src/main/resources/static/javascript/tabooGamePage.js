@@ -4,7 +4,6 @@ let myRole = sessionStorage.getItem("myRole");
 let timerInterval;
 var seconds = 20;
 var stopCondition = 0;
-
 let score = 0;
 
 let prompterData = {

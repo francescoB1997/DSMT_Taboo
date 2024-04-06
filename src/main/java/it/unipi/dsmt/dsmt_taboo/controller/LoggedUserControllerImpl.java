@@ -336,38 +336,35 @@ public class LoggedUserControllerImpl implements LoggedUserControllerInterface
     public ResponseEntity<ServerResponseDTO<Integer>>
     addNewMatch(@RequestBody MatchDTO match)
     {
-        if(match.getScoreInviterTeam() == null) // if true, then, the sender is in RivalTeam
-        {
-            runningMatch.get(match.getMatchId()).setScoreRivalTeam(match.getScoreRivalTeam());
-        }
-        else
-        {
-            runningMatch.get(match.getMatchId()).setScoreInviterTeam(match.getScoreInviterTeam());
-        }
-
         HttpStatus responseHttp = HttpStatus.OK;
         ServerResponseDTO<Integer> addMatchResponse = new ServerResponseDTO<>(0);
+        MatchDTO matchInfo = runningMatch.get(match.getMatchId());
 
-        if(runningMatch.get(match.getMatchId()).getScoreRivalTeam() != null && runningMatch.get(match.getMatchId()).getScoreInviterTeam() != null)
+        if(match.getScoreInviterTeam() == null) // if true, then the sender is in RivalTeam
+            matchInfo.setScoreRivalTeam(match.getScoreRivalTeam());
+        else
+            matchInfo.setScoreInviterTeam(match.getScoreInviterTeam());
+
+        if(matchInfo.getScoreRivalTeam() != null && matchInfo.getScoreInviterTeam() != null)
         {
             int requestStatus = 0;
             MatchDAO matchDAO = new MatchDAO();
-            boolean addOpStatus = matchDAO.addNewMatch(runningMatch.get(match.getMatchId()));
+            boolean addOpStatus = matchDAO.addNewMatch(matchInfo);
+
             if(addOpStatus)
             {
                 System.out.println("\nThe match has been successfully added into DB\n");
                 addMatchResponse = new ServerResponseDTO<>(requestStatus);
-                responseHttp = HttpStatus.OK;
                 runningMatch.remove(match.getMatchId());
-
             } else {
                 System.out.println("\nError occurred during adding opration:" +
-                        "The match has NOT been added into DB\n");
+                                    "The match has NOT been added into DB\n");
                 requestStatus++;
                 addMatchResponse = new ServerResponseDTO<>(requestStatus);
                 responseHttp = HttpStatus.BAD_REQUEST;
             }
         }
+
         return new ResponseEntity<>(addMatchResponse, responseHttp);
     }
 }

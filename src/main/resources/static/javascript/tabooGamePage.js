@@ -8,6 +8,7 @@ let seconds= GAME_DURATION;
 let stopCondition = 0;
 let score = 0;
 
+
 let prompterData = {
     tabooCard : null,
     passCounter : 0

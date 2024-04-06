@@ -21,19 +21,22 @@ $(document).ready(function ()
         return;
     }
 
-initAndConfigureSocket(undefined);
+    initAndConfigureSocket(undefined);
 
 
-document.getElementById("btnSendMsg").onclick = function (e ) { onClickListenerBtnSendMsg(); }
-document.getElementById("btnTabooWord").onclick = function (e ) { }
+    document.getElementById("btnSendMsg").onclick = function (e ) { onClickListenerBtnSendMsg(); }
+    document.getElementById("btnTabooWord").onclick = function (e ) { }
 
-document.getElementById("btnGuess").onclick = function (e) { onClickListenerBtnGuess(); }
-document.getElementById("pass-button").onclick = function (e) { onClickListenerBtnPass(); }
+    document.getElementById("btnGuess").onclick = function (e) { onClickListenerBtnGuess(); }
+    document.getElementById("pass-button").onclick = function (e) { onClickListenerBtnPass(); }
 
-changeVisibilityBtn("btnGuess",myRole === 'Guesser');
-changeVisibilityBtn("pass-button",myRole === 'Prompter');
+    changeVisibilityBtn("btnGuess",myRole === 'Guesser');
+    changeVisibilityBtn("pass-button",myRole === 'Prompter');
 
-let keepAliveInterval = setInterval(keepAlive, 20000);
+    let keepAliveInterval = setInterval(keepAlive, 20000);
+
+    if(myRole === "Guesser")
+        updateViewTabooCard();
 
 });
 
@@ -391,9 +394,9 @@ function updateViewTabooCard()
     let wordToGuess = document.getElementById("wordToGuess");
     if(myRole === "Guesser")
     {
-        wordToGuess.innerText = "Guess the Word";
-        for(let i = 1; i < prompterData.tabooCard.length; i++)
-            document.getElementById("tabooWord" + i).innerText = "Guess the Word";
+        wordToGuess.innerText = "Guess";
+        for(let i = 1; i < 6; i++)
+            document.getElementById("tabooWord" + i).innerText = "Guess";
         return;
     }
 
@@ -413,3 +416,65 @@ function updateViewScoreCounter()
 {
     document.getElementById("score").innerText = score;
 }
+
+function loadTablesTeams()
+// function that load both the tables, FriendTable and RivalTeam
+{
+    let matchJSON = sessionStorage.getItem("match");
+    let match = JSON.parse(matchJSON);
+    let i = 0;
+    while(i < 2)
+    {
+        let tableFriends = (i === 0) ? document.getElementById("tableFriend") : document.getElementById("");
+        emptyTable(tableFriends);
+        let friend;
+        while( friend = friendList.pop() )
+        {
+            let trFriend= document.createElement("tr");
+            trFriend.id = friend.username;
+
+            let tdUserIcon = document.createElement("td");
+            let imgUserIcon = document.createElement("img");
+            imgUserIcon.className = "imgUserIcon";
+            imgUserIcon.src = "../img/user_icon.png";
+            imgUserIcon.alt = "user icon image";
+            tdUserIcon.append(imgUserIcon);
+            trFriend.append(tdUserIcon);
+
+            let tdUsername = document.createElement("td");
+            tdUsername.className = "tdUsername";
+            tdUsername.id = friend.username;
+            let pUsername = document.createElement("p");
+            pUsername.innerText = friend.username;
+            tdUsername.append(pUsername);
+            trFriend.append(tdUsername);
+
+            let tdStatus = document.createElement("td");
+            tdStatus.className = "";
+            let imgUserState = document.createElement("img");
+            imgUserState.className = "img";
+            imgUserState.src = "../img/online.png";
+            imgUserState.alt = "img user state (online or offline)";
+            tdStatus.append(imgUserState);
+            trFriend.append(tdStatus);
+
+            let tdCheckbox = document.createElement("td");
+            let lblCheckboxFriend = document.createElement("label");
+            lblCheckboxFriend.innerText = "Add in your Team ";
+            let checkboxFriend = document.createElement("input");
+            checkboxFriend.id = "check&" + friend.username;
+            lblCheckboxFriend.htmlFor = checkboxFriend.id;
+            checkboxFriend.setAttribute("type", "checkbox");
+
+            tdCheckbox.append(checkboxFriend);
+            tdCheckbox.append(lblCheckboxFriend);
+            trFriend.append(tdCheckbox);
+
+            tableFriends.append(trFriend);
+        }
+        i++;
+    }
+
+
+}
+

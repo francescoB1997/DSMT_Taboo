@@ -14,14 +14,14 @@
             <div id="containerInfoMatch" class="info-match-container">
                 <div class="timer-container">
                     <span class="timer-label">Timer</span>
-                    <div id="timer" class="timer-value">80</div>
+                    <div id="timer" class="timer-value"></div>
                     <img id="hourglassIcon" src="img/hourglass.gif" alt="hourglass icon" class="hourglass-icon">
                 </div>
+                <div class="timer-container">Score: <span id="score">0</span></div>
                 <div class="username-container">Username</div>
             </div>
 
             <div id="gameContainer" >
-
                 <div id="containerTableFriend">
                     <h2> Friends </h2>
                     <table id="tableFriend">
@@ -29,8 +29,23 @@
                         </tbody>
                     </table>
                 </div>
-                <div id="containerGameArea">
-                    Area di gioco<br>ciao<br>sono
+                <div id="gameArea">
+                    <div id="tabooCardGameArea">
+                        <h1 id="wordToGuess">Erlang</h1>
+                        <div class="list">
+                            <ul>
+                                <li id="tabooWord1">Functional</li>
+                                <li id="tabooWord2">Programing</li>
+                                <li id="tabooWord3">Evaluation</li>
+                                <li id="tabooWord4">Bounded</li>
+                                <li id="tabooWord5">Immutable</li>
+                          </ul>
+                        </div>
+                    </div>
+                    <div id="textChat">
+                        <h3> Friend's chat </h3>
+                        <div id="textChat"></div>
+                    </div>
                 </div>
                 <div id="conatinerTableRival">
                     <h2> Rivals </h2>
@@ -43,7 +58,6 @@
             <input type="text" id="txtboxGenericMsg" class="textboxWordToGuess" placeholder="Insert the word to Guess">
             <button id="btnSendMsg">Send a message</button>
             <button id="btnGuess" class="disabled">Indovina</button>
-            <button id="restart-button">Restart Game</button>
             <div class="specialBtnContainer">
                 <div class="pass_btn-container">
                     <button id="pass-button" class="passBtn disabled"><img src="./img/pass.png" id="img_pass_card" alt="pass card"></button>

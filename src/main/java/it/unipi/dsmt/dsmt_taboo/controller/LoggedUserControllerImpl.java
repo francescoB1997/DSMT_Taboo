@@ -314,8 +314,6 @@ public class LoggedUserControllerImpl implements LoggedUserControllerInterface
 
                 // Even when they have accepted we remove invitations freeing memory
                 invites.remove(r);
-                // Clean up memory for runningMatch map
-                //runningMatch.remove(replyInvite.getGameId());
                 // -------------------- ONLY FOR DEBUG --------------------
                 if(returned != null)
                     System.out.println("Thread: esisteva già il MatchDTO nei runningMatch");

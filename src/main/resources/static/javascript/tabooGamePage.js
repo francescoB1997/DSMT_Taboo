@@ -2,7 +2,7 @@ const username = sessionStorage.getItem("userLog");
 const IP_SERVER_ERLANG = "127.0.0.1:8090";
 let myRole = sessionStorage.getItem("myRole");
 let timerInterval;
-var seconds = 20;
+var seconds = 120;
 var stopCondition = 0;
 let score = 0;
 
@@ -112,6 +112,8 @@ function sendInitMsg()
     myRole = sessionStorage.getItem("myRole");
     let matchJSON = sessionStorage.getItem("match");
     let match = JSON.parse(matchJSON);
+
+    loadTablesTeams();
 
     let friendList = extractMyTeam(match);
     if (friendList != null)
@@ -425,13 +427,15 @@ function loadTablesTeams()
     let i = 0;
     while(i < 2)
     {
-        let tableFriends = (i === 0) ? document.getElementById("tableFriend") : document.getElementById("");
-        emptyTable(tableFriends);
-        let friend;
-        while( friend = friendList.pop() )
+        console.log("Caricamento tabella " + i+1);
+        let workingTable = (i === 0) ? document.getElementById("tableFriend") : document.getElementById("tableRival");
+        let friendList = (i === 0) ? match.inviterTeam : match.rivalTeam;
+        emptyTable(workingTable);
+        let usernameFriend;
+        while( usernameFriend = friendList.pop() )
         {
             let trFriend= document.createElement("tr");
-            trFriend.id = friend.username;
+            trFriend.id = usernameFriend;
 
             let tdUserIcon = document.createElement("td");
             let imgUserIcon = document.createElement("img");
@@ -443,38 +447,21 @@ function loadTablesTeams()
 
             let tdUsername = document.createElement("td");
             tdUsername.className = "tdUsername";
-            tdUsername.id = friend.username;
+            tdUsername.id = usernameFriend;
             let pUsername = document.createElement("p");
-            pUsername.innerText = friend.username;
+            pUsername.innerText = usernameFriend;
             tdUsername.append(pUsername);
             trFriend.append(tdUsername);
 
-            let tdStatus = document.createElement("td");
-            tdStatus.className = "";
-            let imgUserState = document.createElement("img");
-            imgUserState.className = "img";
-            imgUserState.src = "../img/online.png";
-            imgUserState.alt = "img user state (online or offline)";
-            tdStatus.append(imgUserState);
-            trFriend.append(tdStatus);
-
-            let tdCheckbox = document.createElement("td");
-            let lblCheckboxFriend = document.createElement("label");
-            lblCheckboxFriend.innerText = "Add in your Team ";
-            let checkboxFriend = document.createElement("input");
-            checkboxFriend.id = "check&" + friend.username;
-            lblCheckboxFriend.htmlFor = checkboxFriend.id;
-            checkboxFriend.setAttribute("type", "checkbox");
-
-            tdCheckbox.append(checkboxFriend);
-            tdCheckbox.append(lblCheckboxFriend);
-            trFriend.append(tdCheckbox);
-
-            tableFriends.append(trFriend);
+            workingTable.append(trFriend);
         }
         i++;
     }
+}
 
-
+function emptyTable(table)
+{
+    while(table.childElementCount > 0)   // Delete all the old elements (if there are)
+        table.removeChild(table.firstChild);
 }
 

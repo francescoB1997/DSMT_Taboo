@@ -138,18 +138,6 @@ h2 p
     color: #007bff;;
 }
 
-.tdUsername
-{
-    width: 150px;
-    text-align: center;
-}
-
-table
-{
-    overflow-y:scroll;
-    height:250px;
-    display:block;
-}
 
 .img
 {

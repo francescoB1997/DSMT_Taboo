@@ -36,8 +36,8 @@ public class MatchDTO
         this.rolesInviterTeam = rolesInviterTeam;
         this.rivalTeam = rivalTeam;
         this.rolesRivalTeam = rolesRivalTeam;
-        this.scoreInviterTeam = 0;
-        this.scoreRivalTeam = 0;
+        this.scoreInviterTeam = null;
+        this.scoreRivalTeam = null;
     }
 
     public String getMatchId() { return this.matchId; }

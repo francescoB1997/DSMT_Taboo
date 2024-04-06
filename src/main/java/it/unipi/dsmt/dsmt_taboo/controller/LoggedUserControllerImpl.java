@@ -338,26 +338,38 @@ public class LoggedUserControllerImpl implements LoggedUserControllerInterface
     public ResponseEntity<ServerResponseDTO<Integer>>
     addNewMatch(@RequestBody MatchDTO match)
     {
-        HttpStatus responseHttp;
-        ServerResponseDTO<Integer> addMatchResponse;
-        int requestStatus = 0;
-
-        MatchDAO matchDAO = new MatchDAO();
-        boolean addOpStatus = matchDAO.addNewMatch(match);
-        if(addOpStatus)
+        if(match.getScoreInviterTeam() == null) // if true, then, the sender is in RivalTeam
         {
-            System.out.println("\nThe match has been successfully added into DB\n");
-            addMatchResponse = new ServerResponseDTO<>(requestStatus);
-            responseHttp = HttpStatus.OK;
-
-        } else {
-            System.out.println("\nError occurred during adding opration:" +
-                                "The match has NOT been added into DB\n");
-            requestStatus++;
-            addMatchResponse = new ServerResponseDTO<>(requestStatus);
-            responseHttp = HttpStatus.BAD_REQUEST;
+            runningMatch.get(match.getMatchId()).setScoreRivalTeam(match.getScoreRivalTeam());
+        }
+        else
+        {
+            runningMatch.get(match.getMatchId()).setScoreInviterTeam(match.getScoreInviterTeam());
         }
 
+        HttpStatus responseHttp = HttpStatus.OK;
+        ServerResponseDTO<Integer> addMatchResponse = new ServerResponseDTO<>(0);
+
+        if(runningMatch.get(match.getMatchId()).getScoreRivalTeam() != null && runningMatch.get(match.getMatchId()).getScoreInviterTeam() != null)
+        {
+            int requestStatus = 0;
+            MatchDAO matchDAO = new MatchDAO();
+            boolean addOpStatus = matchDAO.addNewMatch(runningMatch.get(match.getMatchId()));
+            if(addOpStatus)
+            {
+                System.out.println("\nThe match has been successfully added into DB\n");
+                addMatchResponse = new ServerResponseDTO<>(requestStatus);
+                responseHttp = HttpStatus.OK;
+                runningMatch.remove(match.getMatchId());
+
+            } else {
+                System.out.println("\nError occurred during adding opration:" +
+                        "The match has NOT been added into DB\n");
+                requestStatus++;
+                addMatchResponse = new ServerResponseDTO<>(requestStatus);
+                responseHttp = HttpStatus.BAD_REQUEST;
+            }
+        }
         return new ResponseEntity<>(addMatchResponse, responseHttp);
     }
 }

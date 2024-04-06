@@ -1,9 +1,11 @@
-const username = sessionStorage.getItem("userLog");
 const IP_SERVER_ERLANG = "127.0.0.1:8090";
+const GAME_DURATION = 60;
+
+const username = sessionStorage.getItem("userLog");
 let myRole = sessionStorage.getItem("myRole");
 let timerInterval;
-var seconds = 120;
-var stopCondition = 0;
+let seconds= GAME_DURATION;
+let stopCondition = 0;
 let score = 0;
 
 let prompterData = {
@@ -38,6 +40,7 @@ $(document).ready(function ()
     if(myRole === "Guesser")
         updateViewTabooCard();
 
+    document.getElementById("timer" ).innerText = GAME_DURATION;
 });
 
 function keepAlive()
@@ -82,7 +85,7 @@ function timerHandler()
     if(seconds <= 0)
     {
         clearInterval(timerInterval);
-        seconds = 120;
+        seconds = GAME_DURATION;
         restartGame();
     }
 }
@@ -315,7 +318,6 @@ function changeRoles()
     sessionStorage.setItem("match", JSON.stringify(match));
 
     prompterData.tabooCard = null;
-    updateViewTabooCard();
     prompterData.passCounter = 0;
 
     changeVisibilityBtn("btnGuess",myRole === 'Guesser');
@@ -325,7 +327,7 @@ function changeRoles()
     if (stopCondition === match.rolesInviterTeam.length)
     {
         //Stop The Game and insert match into MySQL DB
-        if(myRole === "Prompter" && myTeam === "inviterTeam")
+        if(myRole === "Prompter")
             addNewMatch();
         location.href = "../endGamePage.html";
     }
@@ -335,7 +337,18 @@ function addNewMatch()
 {
     let matchJSON = sessionStorage.getItem("match");
     let match = JSON.parse(matchJSON);
+    let myTeam = sessionStorage.getItem("myTeam");
 
+    if(myTeam === "inviterTeam")
+    {
+        match.scoreInviterTeam = score;
+        match.scoreRivalTeam = null;
+    }
+    else
+    {
+        match.scoreRivalTeam = score;
+        match.scoreInviterTeam = null;
+    }
     $.ajax({
         url : "http://localhost:8080/addNewMatch",
         data : JSON.stringify(match),
@@ -354,7 +367,6 @@ function addNewMatch()
                         " The match has not been successfully added into DB");
                     break;
                 default:
-                    //alert("Default: " + responseMessage);
                     break;
             }
         },

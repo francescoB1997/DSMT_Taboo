@@ -147,7 +147,13 @@ getRandomTabooCard() ->
         [<<"dance">>, <<"shoes">>, <<"romantic">>, <<"music">>, <<"sing">>, <<"town square">>],
         [<<"proud">>, <<"feeling">>, <<"accomplish">>, <<"great">>, <<"boast">>, <<"humble">>],
         [<<"husband">>, <<"wife">>, <<"ring">>, <<"marry">>, <<"man">>, <<"friend">>],
-        [<<"camera">>, <<"photos">>, <<"pictures">>, <<"snapshot">>, <<"travel">>, <<"memories">>]
+        [<<"camera">>, <<"photos">>, <<"pictures">>, <<"snapshot">>, <<"travel">>, <<"memories">>],
+        [<<"wok">>, <<"cook">>, <<"china">>, <<"iron">>, <<"dishes">>, <<"pot">>],
+        [<<"giraffe">>, <<"tall">>, <<"africa">>, <<"neck">>, <<"long">>, <<"yellow">>],
+        [<<"girlfriend">>, <<"boyfriend">>, <<"beautiful">>, <<"flowers">>, <<"date">>, <<"female">>],
+        [<<"glasses">>, <<"eyes">>, <<"see">>, <<"contacts">>, <<"wear">>, <<"face">>],
+        [<<"popcorn">>, <<"kernel">>, <<"cinema">>, <<"sweet">>, <<"microwave">>, <<"food">>],
+        [<<"erlang">>, <<"evaluation">>, <<"functional">>, <<"programming">>, <<"stateless">>, <<"concurrent">>]
     ],
     RandomIndex = getRandomInt(length(AllTabooCards)),
     SelectedTabooCard = lists:nth(RandomIndex, AllTabooCards),

@@ -14,16 +14,13 @@ public class MatchDTO
 
     public MatchDTO() { }
 
-    public MatchDTO(String matchId,
-                    ArrayList<String> inviterTeam, ArrayList<String> rolesInviterTeam,
-                    ArrayList<String> rivalTeam, ArrayList<String> rolesRivalTeam,
-                    Integer scoreInviterTeam, Integer scoreRivalTeam)
+    public MatchDTO(String matchId, ArrayList<String> inviterTeam,
+                    ArrayList<String> rivalTeam, Integer scoreInviterTeam,
+                    Integer scoreRivalTeam)
     {
         this.matchId = matchId;
         this.inviterTeam = inviterTeam;
-        this.rolesInviterTeam = rolesInviterTeam;
         this.rivalTeam = rivalTeam;
-        this.rolesRivalTeam = rolesRivalTeam;
         this.scoreInviterTeam = scoreInviterTeam;
         this.scoreRivalTeam = scoreRivalTeam;
     }

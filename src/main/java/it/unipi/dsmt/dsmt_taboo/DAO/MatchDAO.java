@@ -1,8 +1,12 @@
 package it.unipi.dsmt.dsmt_taboo.DAO;
 
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import it.unipi.dsmt.dsmt_taboo.model.DTO.MatchDTO;
 
-import java.sql.*;
 
 public class MatchDAO extends BaseDAO
 {
@@ -18,7 +22,9 @@ public class MatchDAO extends BaseDAO
 
         try (Connection connection = getConnection();
              PreparedStatement preparedStatement = connection.
-                     prepareStatement(insertQuery, PreparedStatement.RETURN_GENERATED_KEYS)) {
+                                                    prepareStatement(insertQuery,
+                                                    PreparedStatement.RETURN_GENERATED_KEYS))
+        {
             preparedStatement.setString(1, match.getInviterTeam().toString());
             preparedStatement.setString(2, match.getRivalTeam().toString());
             preparedStatement.setInt(3, match.getScoreInviterTeam());
@@ -38,9 +44,84 @@ public class MatchDAO extends BaseDAO
         }
     }
 
-    public void getAllUserMatches(String username)
-    // retrieve all matches of this username
+    public List<MatchDTO> getMatches(String username)
     {
+        List<MatchDTO> listMatches = new ArrayList<>();
 
+        String userMatchesQuery = "SELECT * FROM " + DB_NAME + ".match " +
+                                  "WHERE Team1 LIKE ? OR Team2 LIKE ?";
+
+        String adminMatchesQuery = "SELECT * FROM " + DB_NAME + ".match ";
+
+        if(username == null) {
+
+            try (Connection connection = getConnection();
+                 PreparedStatement preparedStatement = connection.
+                                                       prepareStatement(adminMatchesQuery,
+                                                       PreparedStatement.RETURN_GENERATED_KEYS))
+            {
+                try (ResultSet resultSet = preparedStatement.executeQuery();)
+                {
+                    while (resultSet.next()) {
+                        String idMatch = resultSet.getString("Timestamp"); //Timestamp
+                        String team1 = resultSet.getString("Team1");
+                        String team2 = resultSet.getString("Team2");
+                        Integer scoreTeam1 = resultSet.getInt("ScoreTeam1");
+                        Integer scoreTeam2 = resultSet.getInt("ScoreTeam2");
+
+                        ArrayList<String> team1List =
+                                new ArrayList<>(Arrays.asList(team1.split(",")));
+                        ArrayList<String> team2List =
+                                new ArrayList<>(Arrays.asList(team2.split(",")));
+
+                        MatchDTO match = new MatchDTO(idMatch, team1List,
+                                                      team2List, scoreTeam1,
+                                                      scoreTeam2);
+                        listMatches.add(match);
+                    }
+                }
+            } catch (SQLException ex){
+                System.out.println("(Admin) searchMatchesInDB eccezione query:" + ex.getMessage());
+                return null;
+            }
+
+        } else {
+
+            try (Connection connection = getConnection();
+                 PreparedStatement preparedStatement = connection.
+                                                       prepareStatement(userMatchesQuery,
+                                                       PreparedStatement.RETURN_GENERATED_KEYS))
+            {
+                preparedStatement.setString(1, "%" + username + "%");
+                preparedStatement.setString(2, "%" + username + "%");
+
+                try (ResultSet resultSet = preparedStatement.executeQuery();)
+                {
+                    while (resultSet.next()) {
+                        String idMatch = resultSet.getString("Timestamp"); //Timestamp
+                        String team1 = resultSet.getString("Team1");
+                        String team2 = resultSet.getString("Team2");
+                        Integer scoreTeam1 = resultSet.getInt("ScoreTeam1");
+                        Integer scoreTeam2 = resultSet.getInt("ScoreTeam2");
+
+                        ArrayList<String> team1List =
+                                new ArrayList<>(Arrays.asList(team1.split(",")));
+                        ArrayList<String> team2List =
+                                new ArrayList<>(Arrays.asList(team2.split(",")));
+
+                        MatchDTO match = new MatchDTO(idMatch, team1List,
+                                                      team2List, scoreTeam1,
+                                                      scoreTeam2);
+                        listMatches.add(match);
+                    }
+                }
+            } catch (SQLException ex) {
+                System.out.println("(User) searchMatchesInDB eccezione query:" + ex.getMessage());
+                return null;
+            }
+        }
+
+        return listMatches;
     }
+
 }

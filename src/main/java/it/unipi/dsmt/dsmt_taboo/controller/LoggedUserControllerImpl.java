@@ -331,6 +331,24 @@ public class LoggedUserControllerImpl implements LoggedUserControllerInterface
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    @PostMapping("/getMyMatches")
+    @Override
+    public ResponseEntity<ServerResponseDTO<List<MatchDTO>>> getMyMatches(@RequestBody String usernameRequester)
+    {
+        HttpStatus responseHttp;
+        ServerResponseDTO<List<MatchDTO>> getAllMatchesResponse = null;
+        boolean checkLogin = SessionManagement.getInstance().isUserLogged(usernameRequester);
+        if(checkLogin)
+        {
+            MatchDAO matchDAO = new MatchDAO();
+            getAllMatchesResponse = new ServerResponseDTO<>(matchDAO.getMatches(usernameRequester));
+            responseHttp = HttpStatus.OK;
+        }
+        else
+            responseHttp = HttpStatus.UNAUTHORIZED;
+        return new ResponseEntity<>(getAllMatchesResponse, responseHttp);
+    }
+
     @PostMapping("/addNewMatch")
     @Override
     public ResponseEntity<ServerResponseDTO<Integer>>

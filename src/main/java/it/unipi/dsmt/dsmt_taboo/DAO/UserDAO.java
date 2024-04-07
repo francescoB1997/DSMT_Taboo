@@ -85,8 +85,8 @@ public class UserDAO extends BaseDAO
         }
     }
 
-    public boolean removeUser(String username) {
-        // Admininastrator Functionality
+    public Boolean removeUser(String username)
+    {
         String removeQuery = "DELETE FROM " + DB_NAME + ".user" + " WHERE username = ?";
 
         try (
@@ -96,8 +96,10 @@ public class UserDAO extends BaseDAO
             preparedStatement.setString(1, username);
             return preparedStatement.executeUpdate() > 0;
 
-        } catch (SQLException ex) {
-            ex.printStackTrace();
+        }
+        catch (SQLException ex)
+        {
+            System.out.println("Eccezione query RemoveUser --> " + ex.getMessage());
             return false;
         }
     }
@@ -130,8 +132,8 @@ public class UserDAO extends BaseDAO
             return  null;
         }
 
-        System.out.println("\t*** Below the matching of users based on the searchRequest: ***");
-        globalSearchUserList.forEach(searchedUserDTO -> System.out.println("[" + searchedUserDTO.getUsername() + "]"));
+        //System.out.println("\t*** Below the matching of users based on the searchRequest: ***");
+        //globalSearchUserList.forEach(searchedUserDTO -> System.out.println("[" + searchedUserDTO.getUsername() + "]"));
 
         return  globalSearchUserList;
     }

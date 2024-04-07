@@ -40,7 +40,7 @@ $(document).ready(function ()
 
     if(myRole === "Guesser")
         updateViewTabooCard();
-
+    updateViewRole();
     document.getElementById("timer" ).innerText = GAME_DURATION;
 });
 
@@ -302,9 +302,9 @@ function changeRoles()
         const myPosInTeam = match.inviterTeam.findIndex(name => name === username);
         myRole = match.rolesInviterTeam[myPosInTeam];
     }
-    else {
+    else
+    {
         const posPrompter = match.rolesRivalTeam.findIndex(role => role === 'Prompter');
-
         if (posPrompter !== -1)
         {
             const newPosPrompter = (posPrompter + 1) % match.rolesRivalTeam.length;
@@ -323,6 +323,7 @@ function changeRoles()
 
     changeVisibilityBtn("btnGuess",myRole === 'Guesser');
     changeVisibilityBtn("pass-button",myRole === 'Prompter');
+    updateViewRole();
 
     stopCondition++;
     if (stopCondition === match.rolesInviterTeam.length)
@@ -430,6 +431,13 @@ function decScoreCounter()
 function updateViewScoreCounter()
 {
     document.getElementById("score").innerText = score;
+}
+
+function updateViewRole()
+{
+    document.getElementById("usernameParagraph").innerText = username;
+    document.getElementById("normalText").innerText = " you're " + ((myRole === "Prompter") ? "the " : "one ");
+    document.getElementById("roleParagraph").innerText = myRole;
 }
 
 function loadTablesTeams()

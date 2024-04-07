@@ -5,7 +5,9 @@ import it.unipi.dsmt.dsmt_taboo.model.DTO.ServerResponseDTO;
 import it.unipi.dsmt.dsmt_taboo.DAO.UserDAO;
 import it.unipi.dsmt.dsmt_taboo.model.DTO.UserDTO;
 import it.unipi.dsmt.dsmt_taboo.exceptions.UserNotExistsException;
+import it.unipi.dsmt.dsmt_taboo.utility.Constant;
 import it.unipi.dsmt.dsmt_taboo.utility.SessionManagement;
+import org.apache.tomcat.util.bcel.Const;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,6 +32,7 @@ public class LoginControllerImpl implements LoginControllerInterface
         this.session = SessionManagement.getInstance();
         ServerResponseDTO <String> loginResponse;
         HttpStatus responseHttp;
+
         try
         {
             user.login(loginRequest.getUsername(), loginRequest.getPassword());

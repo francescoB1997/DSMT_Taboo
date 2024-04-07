@@ -31,7 +31,11 @@ body
 }
 
 h1 { color: #48054d; }
-h3 { color: #d44848; }
+h3
+{
+    color: #d44848;
+    font-style: italic;
+}
 
 label
 {

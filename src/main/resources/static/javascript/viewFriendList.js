@@ -11,7 +11,7 @@ $(document).ready(function ()
     ajaxGetFriendList();
     document.getElementById("btnShowSearchUser").onclick = function (e) { onClickListenerBtnShowSearchFunctions(); };
     document.getElementById("btnSearchUser").onclick = function (e) { onClickBtnSearchUser(e); };
-    //document.getElementById("txtboxUserToSearch").addEventListener("keypress", function (event) { onClickBtnSearchUser(event); });
+    document.getElementById("txtboxUserToSearch").addEventListener("keypress", handlerEnterKeyPress);
 });
 
 function checkLogin()
@@ -22,6 +22,14 @@ function checkLogin()
         return false;
     }
     return true;
+}
+
+function handlerEnterKeyPress(event)
+{
+    if (event.key === "Enter") {
+        event.preventDefault(); // Per evitare l'invio del modulo (se presente)
+        onClickBtnSearchUser(event);
+    }
 }
 
 /* -------------------------- Friend User Management -------------------------- */
@@ -163,7 +171,6 @@ function onClickListenerBtnRemoveFriends(button)
             contentType: 'application/json',
             success: function (serverResponse)
             {
-
                 let removeOperation = serverResponse.responseMessage;
                 switch (removeOperation)
                 {
@@ -222,7 +229,7 @@ function onClickBtnSearchUser(event)
                 createTableSearchedUserInHtml(searchedUserList);
             }
             else {
-                alert("- NOT FOUND - : No [" + usernameToSearch + "] found");
+                alert("- NOT FOUND - : The user  [" + usernameToSearch + "] was not found into db");
             }
         },
         error: function (serverResponse)

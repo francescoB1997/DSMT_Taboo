@@ -6,7 +6,7 @@ body
     font-family: sans-serif;
     line-height: 1.5;
     min-height: 100vh;
-    background-color: black; /* background: #f3f3f3; */
+    background-color: #48054d;
     flex-direction: column;
     margin: 0;
 }

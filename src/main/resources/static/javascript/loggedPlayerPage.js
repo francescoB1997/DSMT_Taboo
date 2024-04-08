@@ -11,6 +11,7 @@ $(document).ready(function ()
     document.getElementById('logoutBtn').onclick = function (e) { onClickListenerBtnLogout(); };
     document.getElementById('startMathBtn').onclick = function (e) { onClickListenerBtnStartMatch(); };
     document.getElementById('viewFriendsBtn').onclick = function (e) { onClickListenerBtnViewFriends(); };
+    document.getElementById("viewMatchesBtn").onclick = function (e) { onClickListenerBtnViewMatches(); };
 });
 
 function checkLogin()
@@ -66,6 +67,9 @@ function onClickListenerBtnViewFriends()
     // Per ogni amico, va creato a runTime un elemento HTML per mostrarlo.
 
     location.href = "../friendListPage.html";
-    return;
 }
 
+function onClickListenerBtnViewMatches()
+{
+    location.href = "../matchesListPage.html";
+}

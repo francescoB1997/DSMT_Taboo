@@ -23,65 +23,24 @@ table
     height: 400px;
     background-color: #eee;
     border: 1px solid #666666;
-    border-radius: 15px;
+    text-align: center;
     overflow-y: scroll;
-    text-align: center;
+    border-radius: 10px;
 }
 
-#btnShowSearchUser
-{
-    margin-bottom: 20px;
-}
+th{ color: #d44848;}
 
-.rowFriend
+p
 {
-    display: table-row;
-    width: 700px;
-    clear: both;
+    font-weight: bold;
+    font-size: 15px;
     text-align: center;
+    color: #48054d;
 }
 
 td
 {
     text-align: center;
-}
-
-p
-{
-    font-size: 15px;
-    text-align: center;
-    width: 50px;
-}
-
-.imgUserIcon
-{
-    width: 50px;
-    height: 50px;
-}
-
-.imgUserState
-{
-    width: 25px;
-    height: 25px;
-}
-
-#btnSearchUser
-{
-    padding: 15px;
-    margin-bottom: 20px;
-}
-
-.hidden
-{
-    visibility: hidden;
-    display: none;
-    z-index: 0;
-}
-
-.visible
-{
-    visibility: visible;
-    z-index: 10 ;
 }
 
 #imgHome

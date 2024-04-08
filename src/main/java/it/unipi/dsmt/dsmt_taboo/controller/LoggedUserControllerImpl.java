@@ -327,7 +327,6 @@ public class LoggedUserControllerImpl implements LoggedUserControllerInterface
                 System.out.println("Invito rifiutato");
             }
         }
-
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 

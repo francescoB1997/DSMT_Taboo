@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Manage Users</title>
+    <script src="https://code.jquery.com/jquery-3.4.0.min.js" type="text/javascript"></script>
+    <link href="./css/viewUserListPage.css" rel="stylesheet">
+    <script src="./javascript/viewUserList.js" type="text/javascript"></script>
+</head>
+<body>
+<div>
+    <div id="title"><h2> Manage Users </h2></div>
+    <a href="adminHomePage.html"> <img id="imgHome" src="./img/home.png" alt="home icon"></a>
+    <button id="btnShowSearchUser"> Search Users </button>
+    <input id="txtboxUserToSearch" placeholder="Insert a username to search" class="hidden"/>
+    <button id="btnSearchUser"class="hidden" > Search user </button>
+    <table id="usersListTable" class="tableUser">
+        <thead>
+        <tr>
+            <th id="thUserUsername">Username</th>
+            <th> </th>
+            <th>Online/Offline</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+    <table id="searchedUserListTable" class="tableUsers hidden">
+        <thead>
+        <tr>
+            <th id="thUsername"> Username</th>
+            <th> </th>
+            <th>Name</th>
+            <th>Surname</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>

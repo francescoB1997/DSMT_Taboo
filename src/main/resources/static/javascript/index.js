@@ -2,18 +2,23 @@
 $(document).ready(function ()
 {
     document.getElementById("loginBtn").onclick = function (e) { onClickListenerBtnLogin(); };
+
+    document.getElementById("txtboxUsername").addEventListener("keypress", handlerEnterKeyPress);
+    document.getElementById("txtboxPassword").addEventListener("keypress", handlerEnterKeyPress);
 });
+
+function handlerEnterKeyPress(event) {
+    if (event.key === "Enter") {
+        event.preventDefault(); // Per evitare l'invio del modulo (se presente)
+        onClickListenerBtnLogin();
+    }
+}
 
 function onClickListenerBtnLogin()
 {
     let username = document.getElementById('txtboxUsername').value
     let password = document.getElementById('txtboxPassword').value
 
-    if(username === "admin" && password === "admin")
-    {
-        location.href = "./admin.html"
-        sessionStorage.setItem("userLog","admin");
-    }
     let loginRequest = {
         username : username,
         password : password
@@ -25,11 +30,20 @@ function onClickListenerBtnLogin()
         type : "POST",
         dataType: "json",
         contentType: 'application/json',
-        success: function ()
+        success: function (serverResponse)
         {
-            sessionStorage.setItem("userLog", username);
-            //sessionStorage.setItem("gameId","");
-            location.href = "../loggedPlayerPage.html"
+            let responseMsg = serverResponse.responseMessage;
+            if(responseMsg === "LoginAdminOK"){
+                sessionStorage.setItem("userLog", username);
+                //sessionStorage.setItem("gameId","");
+                location.href = "../adminHomePage.html";
+                return;
+            } else {
+                sessionStorage.setItem("userLog", username);
+                //sessionStorage.setItem("gameId","");
+                location.href = "../loggedPlayerPage.html";
+                return;
+            }
         },
         error: function(xhr)
         {

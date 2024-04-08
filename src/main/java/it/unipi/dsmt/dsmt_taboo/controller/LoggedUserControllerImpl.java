@@ -74,12 +74,12 @@ public class LoggedUserControllerImpl implements LoggedUserControllerInterface
                                                                 getUsernameToSearch());
             if(userList.isEmpty())
             {
-                System.out.println("\nLoggedUserController: - NOT FOUND - Database NOT contain the user: "
+                System.out.println("\nLoggedUserController: - NOT FOUND - Database NOT contains the user: "
                                     + userSearchRequestDTO.getUsernameToSearch()+ "\n");
                 userListResponse = new ServerResponseDTO<>(null);
 
             } else {
-                System.out.println("\nLoggedUserController: - OK - Database contain the user: "
+                System.out.println("\nLoggedUserController: - OK - Database contains the user: "
                                     + userSearchRequestDTO.getUsernameToSearch() + "\n");
                 userListResponse = new ServerResponseDTO<>(userList);
             }

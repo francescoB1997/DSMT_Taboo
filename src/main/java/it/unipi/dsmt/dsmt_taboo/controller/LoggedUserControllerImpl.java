@@ -125,15 +125,14 @@ public class LoggedUserControllerImpl implements LoggedUserControllerInterface
                 removeFriendResponse = new ServerResponseDTO<>(requestStatus);
                 responseHttp = HttpStatus.BAD_REQUEST;
             }
-
             return new ResponseEntity<>(removeFriendResponse, responseHttp);
-
-        } else {
+        }
+        else
+        {
             System.out.println("\nLoggedUserController: searchUser request from a NonLogged user\n");
             removeFriendResponse = new ServerResponseDTO<>(null);
             responseHttp = HttpStatus.UNAUTHORIZED;
         }
-
         return new ResponseEntity<>(removeFriendResponse, responseHttp);
     }
 

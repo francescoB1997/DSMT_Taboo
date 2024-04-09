@@ -7,6 +7,8 @@ public class UserDTO
     private String surname;
     private String password;
 
+    private Boolean isLogged;
+
     public UserDTO(){};
 
     public UserDTO(String username, String name, String surname, String password)
@@ -15,7 +17,27 @@ public class UserDTO
         this.name = name;
         this.surname = surname;
         this.password = password;
+        this.isLogged = null;
     }
+
+    public UserDTO(String username, String name, String surname, String password, Boolean isLogged)
+    {
+        this.username = username;
+        this.name = name;
+        this.surname = surname;
+        this.password = password;
+        this.isLogged = isLogged;
+    }
+
+    public UserDTO(String username, String name, String surname, Boolean isLogged)
+    {
+        this.username = username;
+        this.name = name;
+        this.surname = surname;
+        this.password = null;
+        this.isLogged = isLogged;
+    }
+
     public UserDTO(String username, String name, String surname)
         // This constructor is used by SearchUser functionality
     {
@@ -49,5 +71,13 @@ public class UserDTO
     }
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public Boolean getLogged() {
+        return isLogged;
+    }
+
+    public void setLogged(Boolean logged) {
+        isLogged = logged;
     }
 }

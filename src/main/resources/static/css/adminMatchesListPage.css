@@ -1,0 +1,57 @@
+body
+{
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    font-family: sans-serif;
+    line-height: 1.5;
+    min-height: 100vh;
+    background: #48054d;
+    flex-direction: row;
+    margin: 0;
+}
+
+#title
+{
+    color: white;
+    text-align: center;
+}
+
+table
+{
+    width: 700px;
+    height: 400px;
+    background-color: #eee;
+    border: 1px solid #666666;
+    text-align: center;
+    overflow-y: scroll;
+    border-radius: 10px;
+}
+
+th{ color: #d44848;}
+
+p
+{
+    font-weight: bold;
+    font-size: 15px;
+    text-align: center;
+    color: #48054d;
+}
+
+td
+{
+    text-align: center;
+}
+
+#imgHome
+{
+    width: 40px;
+    height: 40px;
+    margin-right: 10px;
+    margin-bottom: -5px;
+}
+
+#imgHome:hover
+{
+    transform: scale(1.2);
+}

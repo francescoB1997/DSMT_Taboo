@@ -25,44 +25,35 @@ public class AdminControllerImpl implements AdminControllerInterface
     {
         HttpStatus responseHttp;
         ServerResponseDTO<Integer> userToDeleteResponse;
-        boolean checkLogin = SessionManagement.getInstance().
-                isUserLogged(userToDeleteRequest.getUsername());
+        boolean checkAdminLogin = SessionManagement.getInstance().isUserLogged(Constant.usernameAdmin);
         int requestStatus = 0;
 
-        if(checkLogin)
+        if(checkAdminLogin)
         {
-            if(!checkAdmin(userToDeleteRequest)) {
-                responseHttp = HttpStatus.UNAUTHORIZED;
-            } else {
-
-                UserDAO userDAO = new UserDAO();
-                boolean removeOK = userDAO.removeUser(userToDeleteRequest.getParameter());
-                if(removeOK)
-                {
-                    System.out.println("\nThe user "
-                            + userToDeleteRequest.getParameter() +
-                            " has been successfully removed\n");
-                    responseHttp = HttpStatus.OK;
-                    userToDeleteResponse = new ServerResponseDTO<>(requestStatus);
-                }
-                else
-                {
-                    System.out.println("\nError occurred during remove operation." +
-                            userToDeleteRequest.getParameter() +
-                            " has NOT been removed from your friend list\n");
-                    requestStatus++;
-                    responseHttp = HttpStatus.BAD_REQUEST;
-                    userToDeleteResponse = new ServerResponseDTO<>(requestStatus);
-                }
-                return new ResponseEntity<>(userToDeleteResponse, responseHttp);
+            UserDAO userDAO = new UserDAO();
+            boolean removeOK = userDAO.removeUser(userToDeleteRequest.getParameter());
+            if (removeOK)
+            {
+                System.out.println("\nThe user "
+                        + userToDeleteRequest.getParameter() +
+                        " has been successfully removed\n");
+                responseHttp = HttpStatus.OK;
+                userToDeleteResponse = new ServerResponseDTO<>(requestStatus);
             }
-
-            userToDeleteResponse = new ServerResponseDTO<>(null);
+            else
+            {
+                System.out.println("\nError occurred during remove operation." +
+                        userToDeleteRequest.getParameter() +
+                        " has NOT been removed from your friend list\n");
+                requestStatus++;
+                responseHttp = HttpStatus.BAD_REQUEST;
+                userToDeleteResponse = new ServerResponseDTO<>(requestStatus);
+            }
             return new ResponseEntity<>(userToDeleteResponse, responseHttp);
-
-        } else {
-
-            System.out.println("\nAdminController: getUsers request from a NonLogged user\n");
+        }
+        else
+        {
+            System.out.println("\nAdminController: deleteUserRequest from a NonLoggedAdmin");
             userToDeleteResponse = new ServerResponseDTO<>(null);
             responseHttp = HttpStatus.UNAUTHORIZED;
         }
@@ -77,47 +68,38 @@ public class AdminControllerImpl implements AdminControllerInterface
     {
         HttpStatus responseHttp;
         ServerResponseDTO<List<UserDTO>> getUserResponse = null;
-        boolean checkLogin = SessionManagement.getInstance().
-                isUserLogged(getUserRequest.getUsername());
+        boolean checkAdminLogin = SessionManagement.getInstance().isUserLogged(Constant.usernameAdmin);
 
-        if(checkLogin)
+        if(checkAdminLogin)
         {
-            if(!checkAdmin(getUserRequest)) {
-                responseHttp = HttpStatus.UNAUTHORIZED;
-            } else {
+            UserDAO userDAO = new UserDAO();
+            List<UserDTO> userList = userDAO.globalSearchUser(getUserRequest.getParameter());
 
-                UserDAO userDAO = new UserDAO();
-                List<UserDTO> userList = userDAO.globalSearchUser(getUserRequest.getParameter());
-
-                if(userList.isEmpty())
-                {
-                    if(!getUserRequest.getParameter().equals("")) {
-                        System.out.println("\nAdminController: - NOT FOUND - Database NOT contains the user: "
-                                           + getUserRequest.getParameter() + "\n");
-                    }
-                    getUserResponse = new ServerResponseDTO<>(null);
-
-                } else {
-
-                    if(!getUserRequest.getParameter().equals("")) {
-                        System.out.println("\nAdminController: - OK - Database contains the user: "
-                                           + getUserRequest.getParameter() + "\n");
-                    }
-                    getUserResponse = new ServerResponseDTO<>(userList);
+            if(userList.isEmpty())
+            {
+                if(!getUserRequest.getParameter().equals("")) {
+                    System.out.println("\nAdminController: - NOT FOUND - Database NOT contains the user: "
+                                       + getUserRequest.getParameter() + "\n");
                 }
-
-                responseHttp = HttpStatus.OK;
-                return new ResponseEntity<>(getUserResponse, responseHttp);
+                getUserResponse = new ServerResponseDTO<>(null);
             }
-
+            else
+            {
+                if(!getUserRequest.getParameter().equals("")) {
+                    System.out.println("\nAdminController: - OK - Database contains the user: "
+                                       + getUserRequest.getParameter() + "\n");
+                }
+                getUserResponse = new ServerResponseDTO<>(userList);
+            }
+            responseHttp = HttpStatus.OK;
             return new ResponseEntity<>(getUserResponse, responseHttp);
-
-        } else {
+        }
+        else
+        {
             System.out.println("\nAdminController: getUsers request from a NonLogged user\n");
             getUserResponse = new ServerResponseDTO<>(null);
             responseHttp = HttpStatus.UNAUTHORIZED;
         }
-
         return new ResponseEntity<>(getUserResponse, responseHttp);
     }
 
@@ -127,20 +109,17 @@ public class AdminControllerImpl implements AdminControllerInterface
 
         HttpStatus responseHttp;
         ServerResponseDTO<List<MatchDTO>> getAllMatchesResponse = null;
+        boolean checkAdminLogin = SessionManagement.getInstance().isUserLogged(Constant.usernameAdmin);
 
-        if(!checkAdmin(getAllMatchesRequest))
-            responseHttp = HttpStatus.UNAUTHORIZED;
-        else
+        if(checkAdminLogin)
         {
             MatchDAO matchDAO = new MatchDAO();
             getAllMatchesResponse = new ServerResponseDTO<>(matchDAO.getMatches(""));
             responseHttp = HttpStatus.OK;
         }
-        return new ResponseEntity<>(getAllMatchesResponse, responseHttp);
-    }
+        else
+            responseHttp = HttpStatus.UNAUTHORIZED;
 
-    private Boolean checkAdmin(AdminRequestDTO request)
-    {
-        return Constant.passwordAdmin.equals(request.getPassword());
+        return new ResponseEntity<>(getAllMatchesResponse, responseHttp);
     }
 }

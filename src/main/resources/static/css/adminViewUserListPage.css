@@ -6,9 +6,15 @@ body
     font-family: sans-serif;
     line-height: 1.5;
     min-height: 100vh;
-    background: #f3f3f3;
+    background: #48054d;
     flex-direction: row;
     margin: 0;
+}
+
+#title
+{
+    color: white;
+    text-align: center;
 }
 
 table
@@ -78,8 +84,13 @@ p
 
 #imgHome
 {
-    width: 25px;
-    height: 25px;
+    width: 40px;
+    height: 40px;
     margin-right: 10px;
     margin-bottom: -5px;
+}
+
+#imgHome:hover
+{
+    transform: scale(1.2);
 }

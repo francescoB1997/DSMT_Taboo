@@ -15,9 +15,9 @@ $(document).ready(function ()
 
 function checkLogin()
 {
-    if(!username)
+    if(!username || (username !== "admin"))
     {
-        alert("You're not logged as ADMIN");
+        //alert("You're not logged as ADMIN");
         return false;
     }
     return true;
@@ -54,18 +54,11 @@ function onClickListenerBtnLogout()
 
 function onClickListenerBtnBrowesGames()
 {
-    //Contattare servlet per la creazione del team, oppure reindirizzare verso una createTeams.html
-    //in cui selezionare da una lista di AMICI ONLINE quelli da inserire nella squadra (se è semplice, sarebbbe carino il drag and drop)
-    location.href = "../matchPage.html";
+    location.href = "../adminMatchesListPage.html";
 }
 
 function onClickListenerBtnViewUsers()
 {
-    //Fare una chiamata asincrona AJAX per ottenere la lista degli amici, ossia un JSON con una lista di nomi
-    // e per ognuno, ci vede essere l'info se è Online o meno.
-    // Per ogni amico, va creato a runTime un elemento HTML per mostrarlo.
-
-    location.href = "../uersListPage.html";
-    return;
+    location.href = "../adminUserListPage.html";
 }
 

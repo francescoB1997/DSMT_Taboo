@@ -18,7 +18,7 @@ body {
     padding: 10px 20px;
     transition: transform 0.2s;
     text-align: center;
-   width: 500px;
+    width: 500px;
 }
 
 .flex
@@ -165,5 +165,6 @@ h2 p
     border: 3px solid #d44848;
     border-radius: 50px;
     padding: 20px;
+    display: inline-flex;
 }
 

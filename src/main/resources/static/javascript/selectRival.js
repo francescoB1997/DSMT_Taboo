@@ -142,7 +142,14 @@ function ajaxGetFriendList()
 
 function onClickListenerBtnInvite()
 {
-    const usernameRival = document.querySelector('input[name="rival"]:checked').id.toString().split('&')[1];
+    const radioSelected = document.querySelector('input[name="rival"]:checked');
+    if(radioSelected === null || radioSelected === undefined)
+    {
+        alert("You must choose your Rival");
+        return;
+    }
+    const usernameRival = radioSelected.id.toString().split('&')[1];
+
     inviteFriendRequest.rivals.push(usernameRival);
     sessionStorage.setItem("myRole", inviteFriendRequest.roles[0]);
     $.ajax({

@@ -17,9 +17,9 @@ $(document).ready(function ()
 
 function checkLogin()
 {
-    if(!username)
+    if(!username || (username !== "admin"))
     {
-        alert("You're not logged as ADMIN");
+        //alert("You're not logged as ADMIN");
         return false;
     }
     return true;
@@ -76,7 +76,6 @@ function ajaxGetUserList()
 {
     let userListRequest = {
         username: username,
-        password : "admin",
         parameter : ""
     };
     $.ajax({
@@ -93,7 +92,7 @@ function ajaxGetUserList()
                 createUserListInHtml(userDTOList);
             }
             else
-                alert("UserList vuota");
+                alert("User not found");
         },
         error: function (xhr)
         {

@@ -3,6 +3,8 @@ package it.unipi.dsmt.dsmt_taboo.DAO;
 import it.unipi.dsmt.dsmt_taboo.exceptions.UserNotExistsException;
 import it.unipi.dsmt.dsmt_taboo.model.DTO.FriendDTO;
 import it.unipi.dsmt.dsmt_taboo.model.DTO.UserDTO;
+import it.unipi.dsmt.dsmt_taboo.utility.SessionManagement;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -123,7 +125,8 @@ public class UserDAO extends BaseDAO
                     String username = resultSet.getString("Username");
                     String name = resultSet.getString("Name");
                     String surname = resultSet.getString("Surname");
-                    globalSearchUserList.add(new UserDTO(username, name, surname));
+
+                    globalSearchUserList.add(new UserDTO(username, name, surname, SessionManagement.getInstance().isUserLogged(username)));
                 }
             }
         } catch (SQLException ex)

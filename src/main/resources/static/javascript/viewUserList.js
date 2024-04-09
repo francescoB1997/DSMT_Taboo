@@ -1,5 +1,5 @@
 const username = sessionStorage.getItem("userLog");
-let showFriendList = true;
+let showUsersList = true;
 
 $(document).ready(function ()
 {
@@ -8,7 +8,8 @@ $(document).ready(function ()
         location.href = "../";
         return;
     }
-    ajaxGetFriendList();
+
+    ajaxGetUserList();
     document.getElementById("btnShowSearchUser").onclick = function (e) { onClickListenerBtnShowSearchFunctions(); };
     document.getElementById("btnSearchUser").onclick = function (e) { onClickBtnSearchUser(e); };
     document.getElementById("txtboxUserToSearch").addEventListener("keypress", handlerEnterKeyPress);
@@ -18,7 +19,7 @@ function checkLogin()
 {
     if(!username)
     {
-        alert("You're not logged");
+        alert("You're not logged as ADMIN");
         return false;
     }
     return true;
@@ -32,32 +33,32 @@ function handlerEnterKeyPress(event)
     }
 }
 
-/* -------------------------- Friend User Management -------------------------- */
+/* -------------------------- User Management -------------------------- */
 
 function onClickListenerBtnShowSearchFunctions()
 {
     let searchedUserTable = document.getElementById("searchedUserListTable");
-    let friendListTable = document.getElementById("friendListTable");
+    let usersListTable = document.getElementById("usersListTable");
     let btnSearchUser = document.getElementById("btnSearchUser");
     let btnShowSearchUser = document.getElementById("btnShowSearchUser");
     let txtboxUserToSearch = document.getElementById("txtboxUserToSearch");
 
-    if(showFriendList)
+    if(showUsersList)
     {
-        friendListTable.classList.remove("visible");
-        friendListTable.classList.add("hidden");
+        usersListTable.classList.remove("visible");
+        usersListTable.classList.add("hidden");
         searchedUserTable.classList.remove("hidden");
         searchedUserTable.classList.add("visible");
         btnSearchUser.classList.remove("hidden");
         btnSearchUser.classList.add("visible");
         txtboxUserToSearch.classList.remove("hidden");
         txtboxUserToSearch.classList.add("visible");
-        btnShowSearchUser.innerText = "Back To Friend List";
+        btnShowSearchUser.innerText = "Back To Users List";
     }
     else
     {
-        friendListTable.classList.remove("hidden");
-        friendListTable.classList.add("visible");
+        usersListTable.classList.remove("hidden");
+        usersListTable.classList.add("visible");
         searchedUserTable.classList.remove("visible");
         searchedUserTable.classList.add("hidden");
         btnSearchUser.classList.remove("visible");
@@ -65,50 +66,52 @@ function onClickListenerBtnShowSearchFunctions()
         txtboxUserToSearch.classList.remove("visible");
         txtboxUserToSearch.classList.add("hidden");
         btnShowSearchUser.innerText = "Search New Friends";
-        ajaxGetFriendList();
+        ajaxGetUserList();
         emptyTable(searchedUserTable);
     }
-    showFriendList = !showFriendList;
+    showUsersList = !showUsersList;
 }
 
-function ajaxGetFriendList()
+function ajaxGetUserList()
 {
-    //Fare una chiamata asincrona AJAX per ottenere la lista degli amici, ossia un JSON con una lista di nomi
-    // e per ognuno, ci vede essere l'info se è Online o meno.
-    // Per ogni amico, va creato a runTime un elemento HTML per mostrarlo.
-
+    let userListRequest = {
+        username: username,
+        password : "admin",
+        parameter : ""
+    };
     $.ajax({
-        url: "http://localhost:8080/getFriendList",
+        url: "http://localhost:8080/getUsers",
         type: "POST",
-        data: username,
+        data: JSON.stringify(userListRequest),
+        dataType: "json",
         contentType: 'application/json',
         success: function (serverResponse)
         {
-            let friendDTOList = serverResponse.responseMessage;
-            if(friendDTOList)
+            let userDTOList = serverResponse.responseMessage;
+            if(userDTOList)
             {
-                createFriendListInHtml(friendDTOList);
+                createUserListInHtml(userDTOList);
             }
             else
-                alert("friendList vuota");
+                alert("UserList vuota");
         },
-        error: function ()
+        error: function (xhr)
         {
-            alert("Unauthorized Request!");
+            alert("Unauthorized Here Request!");
             location.href = "../";
         }
     });
 }
 
 
-function createFriendListInHtml(friendDTOList)
+function createUserListInHtml(userDTOList)
 {
-    let tableFriendList = document.getElementById("friendListTable");
-    emptyTable(tableFriendList);
-    while(friend = friendDTOList.pop())
+    let tableUsersList = document.getElementById("usersListTable");
+    emptyTable(tableUsersList);
+    while(user = userDTOList.pop())
     {
-        let trFriend = document.createElement("tr");
-        trFriend.id = friend.username;
+        let trUser = document.createElement("tr");
+        trUser.id = user.username;
 
         let tdUserIcon = document.createElement("td");
         let imgUserIcon = document.createElement("img");
@@ -116,35 +119,35 @@ function createFriendListInHtml(friendDTOList)
         imgUserIcon.src = "../img/user_icon.png";
         imgUserIcon.alt = "user icon image";
         tdUserIcon.append(imgUserIcon);
-        trFriend.append(tdUserIcon);
+        trUser.append(tdUserIcon);
 
         let tdUsername = document.createElement("td");
-        tdUsername.id = friend.username;
+        tdUsername.id = user.username;
         let pUsername = document.createElement("p");
-        pUsername.innerText = friend.username;
+        pUsername.innerText = user.username;
         tdUsername.append(pUsername);
-        trFriend.append(tdUsername);
+        trUser.append(tdUsername);
 
         let tdStatus = document.createElement("td");
         tdStatus.className = "";
         let imgUserState = document.createElement("img");
         imgUserState.className = "imgUserState";
-        imgUserState.src = (friend.logged) ? "../img/online.png" : "../img/offline.png";
+        imgUserState.src = (user.logged) ? "../img/online.png" : "../img/offline.png";
         imgUserState.alt ="img user state (online or offline)";
         tdStatus.append(imgUserState);
-        trFriend.append(tdStatus);
+        trUser.append(tdStatus);
 
         let tdAction = document.createElement("td");
         tdAction.className = "";
-        let btnRemoveFriend = document.createElement("button");
-        btnRemoveFriend.className = "";
-        btnRemoveFriend.id = "btnRemoveFriend&" + trFriend.id;
-        btnRemoveFriend.innerText = "Remove Friend";
-        btnRemoveFriend.onclick = function (e) { onClickListenerBtnRemoveFriends(this); };
-        tdAction.append(btnRemoveFriend);
-        trFriend.append(tdAction);
+        let btnRemoveUser = document.createElement("button");
+        btnRemoveUser.className = "";
+        btnRemoveUser.id = "btnRemoveUser&" + trUser.id;
+        btnRemoveUser.innerText = "Remove User";
+        btnRemoveUser.onclick = function (e) { onClickListenerBtnDeleteUser(this); };
+        tdAction.append(btnRemoveUser);
+        trUser.append(tdAction);
 
-        tableFriendList.append(trFriend);
+        tableUsersList.append(trUser);
     }
 }
 
@@ -154,20 +157,22 @@ function emptyTable(table)
         table.removeChild(table.firstChild);
 }
 
-function onClickListenerBtnRemoveFriends(button)
+function onClickListenerBtnDeleteUser(button)
 {
     const usernameToRemove = button.id.toString().split('&')[1];
-    if (confirm("Sicuro di voler rimuovere " + usernameToRemove + " dai tuoi amici?")) {
+    if (confirm("Sicuro di voler rimuovere " + usernameToRemove + " dalla lista utenti?")) {
 
-        let removeFriendRequest = {
-            username : username,
-            usernameFriend : usernameToRemove
+        let removeUserRequest = {
+            username: username,
+            password : "admin",
+            parameter : usernameToRemove
         };
 
         $.ajax({
-            url: "http://localhost:8080/removeFriend",
+            url: "http://localhost:8080/deleteUser",
             type: "POST",
-            data:  JSON.stringify(removeFriendRequest),
+            data:  JSON.stringify(removeUserRequest),
+            dataType: "json",
             contentType: 'application/json',
             success: function (serverResponse)
             {
@@ -176,17 +181,15 @@ function onClickListenerBtnRemoveFriends(button)
                 {
                     case 0:
                         alert("The User " + usernameToRemove + " has been successfully removed.");
-                        ajaxGetFriendList();
+                        ajaxGetUserList();
                         break;
                     case 1:
                         alert("We're Sorry, an Error occurred during remove operation." +
-                            " The friend " + usernameToRemove + " has NOT been removed from your friend list");
+                            " The User " + usernameToRemove + " has NOT been removed from your Users list");
                         break;
                     default:
-                        //alert("Default: " + responseMessage);
                         break;
                 }
-
             },
             error: function (xhr)
             {
@@ -208,33 +211,30 @@ function onClickBtnSearchUser(event)
     }
     document.getElementById("txtboxUserToSearch").value = "";
     let userSearchRequestDTO = {
-        requesterUsername : username,
-        usernameToSearch : usernameToSearch
+        username: username,
+        password: "admin",
+        parameter : usernameToSearch
     };
 
-    //alert("userSearchRequestDTO: " + userSearchRequestDTO.requesterUsername + ", " + userSearchRequestDTO.usernameToSearch);
     $.ajax({
-        url: "http://localhost:8080/searchUser",
+        url: "http://localhost:8080/getUsers",
         type: "POST",
         data: JSON.stringify(userSearchRequestDTO),
         dataType: "json",
         contentType: 'application/json',
         success: function (serverResponse)
         {
-            //alert(serverResponse);
             let searchedUserList = serverResponse.responseMessage;
             if (searchedUserList)
             {
-                //alert("- OK - : L'utente ricercato è presente nel Database");
                 createTableSearchedUserInHtml(searchedUserList);
             }
             else {
-                alert("- NOT FOUND - : The user  [" + usernameToSearch + "] was not found into db");
+                alert("- NOT FOUND - : The user [" + usernameToSearch + "] was not found into db");
             }
         },
         error: function (serverResponse)
         {
-            //alert(serverResponse);
             alert("Unauthorized Request! You must be logged to navigate this page");
             location.href = "../";
         }
@@ -282,56 +282,14 @@ function createTableSearchedUserInHtml(searchedUserList)
 
         let tdAction = document.createElement("td");
         tdAction.className = "";
-        let btnAddFriend = document.createElement("button");
-        btnAddFriend.className = "";
-        btnAddFriend.id = "btnAddFriend&" + trUser.id;
-        btnAddFriend.innerText = "Add Friend";
-        if(btnAddFriend.id === ("btnAddFriend&" + username))
-            btnAddFriend.disabled = true;
-        else
-            btnAddFriend.onclick = function (e) { onClickListenerBtnAddFriends(this); };
-        tdAction.append(btnAddFriend);
+        let btnRemoveUser = document.createElement("button");
+        btnRemoveUser.className = "";
+        btnRemoveUser.id = "btnRemoveUser&" + trUser.id;
+        btnRemoveUser.innerText = "Remove User";
+        btnRemoveUser.onclick = function (e) { onClickListenerBtnDeleteUser(this); };
+        tdAction.append(btnRemoveUser);
         trUser.append(tdAction);
 
         searchedUserTable.append(trUser);
     }
-}
-
-function onClickListenerBtnAddFriends(button)
-{
-    const usernameFriendToAdd = button.id.toString().split('&')[1];
-
-    let addFriendRequest = {
-        username : username,
-        usernameFriend : usernameFriendToAdd
-    };
-    $.ajax({
-        url: "http://localhost:8080/addFriend",
-        type: "POST",
-        data: JSON.stringify(addFriendRequest),
-        dataType: "json",
-        contentType: 'application/json',
-        success: function (serverResponse)
-        {
-            let responseMessage= serverResponse.responseMessage;
-            switch (responseMessage)
-            {
-                case 0:
-                    alert("Already friends");
-                    break;
-                case 1:
-                    alert("Friend added successfully");
-                    break;
-                default:
-                    alert("Default: " + responseMessage);
-                    break;
-            }
-        },
-        error: function (xhr)
-        {
-            //alert(serverResponse);
-            let responseMessage = xhr.responseText;
-            alert("Error: " + responseMessage);
-        }
-    });
 }

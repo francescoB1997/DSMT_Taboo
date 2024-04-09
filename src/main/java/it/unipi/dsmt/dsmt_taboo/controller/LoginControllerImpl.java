@@ -28,24 +28,41 @@ public class LoginControllerImpl implements LoginControllerInterface
     public ResponseEntity<ServerResponseDTO<String>> loginRequest(@RequestBody  LoginRequestDTO loginRequest)
         // This function handle the login request of a user
     {
-        System.out.println("LoginController: login request from [" + loginRequest.getUsername() + "]");
+        String usernameRequester = loginRequest.getUsername();
+        String passwordRequester = loginRequest.getPassword();
         this.session = SessionManagement.getInstance();
         ServerResponseDTO <String> loginResponse;
         HttpStatus responseHttp;
 
-        try
+        System.out.println("LoginController: login request from [" + usernameRequester + "]");
+
+        if(usernameRequester.equals(Constant.usernameAdmin)
+                && passwordRequester.equals(Constant.passwordAdmin))
         {
-            user.login(loginRequest.getUsername(), loginRequest.getPassword());
+            loginResponse = new ServerResponseDTO<>("LoginAdminOK");
+            responseHttp = HttpStatus.OK;
+            session.setLogUser(usernameRequester);
+
+            System.out.println("LoginController: the user [" + usernameRequester + "] logged successfully");
+
+            return new ResponseEntity<>(loginResponse, responseHttp);
+        }
+
+        try {
+            user.login(usernameRequester, passwordRequester);
             loginResponse = new ServerResponseDTO<>("LoginOK");
             responseHttp = HttpStatus.OK;
-            session.setLogUser(loginRequest.getUsername());
-        }
-        catch (UserNotExistsException e)
-        {
+            session.setLogUser(usernameRequester);
+
+            System.out.println("LoginController: the user [" + usernameRequester + "] logged successfully");
+
+        } catch (UserNotExistsException e) {
+
             loginResponse = new ServerResponseDTO<>(e.getMessage());
             responseHttp = HttpStatus.BAD_REQUEST;
             System.out.println("LoginControllerImpl -> " + e.getMessage());
         }
+
         return new ResponseEntity<>(loginResponse, responseHttp);
     }
 
@@ -54,10 +71,12 @@ public class LoginControllerImpl implements LoginControllerInterface
     public ResponseEntity<ServerResponseDTO<String>> logoutRequest(@RequestBody String username)
         // This method is the handler for the logout requests
     {
-        System.out.println("LoginController: logout request from [" + username + "]");
         ServerResponseDTO<String> logoutResponse;
         HttpStatus responseHttp;
         session = SessionManagement.getInstance();
+
+        System.out.println("LoginController: logout request from [" + username + "]");
+
         if(!session.isUserLogged(username))
         {
             logoutResponse = new ServerResponseDTO<>("Logout Failed");
@@ -69,6 +88,9 @@ public class LoginControllerImpl implements LoginControllerInterface
             responseHttp = HttpStatus.OK;
         }
         session.logoutUser(username);
+
+        System.out.println("LoginController: the user [" + username + "] successfully exited the system");
+
         return new ResponseEntity<>(logoutResponse, responseHttp);
     }
 

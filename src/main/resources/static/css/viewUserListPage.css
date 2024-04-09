@@ -1,0 +1,85 @@
+body
+{
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    font-family: sans-serif;
+    line-height: 1.5;
+    min-height: 100vh;
+    background: #f3f3f3;
+    flex-direction: row;
+    margin: 0;
+}
+
+table
+{
+    width: 700px;
+    height: 400px;
+    background-color: #eee;
+    border: 1px solid #666666;
+    text-align: center;
+}
+
+#btnShowSearchUser
+{
+    margin-bottom: 20px;
+}
+
+.rowFriend
+{
+    display: table-row;
+    width: 700px;
+    clear: both;
+    text-align: center;
+}
+
+td
+{
+    text-align: center;
+}
+
+p
+{
+    font-size: 15px;
+    text-align: center;
+    width: 50px;
+}
+
+.imgUserIcon
+{
+    width: 50px;
+    height: 50px;
+}
+
+.imgUserState
+{
+    width: 25px;
+    height: 25px;
+}
+
+#btnSearchUser
+{
+    padding: 15px;
+    margin-bottom: 20px;
+}
+
+.hidden
+{
+    visibility: hidden;
+    display: none;
+    z-index: 0;
+}
+
+.visible
+{
+    visibility: visible;
+    z-index: 10 ;
+}
+
+#imgHome
+{
+    width: 25px;
+    height: 25px;
+    margin-right: 10px;
+    margin-bottom: -5px;
+}

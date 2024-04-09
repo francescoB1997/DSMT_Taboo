@@ -15,9 +15,6 @@ public interface AdminControllerInterface
     // get all signed user
     public ResponseEntity<ServerResponseDTO<List<UserDTO>>> getAllSignedUsers(@RequestBody AdminRequestDTO getAllUserRequest);
 
-    // get all online user ?
-
-
     // search all matches
     public ResponseEntity<ServerResponseDTO<List<MatchDTO>>> getAllMatches(@RequestBody AdminRequestDTO getAllMatchesRequest);
 

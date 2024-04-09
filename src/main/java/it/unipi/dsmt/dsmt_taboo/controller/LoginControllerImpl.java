@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-//@SessionAttributes("userlog")     DA INVESTIGARE!!!
 public class LoginControllerImpl implements LoginControllerInterface
 {
     @Autowired

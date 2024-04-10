@@ -11,23 +11,41 @@ body
     margin: 0;
 }
 
+#Title{
+    margin: 0;
+    padding: 20px 0 0;
+    color: #48054d;
+    font-size: 43px;
+    font-weight: bold;
+    text-align: center;
+}
+
+p{
+    display: inline-flex;
+    font-size: 15px;
+    font-style: italic;
+    margin-left: auto;
+    margin-right: 10px;
+}
+
 .role
 {
     display: inline-flex;
     font-family: sans-serif;
     justify-content: center;
-    font-size: 25px;
+    font-size: 30px;
     color: #d44848;
 }
 
 .importantText
 {
     font-family: sans-serif;
-    font-size: 25px;
+    font-size: 30px;
     display: inline-flex;
     font-weight: bold;
     color: #d44848;
 }
+
 
 ::-webkit-scrollbar {
     width: 5px;
@@ -66,7 +84,7 @@ body
     display: inline-flex;
     width: 500px;
     height: 350px;
-    background-color: green;
+    background-color: #ffffff;
 }
 
 #tabooCardGameArea
@@ -74,7 +92,7 @@ body
     width: 50%;
     height: 350px;
     border-radius: 10px;
-    background-color: #02a089;
+    background-color: #341850;
 }
 
 h1
@@ -92,7 +110,7 @@ h1
     display:block;
     width: 50%;
     height: 350px;
-    background-color: #7abaff;
+    background-color: #809597;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
@@ -101,9 +119,9 @@ h3
 {
     margin: 0;
     padding: 5px 0 0;
-    color: darkblue;
+    color: #ffffff;
     font-size: 20px;
-    font-weight: normal;
+    font-weight: bold;
     text-align: center;
 }
 
@@ -111,7 +129,7 @@ h3
 {
     width: 100%;
     height: 315px;
-    background-color: #e83e8c;
+    background-color: #dad0b8;
     text-align: center;
     border-radius: 8px;
     overflow-y: scroll;
@@ -141,7 +159,72 @@ li
 .info-match-container {
     display: flex;
     align-items: center;
+    font-weight: bold;
+    margin-left: auto;
+    margin-right: auto;
+
 }
+
+.timer-container {
+    display: flex;
+    align-items: center;
+    margin-left: auto;
+}
+
+.timer-label {
+    margin-right: 5px;
+}
+
+.timer-value {
+    margin-right: 10px;
+}
+
+.score-container {
+    display: flex;
+    align-items: center;
+    margin-left: 20px;
+    margin-right: 10px;
+}
+
+.score-label {
+    margin-right: 5px;
+    margin-left: 20px;
+}
+
+.score-value {
+    margin-right: 10px;
+}
+
+.passCard-label {
+    margin-right: 5px;
+    margin-left: 5px;
+}
+
+.pass-card-value {
+    margin-right: 10px;
+}
+
+.username-container {
+    display: flex;
+    align-items: center;
+    margin-right: auto;
+}
+
+.username-label {
+    margin-right: 5px;
+}
+
+.username-value {
+    margin-right: 10px;
+}
+
+.taboo_btn-container {
+    display: flex;
+    align-items: center;
+    margin-left: auto;
+    margin-right: 25%;
+}
+
 .specialBtnContainer {
     display: flex;
     align-items: center;
@@ -153,44 +236,18 @@ li
     margin-right: auto;
 }
 
-.taboo_btn-container {
-    display: flex;
-    align-items: center;
-    margin-left: auto;
-    margin-right: 25%;
-}
-
-.timer-container {
-    display: flex;
-    align-items: center;
-    margin-left: auto;
-}
-
-.timer-label {
-    margin-right: 10px;
-}
-
-.timer-value {
-    margin-right: 10px;
-}
-
-.username-container {
-    margin-left: auto;
-    margin-right: auto;
-}
-
 #containerTableRival
 {
     text-align: center;
-    border: 3px solid #007bff;
-    border-radius: 50px;
+    border: 3px solid #002aff;
+    border-radius: 25px;
 }
 
 #containerTableFriend
 {
     text-align: center;
     border: 3px solid #d44848;
-    border-radius: 50px;
+    border-radius: 25px;
 }
 
 .img
@@ -201,6 +258,7 @@ li
 
 #hourglassIcon
 {
+    margin-left: -5px;
     width: 25px;
     height: 25px;
 }
@@ -285,7 +343,11 @@ button
 
 .textboxWordToGuess
 {
-    width: 500px;
+    width: 490px;
+    height: 33px;
+    margin-top: 15px;
+    margin-bottom: 5px;
+    text-align: center;
 }
 
 .imgUserIcon

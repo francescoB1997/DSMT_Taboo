@@ -1,5 +1,5 @@
 -module(player_handler).
--export([login/2, send_msg_to_friends/2, attemptGuessWord/2, wakeUpAllGuessers/1, assignTabooCard/1, getRandomTabooCard/0]).
+-export([login/2, send_msg_to_friends/2, attemptGuessWord/2, wakeUpAllGuessers/1, assignTabooCard/1, getRandomTabooCard/0, send_result_checkWord/2]).
 
 
 login (DecodedJson, State = {User, EmptyRole, Friends, GenericMessage, EmptyTabooCard}) ->
@@ -60,7 +60,7 @@ send_msg_to_friends( DecodedJson, State = {Username, Role, FriendList, GenericMe
 
 
 % Only when you are GUESSER
-attemptGuessWord(DecodedJson, State = {Username, Role, [PrompterName | []], GenericMessage, TabooCard}) when Role == <<"Guesser">> ->
+attemptGuessWord(DecodedJson, State = {Username, Role, [PrompterName | [OtherFriends]], GenericMessage, TabooCard}) when Role == <<"Guesser">> ->
     %MyPrompterName = maps:get(<<"myPrompterName">>, DecodedJson),
     AttemptedWord = maps:get(<<"word">>, DecodedJson),
     io:format("ATTEMPT_GUESS: io sono ~p, word = ~p, mioPrompter = ~p~n", [Username, AttemptedWord, PrompterName]),
@@ -118,6 +118,11 @@ send_msg(Msg, Friend) ->
             send_no
     end.
 
+send_result_checkWord([], _) -> ok; % Used only by the prompter to notify all guesser to increase its scoreCounter or not.
+send_result_checkWord([Friend | OtherFriend], Result) ->
+    PidFriend = global:whereis_name(Friend),
+    PidFriend ! {resultAttemptGuessWord, Result}.
+
 
 % [si, usa, per, bere] , [bicchiere, bibita, bere, mano, sete, acqua] -----------------------> [[],[],[],[bere],[],[]]
 checkTabooWords(WordList , TabooCard) ->
@@ -127,7 +132,7 @@ checkTabooWords(WordList , TabooCard) ->
 
 
 waitResult(MyPrompterPID, AttemptedWord) ->
-    MyPrompterPID ! {attemptGuessWord, self(), AttemptedWord},
+    MyPrompterPID ! {attemptGuessWord, AttemptedWord},
     receive % mettere una after
         {resultAttemptGuessWord, Result} ->
             io:format("checkWord result: ~p~n", [Result]),
@@ -136,8 +141,8 @@ waitResult(MyPrompterPID, AttemptedWord) ->
             io:format("checkWord messaggio no sense ~n"),
             no
     after
-        1500 ->
-            io:format("****************************** SVegliato waitResult : ~p~n", [AttemptedWord])
+        5000 ->
+            io:format("****************************** Timer scaduto waitResult : ~p~n", [AttemptedWord])
     end.
 
 

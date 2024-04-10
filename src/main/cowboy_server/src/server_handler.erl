@@ -44,10 +44,10 @@ websocket_handle(Frame = {text, JsonMsg}, State = {Username, Role, FriendList, G
     	JsonMessage = jsx:encode([{<<"action">>, msgFromFriend}, {<<"msg">>, MsgFromFriend}]),
     	{[{text, JsonMessage}], State};
 
-    websocket_info( {attemptGuessWord, RequesterPID, AttemptedWord},
+    websocket_info( {attemptGuessWord, AttemptedWord},
                     State = {Username, Role, FriendList, GenericMessage, [AttemptedWord, TabooWord1, TabooWord2, TabooWord3, TabooWord4, TabooWord5]} ) ->
         Result = true,
-        RequesterPID ! {resultAttemptGuessWord, Result},
+        player_handler:
         NewTabooCard = player_handler:getRandomTabooCard(),
         JsonMessage = jsx:encode([{<<"action">>, attemptGuessWord}, {<<"msg">>, true}, {<<"newTabooCard">>, NewTabooCard}]),
         {[{text, JsonMessage}], {Username, Role, FriendList, GenericMessage, NewTabooCard}};

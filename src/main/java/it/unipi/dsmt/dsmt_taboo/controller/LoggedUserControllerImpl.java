@@ -5,19 +5,15 @@ import it.unipi.dsmt.dsmt_taboo.DAO.MatchDAO;
 import it.unipi.dsmt.dsmt_taboo.DAO.UserDAO;
 import it.unipi.dsmt.dsmt_taboo.model.DTO.*;
 import it.unipi.dsmt.dsmt_taboo.model.entity.*;
-import it.unipi.dsmt.dsmt_taboo.service.UserService;
 import it.unipi.dsmt.dsmt_taboo.utility.SessionManagement;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 
 @RestController
 public class LoggedUserControllerImpl implements LoggedUserControllerInterface
@@ -162,7 +158,6 @@ public class LoggedUserControllerImpl implements LoggedUserControllerInterface
         return new ResponseEntity<>(addFriendResponse, responseHttp);
     }
 
-    UserService userService = new UserService();
     Vector<InviteFriends> invites = new Vector<>();
     final ConcurrentHashMap<String, PendingMatch> pendingMatchMap = new ConcurrentHashMap<>();
     final ConcurrentHashMap<String, MatchDTO> runningMatch = new ConcurrentHashMap<>();

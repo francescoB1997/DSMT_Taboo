@@ -77,7 +77,7 @@ function onClickListenerBtnInvite()
         let randomPositionPrompter = getRandomInt(0, maxIndex);
         invite.rivalsRoles[randomPositionPrompter] = "Prompter";
     }
-    alert("invite: " + JSON.stringify(invite));
+    //alert("invite: " + JSON.stringify(invite));
 
     //alert("Array: " + inviteFriendRequest.roles);
     //sessionStorage.setItem("inviteFriendRequest", JSON.stringify(invite));

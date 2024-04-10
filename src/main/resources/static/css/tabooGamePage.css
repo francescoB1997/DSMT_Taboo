@@ -155,13 +155,13 @@ li
     padding-top: 20px;
 }
 
-
 .info-match-container {
     display: flex;
     align-items: center;
     font-weight: bold;
     margin-left: auto;
     margin-right: auto;
+    margin-bottom: 10px;
 }
 
 .timer-container {
@@ -215,6 +215,8 @@ li
 
 .username-value {
     margin-right: 10px;
+    font-style: italic;
+    color: #d44848;
 }
 
 .taboo_btn-container {
@@ -227,11 +229,13 @@ li
 .specialBtnContainer {
     display: flex;
     align-items: center;
+    margin-left: auto;
+    margin-right: auto;
 }
 .pass_btn-container {
     display: flex;
     align-items: center;
-    margin-left: 25%;
+    margin-left: auto;
     margin-right: auto;
 }
 
@@ -291,7 +295,7 @@ button
     padding: 15px;
     border-radius: 10px;
     margin-top: 20px;
-    margin-bottom: 15px;
+
     border: none;
     color: white;
     cursor: pointer;
@@ -310,20 +314,6 @@ button
 .enabled {
     opacity: 1; /* Opacità ripristinata per il pulsante disabilitato */
      /* Cambia il cursore quando si passa sopra il pulsante disabilitato */
-}
-
-#img_taboo_text
-{
-    border-radius: 5px;
-    height: 60px;
-    width: auto;
-}
-
-.tabooBtn{
-    display: flex;
-    align-items: center;
-    height: auto;
-    width: auto;
 }
 
 #img_pass_card
@@ -349,6 +339,9 @@ button
     text-align: center;
 }
 
+#btnGuess{
+    font-style: italic;
+}
 .imgUserIcon
 {
     width: 50px;

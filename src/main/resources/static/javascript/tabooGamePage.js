@@ -23,27 +23,28 @@ $(document).ready(function ()
         return;
     }
 
-    setWelcomeText();
-    initAndConfigureSocket(undefined);
-
-
-    document.getElementById("btnSendMsg").onclick = function (e ) { onClickListenerBtnSendMsg(); }
-    document.getElementById("btnTabooWord").onclick = function (e ) { }
-
-    document.getElementById("btnGuess").onclick = function (e) { onClickListenerBtnGuess(); }
-    document.getElementById("pass-button").onclick = function (e) { onClickListenerBtnPass(); }
-
-    document.getElementById("txtboxGenericMsg").addEventListener("keypress", handlerEnterKeyPress);
-
-    changeVisibilityBtn("btnGuess",myRole === 'Guesser');
-    changeVisibilityBtn("pass-button",myRole === 'Prompter');
-
     setInterval(keepAlive, 20000);
 
     if(myRole === "Guesser")
         updateViewTabooCard();
+
     updateViewRole();
+    setWelcomeText();
+
+    changeVisibilityBtn("btnGuess",myRole === 'Guesser');
+    changeVisibilityBtn("pass-button",myRole === 'Prompter');
+
+    document.getElementById("txtboxGenericMsg").addEventListener("keypress", handlerEnterKeyPress);
+
+    initAndConfigureSocket(undefined);
+
     document.getElementById("timer" ).innerText = GAME_DURATION;
+
+    document.getElementById("btnSendMsg").onclick = function (e ) { onClickListenerBtnSendMsg(); }
+    document.getElementById("btnTabooWord").onclick = function (e ) { }
+    document.getElementById("btnGuess").onclick = function (e) { onClickListenerBtnGuess(); }
+    document.getElementById("pass-button").onclick = function (e) { onClickListenerBtnPass(); }
+
 });
 
 function setWelcomeText()

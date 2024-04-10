@@ -25,8 +25,8 @@ function checkLogin()
 
 function setWelcomeText()
 {
-    let divWelcome = document.getElementById("h1WelcomeDiv");
-    divWelcome.innerHTML = "Welcome to Administrator Page";
+    let divWelcome = document.getElementById("h1WelcomeDiv_2");
+    divWelcome.innerHTML = "Administrator";
 }
 
 function onClickListenerBtnLogout()

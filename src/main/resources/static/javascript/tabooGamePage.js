@@ -24,6 +24,7 @@ $(document).ready(function ()
         return;
     }
 
+    setWelcomeText();
     initAndConfigureSocket(undefined);
 
 
@@ -32,6 +33,8 @@ $(document).ready(function ()
 
     document.getElementById("btnGuess").onclick = function (e) { onClickListenerBtnGuess(); }
     document.getElementById("pass-button").onclick = function (e) { onClickListenerBtnPass(); }
+
+    document.getElementById("txtboxGenericMsg").addEventListener("keypress", handlerEnterKeyPress);
 
     changeVisibilityBtn("btnGuess",myRole === 'Guesser');
     changeVisibilityBtn("pass-button",myRole === 'Prompter');
@@ -43,6 +46,12 @@ $(document).ready(function ()
     updateViewRole();
     document.getElementById("timer" ).innerText = GAME_DURATION;
 });
+
+function setWelcomeText()
+{
+    let divWelcome = document.getElementById("usernameField");
+    divWelcome.innerHTML = username;
+}
 
 function keepAlive()
 {
@@ -58,6 +67,14 @@ function checkLogin()
         return false;
     }
     return true;
+}
+
+function handlerEnterKeyPress(event)
+{
+    if (event.key === "Enter") {
+        event.preventDefault(); // Per evitare l'invio del modulo (se presente)
+        onClickListenerBtnSendMsg();
+    }
 }
 
 function initAndConfigureSocket(event)
@@ -333,6 +350,7 @@ function changeRoles()
             addNewMatch();
         location.href = "../endGamePage.html";
     }
+    document.getElementById("txtboxGenericMsg").value = "";
 }
 
 function addNewMatch()
@@ -415,10 +433,13 @@ function updateViewTabooCard()
             document.getElementById("tabooWord" + i).innerText = "Guess";
         return;
     }
-
-    wordToGuess.innerText = (prompterData.tabooCard[0][0].toUpperCase() + prompterData.tabooCard[0].slice(1));
-    for(let i = 1; i < prompterData.tabooCard.length; i++)
-        document.getElementById("tabooWord" + i).innerText = (prompterData.tabooCard[i][0].toUpperCase() + prompterData.tabooCard[i].slice(1));
+    else
+    {
+        wordToGuess.innerText = (prompterData.tabooCard[0][0].toUpperCase() + prompterData.tabooCard[0].slice(1));
+        for(let i = 1; i < prompterData.tabooCard.length; i++)
+            document.getElementById("tabooWord" + i).innerText = (prompterData.tabooCard[i][0].toUpperCase() + prompterData.tabooCard[i].slice(1));
+        return;
+    }
 }
 
 function decScoreCounter()
@@ -433,10 +454,15 @@ function updateViewScoreCounter()
     document.getElementById("score").innerText = score;
 }
 
+function updateViewPassCounter()
+{
+    document.getElementById("p").innerText = score;
+}
 function updateViewRole()
 {
-    document.getElementById("usernameParagraph").innerText = username;
-    document.getElementById("normalText").innerText = " you're " + ((myRole === "Prompter") ? "the " : "one ");
+    document.getElementById("usernameParagraph").innerText = username+",";
+    document.getElementById("normalText").innerText =
+        " in this turn you are " + ((myRole === "Prompter") ? "the " : "one of the ");
     document.getElementById("roleParagraph").innerText = myRole;
 }
 

@@ -8,7 +8,6 @@ let seconds= GAME_DURATION;
 let stopCondition = 0;
 let score = 0;
 
-
 let prompterData = {
     tabooCard : null,
     passCounter : 0
@@ -39,7 +38,7 @@ $(document).ready(function ()
     changeVisibilityBtn("btnGuess",myRole === 'Guesser');
     changeVisibilityBtn("pass-button",myRole === 'Prompter');
 
-    let keepAliveInterval = setInterval(keepAlive, 20000);
+    setInterval(keepAlive, 20000);
 
     if(myRole === "Guesser")
         updateViewTabooCard();
@@ -433,13 +432,10 @@ function updateViewTabooCard()
             document.getElementById("tabooWord" + i).innerText = "Guess";
         return;
     }
-    else
-    {
-        wordToGuess.innerText = (prompterData.tabooCard[0][0].toUpperCase() + prompterData.tabooCard[0].slice(1));
-        for(let i = 1; i < prompterData.tabooCard.length; i++)
-            document.getElementById("tabooWord" + i).innerText = (prompterData.tabooCard[i][0].toUpperCase() + prompterData.tabooCard[i].slice(1));
-        return;
-    }
+
+    wordToGuess.innerText = (prompterData.tabooCard[0][0].toUpperCase() + prompterData.tabooCard[0].slice(1));
+    for(let i = 1; i < prompterData.tabooCard.length; i++)
+        document.getElementById("tabooWord" + i).innerText = (prompterData.tabooCard[i][0].toUpperCase() + prompterData.tabooCard[i].slice(1));
 }
 
 function decScoreCounter()

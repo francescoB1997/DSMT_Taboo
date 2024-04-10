@@ -20,6 +20,32 @@ body {
     text-align: center;
 }
 
+.main-container
+{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: sans-serif;
+    line-height: 1.5;
+    min-height: 100vh;
+    background-color: #48054d;
+    flex-direction: column;
+    margin: 0;
+}
+
+#imgBack
+{
+    width: 45px;
+    height: 40px;
+    margin-right: 480px;
+    margin-bottom: -1px;
+}
+
+#imgBack:hover
+{
+    transform: scale(1.2);
+}
+
 .flex {
     border-radius: 10px;
     max-width: 100%}

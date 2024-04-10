@@ -45,11 +45,11 @@ function onClickListenerBtnInvite()
 {
     invite.rivalsRoles = [];
     let checkboxes = document.querySelectorAll("input[type='checkbox']:checked");
-    if(checkboxes.length !== 2)
-    {
-        alert("You must choose 2 friends");
-        return;
-    }
+    //if(checkboxes.length !== 2)
+    //{
+    //alert("You must choose 2 friends");
+    //return;
+    // }
     //invite.rivals.push(username); // Push my username first
     for (let i = 0 ; i < checkboxes.length; i++)
         invite.rivals.push(checkboxes[i].id.toString().split('&')[1]);

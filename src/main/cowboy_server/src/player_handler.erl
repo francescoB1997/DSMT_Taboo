@@ -2,7 +2,7 @@
 -export([login/2, send_msg_to_friends/2, attemptGuessWord/2, wakeUpAllGuessers/1, assignTabooCard/1, getRandomTabooCard/0, send_result_checkWord/2]).
 
 
-login (DecodedJson, State = {User, EmptyRole, Friends, GenericMessage, EmptyTabooCard}) ->
+login (DecodedJson, State = {EmptyUser, EmptyRole, EmptyPrompterName, EmptyFriends, GenericMessage, EmptyTabooCard}) ->
     Username = maps:get(<<"username">>, DecodedJson),
     PidPlayer = global:whereis_name(Username),
     case PidPlayer of
@@ -12,9 +12,10 @@ login (DecodedJson, State = {User, EmptyRole, Friends, GenericMessage, EmptyTabo
             global:unregister_name(Username),
             global:register_name(Username, self())
     end,
+    PrompterName = maps:get(<<"prompterName">>, DecodedJson),
     FriendList = maps:get(<<"friendList">>, DecodedJson),
     Role = maps:get(<<"role">>, DecodedJson),
-    io:format("LOGIN: MyPID=~p login ~s Role=~p FriendList=~p EmptyTabooCard=~p~n", [self(), Username, Role, FriendList, EmptyTabooCard]),
+    io:format("LOGIN: MyPID=~p i'm=~p Promptername=~p Role=~p FriendList=~p EmptyTabooCard=~p~n", [self(), Username, PrompterName, Role, FriendList, EmptyTabooCard]),
     if
         Role == <<"Guesser">> ->
             io:format("Sono ~p, mi addormento ~n", [Username]),
@@ -26,11 +27,11 @@ login (DecodedJson, State = {User, EmptyRole, Friends, GenericMessage, EmptyTabo
         true ->
             JsonResponse = jsx:encode([{<<"action">>, loginOk}])
     end,
-    { {text, JsonResponse} , {Username, Role, FriendList, GenericMessage , EmptyTabooCard} }.
+    { {text, JsonResponse} , {Username, Role, PrompterName, FriendList, GenericMessage , EmptyTabooCard} }.
 
 
 %% when you are PROMPTER
-send_msg_to_friends( DecodedJson, State = {Username, Role, FriendList, GenericMessage, TabooCard} ) when Role == <<"Prompter">> ->
+send_msg_to_friends( DecodedJson, State = {Username, Role, PrompterName, FriendList, GenericMessage, TabooCard} ) when Role == <<"Prompter">> ->
     MessageToFriend = maps:get(<<"msg">>, DecodedJson),
     io:format("send inviata da ~p, genericMess =~p~n", [Username, MessageToFriend]),
     Result = checkTabooWords(MessageToFriend, TabooCard),
@@ -46,13 +47,13 @@ send_msg_to_friends( DecodedJson, State = {Username, Role, FriendList, GenericMe
             [ send_msg(errorFromPrompter, Friend) || Friend <- FriendList ], % Foreach equivalent
             io:format("Result è piena! => ~p~n *** NUOVA CARTA ~p~n", [Result, NewTabooCard])
     end,
-    UpdateState = {Username, Role, FriendList, GenericMessage, NewTabooCard},
+    UpdateState = {Username, Role, PrompterName, FriendList, GenericMessage, NewTabooCard},
     JsonResponse = jsx:encode([{<<"action">>, checkWordResult}, {<<"msg">>, Error}, {<<"newTabooCard">>, NewTabooCard}]),
     { {text, JsonResponse} , UpdateState};
 
 
 %% when you are GUESSER
-send_msg_to_friends( DecodedJson, State = {Username, Role, FriendList, GenericMessage, TabooCard} ) when Role == <<"Guesser">> ->
+send_msg_to_friends( DecodedJson, State = {Username, Role, PrompterName, FriendList, GenericMessage, TabooCard} ) when Role == <<"Guesser">> ->
     MessageToFriend = maps:get(<<"msg">>, DecodedJson),
     [ send_msg(MessageToFriend, Friend) || Friend <- FriendList ], % Foreach equivalent
     JsonResponse = jsx:encode([{<<"action">>, ignore}]),
@@ -60,8 +61,7 @@ send_msg_to_friends( DecodedJson, State = {Username, Role, FriendList, GenericMe
 
 
 % Only when you are GUESSER
-attemptGuessWord(DecodedJson, State = {Username, Role, [PrompterName | [OtherFriends]], GenericMessage, TabooCard}) when Role == <<"Guesser">> ->
-    %MyPrompterName = maps:get(<<"myPrompterName">>, DecodedJson),
+attemptGuessWord(DecodedJson, State = {Username, Role, PrompterName, FriendList, GenericMessage, TabooCard}) when Role == <<"Guesser">> ->
     AttemptedWord = maps:get(<<"word">>, DecodedJson),
     io:format("ATTEMPT_GUESS: io sono ~p, word = ~p, mioPrompter = ~p~n", [Username, AttemptedWord, PrompterName]),
     MyPrompterPID = global:whereis_name(PrompterName),
@@ -73,21 +73,21 @@ attemptGuessWord(DecodedJson, State = {Username, Role, [PrompterName | [OtherFri
                 ResultAttempt = false,
                 io:format("MyPrompterPID non esiste: ~n")
     end,
-    io:format("ATTEMPT_GUESS: rispondo con ~p~n", [ResultAttempt]),
+    io:format("ATTEMPT_GUESS: invio JSON con ~p~n", [ResultAttempt]),
     JsonResponse = jsx:encode([{<<"action">>, attemptGuessWord}, {<<"msg">>, ResultAttempt}]),
-    { {text, JsonResponse} , {Username, Role, [PrompterName | []], GenericMessage, TabooCard}}.
+    { {text, JsonResponse} , {Username, Role, PrompterName, FriendList, GenericMessage, TabooCard}}.
 
 
 % Only when you are PROMPTER
-assignTabooCard(State = {Username, Role, FriendList, GenericMessage, OldTabooCard} ) when Role == <<"Prompter">> ->
+assignTabooCard(State = {Username, Role, PrompterName, FriendList, GenericMessage, OldTabooCard} ) when Role == <<"Prompter">> ->
     TabooCard = getRandomTabooCard(),
     io:format("Sono ~p, assignTabooCard: Role=~p , NewTaboo = ~p~n", [Username, Role, TabooCard]),
     JsonResponse = jsx:encode([{<<"action">>, tabooCard}, {<<"msg">>, TabooCard}]),
-    { { text, JsonResponse } , {Username, Role, FriendList, GenericMessage, TabooCard} }.
+    { { text, JsonResponse } , {Username, Role, PrompterName, FriendList, GenericMessage, TabooCard} }.
 
 
 % Only when you are PROMPTER
-wakeUpAllGuessers( State = {Username, Role, FriendList, GenericMessage, OldTabooCard} ) when Role == <<"Prompter">> ->
+wakeUpAllGuessers( State = {Username, Role, PrompterName, FriendList, GenericMessage, OldTabooCard} ) when Role == <<"Prompter">> ->
     [ send_start_msg( Friend ) || Friend <- FriendList ],
     State.
 
@@ -119,9 +119,10 @@ send_msg(Msg, Friend) ->
     end.
 
 send_result_checkWord([], _) -> ok; % Used only by the prompter to notify all guesser to increase its scoreCounter or not.
-send_result_checkWord([Friend | OtherFriend], Result) ->
+send_result_checkWord([Friend | OtherFriends], Result) ->
     PidFriend = global:whereis_name(Friend),
-    PidFriend ! {resultAttemptGuessWord, Result}.
+    PidFriend ! {resultAttemptGuessWord, Result},
+    send_result_checkWord(OtherFriends, Result).
 
 
 % [si, usa, per, bere] , [bicchiere, bibita, bere, mano, sete, acqua] -----------------------> [[],[],[],[bere],[],[]]
@@ -133,7 +134,7 @@ checkTabooWords(WordList , TabooCard) ->
 
 waitResult(MyPrompterPID, AttemptedWord) ->
     MyPrompterPID ! {attemptGuessWord, AttemptedWord},
-    receive % mettere una after
+    receive
         {resultAttemptGuessWord, Result} ->
             io:format("checkWord result: ~p~n", [Result]),
             Result;

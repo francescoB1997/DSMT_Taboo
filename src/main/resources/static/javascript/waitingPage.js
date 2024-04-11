@@ -38,8 +38,8 @@ function ajaxSendReplyInvitation()
         contentType: 'application/json',
         success: function (serverResponse)
         {
-            if(serverResponse.responseMessage != undefined) // If NOT undefined ==> All the users have accepted the invite
-            {
+            if(serverResponse.responseMessage != undefined) // If NOT_Undefined ==> All the users have accepted the invite
+            {                                               // and the serverResponse cointaind all MATCH_INFO
                 //alert("Tutti hanno accettato");
                 sessionStorage.setItem("match", JSON.stringify(serverResponse.responseMessage));
                 sessionStorage.removeItem("invite");

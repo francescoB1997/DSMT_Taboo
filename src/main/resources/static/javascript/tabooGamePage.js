@@ -28,6 +28,7 @@ $(document).ready(function ()
     if(myRole === "Guesser")
         updateViewTabooCard();
 
+    sessionStorage.setItem("myPrompterName", extractMyPrompterName());
     updateViewRole();
     setWelcomeText();
 
@@ -41,7 +42,6 @@ $(document).ready(function ()
     document.getElementById("timer" ).innerText = GAME_DURATION;
 
     document.getElementById("btnSendMsg").onclick = function (e ) { onClickListenerBtnSendMsg(); }
-    document.getElementById("btnTabooWord").onclick = function (e ) { }
     document.getElementById("btnGuess").onclick = function (e) { onClickListenerBtnGuess(); }
     document.getElementById("pass-button").onclick = function (e) { onClickListenerBtnPass(); }
 
@@ -66,6 +66,13 @@ function checkLogin()
         alert("You're not logged");
         return false;
     }
+    if( sessionStorage.getItem("match") === "" ||
+        sessionStorage.getItem("match") === undefined ||
+        sessionStorage.getItem("match") === null )
+    {
+        alert("No match");
+        return false;
+    }
     return true;
 }
 
@@ -84,7 +91,7 @@ function initAndConfigureSocket(event)
     socket.addEventListener("message", (event) => { msgOnSocketRecevedListener(event);});
 
     socket.addEventListener("close", (event) => {
-        console.log("socket chiuso, riapro");
+        //console.log("socket chiuso, riapro");
         clearInterval(timerInterval);
         initAndConfigureSocket(event);
     });
@@ -131,6 +138,7 @@ function changeVisibilityBtn (buttonId, visible)
 function sendInitMsg()
 {
     myRole = sessionStorage.getItem("myRole");
+    const myPrompterName = sessionStorage.getItem("myPrompterName");
     let matchJSON = sessionStorage.getItem("match");
     let match = JSON.parse(matchJSON);
 
@@ -142,6 +150,7 @@ function sendInitMsg()
         let loginMsg = {
             action: "login",
             username: username,
+            prompterName : myPrompterName,
             friendList: friendList,
             role: myRole
         };
@@ -159,11 +168,11 @@ function msgOnSocketRecevedListener (event)
             if(myRole === "Prompter")
             {
                 let assignTabooCardMsg = { action : "assignTabooCard" };
-                console.log("Inviato taboocard, attendo 2 secondi e invio start...");
+                //console.log("Inviato taboocard, attendo 2 secondi e invio start...");
                 socket.send(JSON.stringify(assignTabooCardMsg));
 
                 setTimeout(function() {
-                    console.log("start inviato");
+                   // console.log("start inviato");
                     let startGameMsg = { action : "startGame"};
                     socket.send(JSON.stringify(startGameMsg));
                     clearInterval(timerInterval);
@@ -178,7 +187,7 @@ function msgOnSocketRecevedListener (event)
         case "wakeUpGuesser":
             if(myRole === "Guesser")
             {
-                console.log("Sono un guesser, ed il gioco può partire");
+                //console.log("Sono un guesser, ed il gioco può partire");
                 clearInterval(timerInterval);
                 timerInterval = setInterval(timerHandler, 1000);
             }
@@ -211,7 +220,7 @@ function msgOnSocketRecevedListener (event)
             else
             {   // ["mi", "chiamo", "come", "te"] --> dopo la join --> "mi chiamo come te"
                 divAreaGioco.innerText = divAreaGioco.innerText + '\n' + (objectFromErlang.msg.join(' '));
-                console.log("Message from friend: " + objectFromErlang.msg);
+                //console.log("Message from friend: " + objectFromErlang.msg);
             }
             break;
         case "attemptGuessWord":
@@ -332,11 +341,18 @@ function changeRoles()
         myRole = match.rolesRivalTeam[myPosInTeam];
     }
 
+    console.log("| InviterTeam: " + match.inviterTeam + " | InviterTeamROle: " + match.rolesInviterTeam);
+    console.log("| RivalTeam: " + match.rivalTeam + " | InviterTeamROle: " + match.rolesRivalTeam);
+
     sessionStorage.setItem("myRole", myRole);
     sessionStorage.setItem("match", JSON.stringify(match));
+    sessionStorage.setItem("myPrompterName", extractMyPrompterName());
 
     prompterData.tabooCard = null;
     prompterData.passCounter = 0;
+
+    if(myRole === "Guesser")
+        updateViewTabooCard();
 
     changeVisibilityBtn("btnGuess",myRole === 'Guesser');
     changeVisibilityBtn("pass-button",myRole === 'Prompter');
@@ -380,11 +396,11 @@ function addNewMatch()
             switch (addMatchOperation)
             {
                 case 0:
-                    console.log("The match has been successfully added into DB.");
+                    //console.log("The match has been successfully added into DB.");
                     break;
                 case 1:
-                    console.log("We're Sorry, an Error occurred during adding operation." +
-                        " The match has not been successfully added into DB");
+                    //console.log("We're Sorry, an Error occurred during adding operation." +
+                     //   " The match has not been successfully added into DB");
                     break;
                 default:
                     break;
@@ -398,6 +414,25 @@ function addNewMatch()
     });
 }
 
+function extractMyPrompterName()
+{
+    //const match = (passedMatch === null) ? JSON.parse(sessionStorage.getItem("match")) : passedMatch;
+    const match = JSON.parse(sessionStorage.getItem("match"));
+    extractMyTeam(match);
+    const myTeam = sessionStorage.getItem("myTeam");
+    let myPrompterName = null;
+    if(myTeam === "inviterTeam")
+    {
+        const posPrompter = match.rolesInviterTeam.findIndex(role => role === 'Prompter');
+        myPrompterName = match.inviterTeam[posPrompter];
+    }
+    else if(myTeam === "rivalTeam")
+    {
+        const posPrompter = match.rolesRivalTeam.findIndex(role => role === 'Prompter');
+        myPrompterName = match.rivalTeam[posPrompter];
+    }
+    return myPrompterName;
+}
 
 function extractMyTeam(match)
 // This function returns the teamMembers of this user. In details filters-out this user from its own team, beacuse
@@ -471,7 +506,7 @@ function loadTablesTeams()
     let i = 0;
     while(i < 2)
     {
-        console.log("Caricamento tabella " + i+1);
+        //console.log("Caricamento tabella " + i+1);
         let workingTable = (i === 0) ? document.getElementById("tableFriend") : document.getElementById("tableRival");
         let friendList = (i === 0) ? match.inviterTeam : match.rivalTeam;
         emptyTable(workingTable);
@@ -509,3 +544,17 @@ function emptyTable(table)
         table.removeChild(table.firstChild);
 }
 
+
+
+/*
+    ALLA LOGIN DI OGNI PROCESSO, BISOGNA METTERE NELLA 1° POSIZIONE SEMPRE IL PROMPTER!
+    Solo dopo invii a Erlang la lista degli amici.
+
+
+fra2 cia2 gsf2
+ G    G    P
+
+fra2 LOGIN G gsf2,cia2
+cia2 LOGIN G gsf2,fra2
+gsf2 LOGIN P fra2,cia2
+*/

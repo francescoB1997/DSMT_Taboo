@@ -8,25 +8,32 @@
     <link rel="stylesheet" href="./css/selectRival.css">
 </head>
 <body>
-<div class="containerTeams">
-    <div id="tableFriendContainer">
-        <h2>Your <p class="green">Online</p> Friends</h2>
-        <span class="tooltip-wrap">
-                <img id="imgRefresh" src="./img/refresh.png" alt="refresh">
-                <span class="tooltip-content"> Refresh your online friends list</span>
-            </span>
-        <table id="tableFriend">
-            <tbody>
-            </tbody>
-        </table>
-    </div>
+
+<div class = "main-container">
     <div>
-        <img src="./img/versus.png" id="imgVersus" alt="versus img">
+        <a href="loggedPlayerPage.html"> <img id="imgHome" src="./img/home.png" alt="home icon"></a>
+        <a href="createTeamPage.html"> <img id="imgBack" src="./img/goback-button.png" alt="back icon"></a>
     </div>
-    <div>
-        <h2>Choose your rival</h2>
+    <div class="containerTeams">
+        <div id="tableFriendContainer">
+            <h2>Your <p class="green">Online</p> Friends</h2>
+            <span class="tooltip-wrap">
+                    <img id="imgRefresh" src="./img/refresh.png" alt="refresh">
+                    <span class="tooltip-content"> Refresh your online friends list</span>
+                </span>
+            <table id="tableFriend">
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+        <div>
+            <img src="./img/versus.png" id="imgVersus" alt="versus img">
+        </div>
+        <div>
+            <h2>Choose your rival</h2>
+        </div>
+        <button id="btnInvite"> Send Invite </button>
     </div>
-    <button id="btnInvite"> Send Invite </button>
 </div>
 </body>
 </html>

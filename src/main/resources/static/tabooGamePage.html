@@ -9,16 +9,25 @@
     </head>
     <body>
         <div id="mainContainer">
-            <p id="usernameParagraph" class="importantText"></p> <p id="normalText" class="role"></p> <p id="roleParagraph" class="importantText"></p>
+            <div><h1 id ="Title">*** GAME STARTED ***</h1></div>
+            <p id="txtPreUsername" class ="role">Player</p><p id="usernameParagraph" class="importantText"><p id="normalText" class="role"></p> <p id="roleParagraph" class="importantText"></p>
 
             <div id="containerInfoMatch" class="info-match-container">
                 <div class="timer-container">
-                    <span class="timer-label">Timer</span>
-                    <div id="timer" class="timer-value"></div>
+                    <span class="timer-label">Timer: </span>
+                    <div id="timer" class="timer-value">60</div>
                     <img id="hourglassIcon" src="img/hourglass.gif" alt="hourglass icon" class="hourglass-icon">
                 </div>
-                <div class="timer-container">Score: <span id="score">0</span></div>
-                <div class="username-container">Username</div>
+                <div class="score-container">
+                    <span class="passCard-label">Pass-Card: </span>
+                    <div id="pass-card" class="pass-card-value">3</div>
+                    <span class="score-label">Score: </span>
+                    <div id="score" class="score-value">0</div>
+                </div>
+                <div class="username-container">
+                    <span class="username-label">Username: </span>
+                    <div id="usernameField" class="username-value"></div>
+                </div>
             </div>
 
             <div id="gameContainer" >
@@ -43,7 +52,7 @@
                         </div>
                     </div>
                     <div id="chatArea">
-                        <h3> Friend's chat </h3>
+                        <h3> Friend's Chat </h3>
                         <div id="textChat"></div>
                     </div>
                 </div>
@@ -55,17 +64,14 @@
                     </table>
                 </div>
             </div>
-            <input type="text" id="txtboxGenericMsg" class="textboxWordToGuess" placeholder="Insert the word to Guess">
-            <button id="btnSendMsg">Send a message</button>
-            <button id="btnGuess" class="disabled">Indovina</button>
+            <input type="text" id="txtboxGenericMsg" class="textboxWordToGuess" placeholder="WRITE A MESSAGE TO SEND">
+            <button id="btnSendMsg">SEND MESSAGE</button>
+            <button id="btnGuess" class="disabled">CLICK TO GUESS!</button>
             <div class="specialBtnContainer">
                 <div class="pass_btn-container">
                     <button id="pass-button" class="passBtn disabled"><img src="./img/pass.png" id="img_pass_card" alt="pass card"></button>
-                </div>
-                <div class="taboo_btn-container">
-                    <button id="btnTabooWord" class="tabooBtn"><img src="./img/taboo_text_logo.png" id="img_taboo_text" alt="taboo text"></button>
-                </div>
             </div>
+        </div>
         </div>
     </body>
 </html>

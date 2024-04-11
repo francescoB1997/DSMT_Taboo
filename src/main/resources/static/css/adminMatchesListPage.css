@@ -13,6 +13,9 @@ body
 
 #title
 {
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 25px;
     color: white;
     text-align: center;
 }
@@ -26,6 +29,8 @@ table
     text-align: center;
     overflow-y: scroll;
     border-radius: 10px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 th{ color: #d44848;}
@@ -45,10 +50,12 @@ td
 
 #imgHome
 {
+    display: flex;
     width: 40px;
     height: 40px;
-    margin-right: 10px;
-    margin-bottom: -5px;
+    margin-right: 750px;
+    margin-left: auto;
+    margin-bottom: 5px;
 }
 
 #imgHome:hover

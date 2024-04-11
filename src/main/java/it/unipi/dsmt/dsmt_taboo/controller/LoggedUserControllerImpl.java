@@ -40,7 +40,6 @@ public class LoggedUserControllerImpl implements LoggedUserControllerInterface
         }
         return new ResponseEntity<>(getFriendListResponse, responseHttp);
     }
-
     @PostMapping("/searchUser")
     @Override
     public ResponseEntity<ServerResponseDTO<List<UserDTO>>>
@@ -314,6 +313,7 @@ public class LoggedUserControllerImpl implements LoggedUserControllerInterface
                 System.out.println("Invito rifiutato");
             }
         }
+
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 

@@ -30,7 +30,30 @@ body
     width: 160px;
 }
 
-h1 { color: #48054d; }
+h1 {
+    color: #48054d;
+}
+
+.welcome-text{
+    display: flex;
+    width: auto;
+    margin-bottom: -20px;
+}
+.welcome-text_2{
+    align-items: center;
+}
+
+#h1WelcomeDiv_1{
+    margin-left: auto;
+}
+#h1WelcomeDiv_2{
+    margin-left: 10px;
+    color: #d44848;
+    font-style: italic;
+    margin-right: auto;
+}
+#h1WelcomeDiv_3{ margin-top: -20px; }
+
 h3
 {
     color: #d44848;

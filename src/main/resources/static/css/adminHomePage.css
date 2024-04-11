@@ -31,6 +31,24 @@ body
 }
 
 h1 { color: #48054d; }
+
+.welcome-text{
+    align-items: center;
+}
+.welcome-text_2{
+    display: flex;
+    width: auto;
+}
+
+#h1WelcomeDiv_2{
+    margin-left: auto;
+    color: #d44848;
+    font-style: italic;
+    margin-right: 10px;
+    margin-top: -20px;
+}
+#h1WelcomeDiv_3{ margin-right: auto; margin-top: -20px; }
+
 h3
 {
     color: #d44848;

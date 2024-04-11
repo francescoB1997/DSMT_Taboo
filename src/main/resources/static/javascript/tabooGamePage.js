@@ -8,7 +8,6 @@ let seconds= GAME_DURATION;
 let stopCondition = 0;
 let score = 0;
 
-
 let prompterData = {
     tabooCard : null,
     passCounter : 0
@@ -24,25 +23,35 @@ $(document).ready(function ()
         return;
     }
 
-    initAndConfigureSocket(undefined);
+    setInterval(keepAlive, 20000);
 
+    if(myRole === "Guesser")
+        updateViewTabooCard();
 
-    document.getElementById("btnSendMsg").onclick = function (e ) { onClickListenerBtnSendMsg(); }
-    document.getElementById("btnTabooWord").onclick = function (e ) { }
-
-    document.getElementById("btnGuess").onclick = function (e) { onClickListenerBtnGuess(); }
-    document.getElementById("pass-button").onclick = function (e) { onClickListenerBtnPass(); }
+    updateViewRole();
+    setWelcomeText();
 
     changeVisibilityBtn("btnGuess",myRole === 'Guesser');
     changeVisibilityBtn("pass-button",myRole === 'Prompter');
 
-    let keepAliveInterval = setInterval(keepAlive, 20000);
+    document.getElementById("txtboxGenericMsg").addEventListener("keypress", handlerEnterKeyPress);
 
-    if(myRole === "Guesser")
-        updateViewTabooCard();
-    updateViewRole();
+    initAndConfigureSocket(undefined);
+
     document.getElementById("timer" ).innerText = GAME_DURATION;
+
+    document.getElementById("btnSendMsg").onclick = function (e ) { onClickListenerBtnSendMsg(); }
+    document.getElementById("btnTabooWord").onclick = function (e ) { }
+    document.getElementById("btnGuess").onclick = function (e) { onClickListenerBtnGuess(); }
+    document.getElementById("pass-button").onclick = function (e) { onClickListenerBtnPass(); }
+
 });
+
+function setWelcomeText()
+{
+    let divWelcome = document.getElementById("usernameField");
+    divWelcome.innerHTML = username;
+}
 
 function keepAlive()
 {
@@ -58,6 +67,14 @@ function checkLogin()
         return false;
     }
     return true;
+}
+
+function handlerEnterKeyPress(event)
+{
+    if (event.key === "Enter") {
+        event.preventDefault(); // Per evitare l'invio del modulo (se presente)
+        onClickListenerBtnSendMsg();
+    }
 }
 
 function initAndConfigureSocket(event)
@@ -333,6 +350,7 @@ function changeRoles()
             addNewMatch();
         location.href = "../endGamePage.html";
     }
+    document.getElementById("txtboxGenericMsg").value = "";
 }
 
 function addNewMatch()
@@ -433,10 +451,15 @@ function updateViewScoreCounter()
     document.getElementById("score").innerText = score;
 }
 
+function updateViewPassCounter()
+{
+    document.getElementById("p").innerText = score;
+}
 function updateViewRole()
 {
-    document.getElementById("usernameParagraph").innerText = username;
-    document.getElementById("normalText").innerText = " you're " + ((myRole === "Prompter") ? "the " : "one ");
+    document.getElementById("usernameParagraph").innerText = username+",";
+    document.getElementById("normalText").innerText =
+        " in this turn you are " + ((myRole === "Prompter") ? "the " : "one of the ");
     document.getElementById("roleParagraph").innerText = myRole;
 }
 

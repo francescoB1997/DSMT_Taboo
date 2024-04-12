@@ -294,7 +294,7 @@ public class LoggedUserControllerImpl implements LoggedUserControllerInterface
 
                 System.out.println("matchDTO = { InviterTeam = [ " + matchDTO.getInviterTeam() + " ]\n" +
                         "InviterTeamRoles=" + matchDTO.getRolesInviterTeam() + "]\n" +
-                        "RivalTeam = [ " + matchDTO.getRivalTeam() +
+                        "RivalTeam = [ " + matchDTO.getRivalTeam() + " ]\n" +
                         "RivalTeamRoles= [ " + matchDTO.getRolesRivalTeam() + " ]}");
                 MatchDTO returned = runningMatch.putIfAbsent(replyInvite.getGameId(), matchDTO); // Il returned è solo per DGB
 

@@ -80,9 +80,13 @@ public class InviteFriendRequestDTO //InviteFriendRequestDTO
         System.out.print("Team Blue { ");
         this.yourTeam.forEach(friendUsername -> System.out.print("[" + friendUsername + "] "));
         System.out.println(" }");
+        System.out.print("Roles Team Blue { ");
+        this.roles.forEach(inviterRole -> System.out.print("[" + inviterRole + "]"));
+        System.out.println(" }");
         System.out.print("Team Red { ");
         this.rivals.forEach(rivalUsername -> System.out.print("[" + rivalUsername + "] "));
-        System.out.println();
+        System.out.println(" }");
+        System.out.print("Roles Team Red { ");
         this.rivalsRoles.forEach(rivalRole -> System.out.print("[" + rivalRole + "]"));
         System.out.println(" }");
     }

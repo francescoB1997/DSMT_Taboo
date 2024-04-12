@@ -1,5 +1,5 @@
 -module(player_handler).
--export([login/2, send_msg_to_friends/2, attemptGuessWord/2, wakeUpAllGuessers/1, assignTabooCard/1, getRandomTabooCard/0, send_result_checkWord/2]).
+-export([login/2, send_msg_to_friends/2, attemptGuessWord/2, wakeUpAllGuessers/1, assignTabooCard/1, getRandomTabooCard/0, send_result_checkWord/2, sendMatchResult/2]).
 
 
 login (DecodedJson, State = {EmptyUser, EmptyRole, EmptyPrompterName, EmptyFriends, GenericMessage, EmptyTabooCard}) ->
@@ -37,14 +37,14 @@ send_msg_to_friends( DecodedJson, State = {Username, Role, PrompterName, FriendL
     Result = checkTabooWords(MessageToFriend, TabooCard),
     if
         Result == [[],[],[],[],[],[]] ->
-            [ send_msg(MessageToFriend, Friend) || Friend <- FriendList ], % Foreach equivalent
+            [ send_msg(msgFromFriend, MessageToFriend, Friend) || Friend <- FriendList ], % Foreach equivalent
             io:format("Result è vuota! => send_msg_to_friends ~p~n", [FriendList]),
             Error = false,
             NewTabooCard = TabooCard;
         true ->
             Error = true,
             NewTabooCard = getRandomTabooCard(),
-            [ send_msg(errorFromPrompter, Friend) || Friend <- FriendList ], % Foreach equivalent
+            [ send_msg(msgFromFriend, errorFromPrompter, Friend) || Friend <- FriendList ], % Foreach equivalent
             io:format("Result è piena! => ~p~n *** NUOVA CARTA ~p~n", [Result, NewTabooCard])
     end,
     UpdateState = {Username, Role, PrompterName, FriendList, GenericMessage, NewTabooCard},
@@ -55,7 +55,7 @@ send_msg_to_friends( DecodedJson, State = {Username, Role, PrompterName, FriendL
 %% when you are GUESSER
 send_msg_to_friends( DecodedJson, State = {Username, Role, PrompterName, FriendList, GenericMessage, TabooCard} ) when Role == <<"Guesser">> ->
     MessageToFriend = maps:get(<<"msg">>, DecodedJson),
-    [ send_msg(MessageToFriend, Friend) || Friend <- FriendList ], % Foreach equivalent
+    [ send_msg(msgFromFriend, MessageToFriend, Friend) || Friend <- FriendList ], % Foreach equivalent
     JsonResponse = jsx:encode([{<<"action">>, ignore}]),
     { {text, JsonResponse} , State}.
 
@@ -104,13 +104,20 @@ send_start_msg(FriendName) ->
             send_no
     end.
 
+sendMatchResult( DecodedJson, State) ->
+    Score = maps:get(<<"score">>, DecodedJson),
+    RivalTeam = maps:get(<<"team">>, DecodedJson),
+    [ send_msg(scoreTeam, Score, Rival) || Rival <- RivalTeam ], % Foreach equivalent
+    JsonResponse = jsx:encode([{<<"action">>, ignore}]),
+    { {text, JsonResponse} , State}.
 
-send_msg(Msg, Friend) ->
+
+send_msg(Atom, Msg, Friend) ->
     %io:format("send_msg(~p, ~p) --> ", [Msg, Friend]),
     PidFriend = global:whereis_name(Friend),
     case(is_pid(PidFriend)) of
         true ->
-            PidFriend ! {msgFromFriend, Msg},
+            PidFriend ! {Atom, Msg},
             io:format("Invio send_msg ok a ~p, il suo PID è ~p~n", [Friend, PidFriend]),
             send_ok;
         false ->
@@ -168,48 +175,6 @@ getRandomTabooCard() ->
 getRandomInt(Max) ->
     RandomIndex = rand:uniform(Max),
     RandomIndex.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-%send_msg_to_everyone(_, []) -> ok;
-%send_msg_to_everyone(Msg, [Friend | OtherFriends]) -> % [Friend1, Friend2,... FriendN]
-%    PidFriend = global:whereis_name(Friend),
-%    PidFriend ! {msgFromFriend, Msg},
-%    send_msg_to_everyone(Msg, OtherFriends).
-
 
 
 

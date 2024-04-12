@@ -25,10 +25,14 @@ websocket_handle(Frame = {text, JsonMsg}, State = {Username, Role, PrompterName,
             UserAction == <<"attemptGuessWord">> ->
                 player_handler:attemptGuessWord(DecodedJson, State);
 
+            UserAction == <<"matchResult">> ->
+              player_handler:sendMatchResult(DecodedJson, State);
+
             UserAction == <<"keepAlive">> ->
                 io:format("keepAlive di ~p~n", [Username]),
                 {Frame, State}
                 %player_handler:passTabooCard(State);
+
         end,
 	%io:format("~p Response ~p~n", [Username,Response]),
 	{reply, [Response], UpdatedState}.
@@ -38,9 +42,13 @@ websocket_handle(Frame = {text, JsonMsg}, State = {Username, Role, PrompterName,
         JsonMessage = jsx:encode([{<<"action">>, wakeUpGuesser}]),
         {[{text, JsonMessage}], State};
 
-	websocket_info( {msgFromFriend, MsgFromFriend}, State) ->
+	  websocket_info( {msgFromFriend, MsgFromFriend}, State) ->
     	JsonMessage = jsx:encode([{<<"action">>, msgFromFriend}, {<<"msg">>, MsgFromFriend}]),
     	{[{text, JsonMessage}], State};
+
+    websocket_info( {scoreTeam, Score}, State) ->
+      JsonMessage = jsx:encode([{<<"action">>, matchRivalResult}, {<<"scoreRivalTeam">>, Score}]),
+      {[{text, JsonMessage}], State};
 
     %% PARTICOLARITA': per capire se la parola "tentata" è esatta, abbiamo sfruttato il patterMatching nella firma della funzione
     websocket_info( {attemptGuessWord, AttemptedWord},

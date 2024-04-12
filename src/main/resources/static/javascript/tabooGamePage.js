@@ -1,5 +1,5 @@
 const IP_SERVER_ERLANG = "127.0.0.1:8090";
-const GAME_DURATION = 60;
+const GAME_DURATION = 20;
 
 const username = sessionStorage.getItem("userLog");
 let myRole = sessionStorage.getItem("myRole");
@@ -223,6 +223,19 @@ function msgOnSocketRecevedListener (event)
                 //console.log("Message from friend: " + objectFromErlang.msg);
             }
             break;
+        case "matchRivalResult":
+            const rivalScore  = objectFromErlang.scoreRivalTeam;
+            if(score > rivalScore)
+                //vinto
+                sessionStorage.setItem("matchResult", "1");
+            else if(score < rivalScore)
+                //perso
+                sessionStorage.setItem("matchResult", "-1");
+            else
+                sessionStorage.setItem("matchResult", "0");
+
+            location.href="../endGamePage.html";
+            break;
         case "attemptGuessWord":
             if(myRole === "Guesser")
             {
@@ -341,12 +354,12 @@ function changeRoles()
         myRole = match.rolesRivalTeam[myPosInTeam];
     }
 
-    console.log("| InviterTeam: " + match.inviterTeam + " | InviterTeamROle: " + match.rolesInviterTeam);
-    console.log("| RivalTeam: " + match.rivalTeam + " | InviterTeamROle: " + match.rolesRivalTeam);
-
     sessionStorage.setItem("myRole", myRole);
     sessionStorage.setItem("match", JSON.stringify(match));
     sessionStorage.setItem("myPrompterName", extractMyPrompterName());
+
+    console.log("| InviterTeam: " + match.inviterTeam + " | InviterTeamRole: " + match.rolesInviterTeam);
+    console.log("| RivalTeam: " + match.rivalTeam + " | InviterTeamRole: " + match.rolesRivalTeam);
 
     prompterData.tabooCard = null;
     prompterData.passCounter = 0;
@@ -363,10 +376,30 @@ function changeRoles()
     {
         //Stop The Game and insert match into MySQL DB
         if(myRole === "Prompter")
+        {
             addNewMatch();
-        location.href = "../endGamePage.html";
+            sendMatchResult(myTeam, match);
+        }
     }
     document.getElementById("txtboxGenericMsg").value = "";
+}
+
+function sendMatchResult(myTeam, match)
+{
+    let matchInfoResult = {
+        action: "matchResult",
+        team: [],
+        score: score
+    };
+    if(myTeam === "inviterTeam")
+    {
+        matchInfoResult.team = match.rivalTeam;
+    }
+    else if(myTeam === "rivalTeam")
+    {
+        matchInfoResult.team = match.inviterTeam;
+    }
+    socket.send(JSON.stringify(matchInfoResult));
 }
 
 function addNewMatch()

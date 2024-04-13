@@ -131,8 +131,6 @@ function timerHandler()
             if(myRole === "Prompter")
             {
                 addNewMatch();
-                //const myTeam = sessionStorage.getItem("myTeam");
-                //sendMatchResult(myTeam, match);
             }
             else if(myRole === "Guesser")
             {
@@ -401,6 +399,10 @@ function changeRoles()
     document.getElementById("txtboxGenericMsg").value = "";
 }
 
+/*
+Funzione ABOLITA: la sincronizzazione del punteggio veniva fatta tramite erlang. Ma poi abbiamo ritenuto opportuno
+che doveva essere il WebServer ad occuparsi di questa informazione. Ma come fare a sapere quando il server ha
+l'info completa ? -> Ricorda perchè il matchDTO adesso ha il PendingResult...
 function sendMatchResult(myTeam, match)
 {
     let matchInfoResult = {
@@ -418,6 +420,7 @@ function sendMatchResult(myTeam, match)
     }
     socket.send(JSON.stringify(matchInfoResult));
 }
+ */
 
 function addNewMatch()
 {

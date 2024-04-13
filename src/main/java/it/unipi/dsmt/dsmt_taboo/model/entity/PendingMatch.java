@@ -6,7 +6,12 @@ import java.util.ArrayList;
 import java.util.concurrent.CountDownLatch;
 import java.util.stream.Collectors;
 
+/*
+    ATTENZIONE, un utente per poter aggiungersi in uno dei due team DEVE bloccarsi all'interno del latch.
+    In questo modo verrà creato un pendingMatch consistente con l'invito (se tutti accettano).
+ */
 public class PendingMatch
+    //Classe che rappresenta un match pendente, ossia non ancora in attesa di risposta di accettazione/rifiuto di invito
 {
     private CountDownLatch latch;
     private ArrayList<String> inviterTeamWaiting;
@@ -29,7 +34,7 @@ public class PendingMatch
         }
         try { this.latch.await(); }
         catch (Exception e) { System.out.println("Errore eccezione await() [R] -> " + e.getMessage()); }
-        //System.out.println("[R] Sveglio");
+        //System.out.println("ThreadR di [ " + usernameRival + " ] Sveglio");
     }
 
     public void addWaitingFriend(String usernameFriend)

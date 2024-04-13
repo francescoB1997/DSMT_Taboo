@@ -50,7 +50,7 @@ websocket_handle(Frame = {text, JsonMsg}, State = {Username, Role, PrompterName,
       JsonMessage = jsx:encode([{<<"action">>, matchRivalResult}, {<<"scoreRivalTeam">>, Score}]),
       {[{text, JsonMessage}], State};
 
-    %% PARTICOLARITA': per capire se la parola "tentata" è esatta, abbiamo sfruttato il patterMatching nella firma della funzione
+    %% ATTENZIONE: per capire se la parola "tentata" è esatta, abbiamo sfruttato il patterMatching nella firma della funzione
     websocket_info( {attemptGuessWord, AttemptedWord},
                     State = {Username, Role, PrompterName, FriendList, GenericMessage, [AttemptedWord, TabooWord1, TabooWord2, TabooWord3, TabooWord4, TabooWord5]} ) ->
         Result = true,

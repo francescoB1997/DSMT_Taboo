@@ -7,6 +7,7 @@ $(document).ready(function ()
         location.href = "../";
         return;
     }
+    ajaxGetMatchResult();
     displayMatchResult();
     document.getElementById("returnHomeBtn").onclick = function (e) { onClickListenerBtnReturnToHP(); };
 });
@@ -31,18 +32,33 @@ function checkLogin()
     return true;
 }
 
-function displayMatchResult()
+function ajaxGetMatchResult()
 {
-    const resultMatch = parseInt(sessionStorage.getItem("matchResult"));
-    sessionStorage.removeItem("matchResult");
 
-    if(resultMatch === 1)
+
+
+
+    sessionStorage.removeItem("matchResult");
+}
+
+function displayMatchResult(resultMatch)
+{
+    //const resultMatch = parseInt(sessionStorage.getItem("matchResult"));
+
+    let divResult = document.getElementById("resultMatch");
+    switch (resultMatch)
     {
-        alert("You and Your team are the *** WINNERS *** of the Game");
-    } else if (resultMatch === -1 )
-    {
-        alert("You and Your team are the *** LOSERS *** of the Game");
-    } else {
-        alert("\nThe Game Ended in a *** TIE ***." + "\n\n- Play Again and Try to Do Better! -");
-    }
+        case 1:
+            divResult.innerText = "You and Your team are the *** WINNERS *** of the Game";
+            break;
+        case -1:
+            divResult.innerText = "You and Your team are the *** LOSERS *** of the Game";
+            break;
+        case 0:
+            divResult.innerText = "The Game Ended in a *** TIE ***";
+            break;
+        default:
+            divResult.innerText = "Are you sure you've played a game?";
+            break;
+    };
 }

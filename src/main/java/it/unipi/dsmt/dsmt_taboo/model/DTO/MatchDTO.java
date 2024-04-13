@@ -1,5 +1,7 @@
 package it.unipi.dsmt.dsmt_taboo.model.DTO;
 
+import it.unipi.dsmt.dsmt_taboo.model.entity.PendingMatchResult;
+
 import java.util.ArrayList;
 
 public class MatchDTO
@@ -9,8 +11,7 @@ public class MatchDTO
     private ArrayList<String> rolesInviterTeam;
     private ArrayList<String> rivalTeam;
     private ArrayList<String> rolesRivalTeam;
-    private Integer scoreInviterTeam;
-    private Integer scoreRivalTeam;
+    private PendingMatchResult pendingMatchResult;
 
     public MatchDTO() { }
 
@@ -21,8 +22,9 @@ public class MatchDTO
         this.matchId = matchId;
         this.inviterTeam = inviterTeam;
         this.rivalTeam = rivalTeam;
-        this.scoreInviterTeam = scoreInviterTeam;
-        this.scoreRivalTeam = scoreRivalTeam;
+        this.pendingMatchResult = new PendingMatchResult();
+        //this.scoreInviterTeam = scoreInviterTeam; // ELIMINARE ?
+        //this.scoreRivalTeam = scoreRivalTeam; // ELIMINARE ?
     }
 
     public MatchDTO(String matchId, ArrayList<String> inviterTeam, ArrayList<String> rolesInviterTeam,
@@ -33,8 +35,9 @@ public class MatchDTO
         this.rolesInviterTeam = rolesInviterTeam;
         this.rivalTeam = rivalTeam;
         this.rolesRivalTeam = rolesRivalTeam;
-        this.scoreInviterTeam = null;
-        this.scoreRivalTeam = null;
+        this.pendingMatchResult = new PendingMatchResult();
+        //this.scoreInviterTeam = null; // ELIMINARE ?
+        //this.scoreRivalTeam = null; // ELIMINARE ?
     }
 
     public String getMatchId() { return this.matchId; }
@@ -49,13 +52,21 @@ public class MatchDTO
 
     public void setRivalTeam(ArrayList<String> rivalTeam) { this.rivalTeam = rivalTeam; }
 
-    public Integer getScoreInviterTeam() { return this.scoreInviterTeam; }
+    public Integer getScoreInviterTeam() { return this.pendingMatchResult.getScoreInviterTeam(); } // Vediamo se posso realizzare un semaforo per la lettura del punteggio. Se null => ASPETTA
 
-    public void setScoreInviterTeam(Integer scoreInviterTeam) { this.scoreInviterTeam = scoreInviterTeam; }
+    public Integer getScoreRivalTeam() { return this.pendingMatchResult.getScoreRivalTeam(); } // Vediamo se posso realizzare un semaforo per la lettura del punteggio. Se null => ASPETTA
 
-    public Integer getScoreRivalTeam() { return this.scoreRivalTeam; }
 
-    public void setScoreRivalTeam(Integer scoreRivalTeam) { this.scoreRivalTeam = scoreRivalTeam; }
+    public void setScoreInviterTeam(Integer scoreInviterTeam) // ATTENZIONE: la funzione del PendingMatch può bloccarti
+    {
+        this.pendingMatchResult.setScoreInviterTeam(scoreInviterTeam);
+    }
+    public void setScoreRivalTeam(Integer scoreRivalTeam)// ATTENZIONE: la funzione del PendingMatch può bloccarti
+    {
+        this.pendingMatchResult.setScoreRivalTeam( scoreRivalTeam);
+    }
+
+    public Boolean canINonBlock() { return this.pendingMatchResult.canINonBlock(); }
 
 
     public ArrayList<String> getRolesInviterTeam() {

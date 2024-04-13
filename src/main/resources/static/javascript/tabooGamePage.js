@@ -1,5 +1,6 @@
 const IP_SERVER_ERLANG = "127.0.0.1:8090";
-const GAME_DURATION = 20;
+const GAME_DURATION = 5;
+const PASS = 3;
 
 const username = sessionStorage.getItem("userLog");
 let myRole = sessionStorage.getItem("myRole");
@@ -23,13 +24,21 @@ $(document).ready(function ()
         return;
     }
 
+    /*
+    const match = JSON.parse(sessionStorage.getItem("match"));
+    console.log("| InviterTeam: " + match.inviterTeam + " | InviterTeamRole: " + match.rolesInviterTeam);
+    console.log("| RivalTeam: " + match.rivalTeam + " | InviterTeamRole: " + match.rolesRivalTeam);
+    */
     setInterval(keepAlive, 20000);
 
     if(myRole === "Guesser")
         updateViewTabooCard();
+    else
+        updateViewPassCounter();
 
     sessionStorage.setItem("myPrompterName", extractMyPrompterName());
     updateViewRole();
+    updateViewPassCounter();
     setWelcomeText();
 
     changeVisibilityBtn("btnGuess",myRole === 'Guesser');
@@ -40,6 +49,7 @@ $(document).ready(function ()
     initAndConfigureSocket(undefined);
 
     document.getElementById("timer" ).innerText = GAME_DURATION;
+
 
     document.getElementById("btnSendMsg").onclick = function (e ) { onClickListenerBtnSendMsg(); }
     document.getElementById("btnGuess").onclick = function (e) { onClickListenerBtnGuess(); }
@@ -111,6 +121,25 @@ function timerHandler()
     {
         clearInterval(timerInterval);
         seconds = GAME_DURATION;
+
+        stopCondition++;
+        const match = JSON.parse(sessionStorage.getItem("match"));
+        console.log("StopCond: " + stopCondition + " | rolesInviterTeamLenght : " + match.rivalTeam.length);
+        if (stopCondition === match.rivalTeam.length)
+        {
+            //Stop The Game and insert match into MySQL DB
+            if(myRole === "Prompter")
+            {
+                addNewMatch();
+                //const myTeam = sessionStorage.getItem("myTeam");
+                //sendMatchResult(myTeam, match);
+            }
+            else if(myRole === "Guesser")
+            {
+                location.href = "../endGamePage.html";
+            }
+            return;
+        }
         restartGame();
     }
 }
@@ -314,6 +343,7 @@ function onClickListenerBtnPass()
         return;
     }
     prompterData.passCounter++;
+    updateViewPassCounter();
     let passMsg = {
         action : "assignTabooCard"
     };
@@ -358,9 +388,6 @@ function changeRoles()
     sessionStorage.setItem("match", JSON.stringify(match));
     sessionStorage.setItem("myPrompterName", extractMyPrompterName());
 
-    console.log("| InviterTeam: " + match.inviterTeam + " | InviterTeamRole: " + match.rolesInviterTeam);
-    console.log("| RivalTeam: " + match.rivalTeam + " | InviterTeamRole: " + match.rolesRivalTeam);
-
     prompterData.tabooCard = null;
     prompterData.passCounter = 0;
 
@@ -371,16 +398,6 @@ function changeRoles()
     changeVisibilityBtn("pass-button",myRole === 'Prompter');
     updateViewRole();
 
-    stopCondition++;
-    if (stopCondition === match.rolesInviterTeam.length)
-    {
-        //Stop The Game and insert match into MySQL DB
-        if(myRole === "Prompter")
-        {
-            addNewMatch();
-            sendMatchResult(myTeam, match);
-        }
-    }
     document.getElementById("txtboxGenericMsg").value = "";
 }
 
@@ -404,36 +421,37 @@ function sendMatchResult(myTeam, match)
 
 function addNewMatch()
 {
-    let matchJSON = sessionStorage.getItem("match");
-    let match = JSON.parse(matchJSON);
+    let match = JSON.parse(sessionStorage.getItem("match"));
     let myTeam = sessionStorage.getItem("myTeam");
 
-    if(myTeam === "inviterTeam")
-    {
-        match.scoreInviterTeam = score;
-        match.scoreRivalTeam = null;
-    }
-    else
-    {
-        match.scoreRivalTeam = score;
-        match.scoreInviterTeam = null;
-    }
+    let matchResultRequest = {
+        matchId : match.matchId,
+        scoreInviterTeam : (myTeam === "inviterTeam") ? score : null,
+        scoreRivalTeam : (myTeam === "rivalTeam") ? score : null
+    };
+
     $.ajax({
         url : "http://localhost:8080/addNewMatch",
-        data : JSON.stringify(match),
         type : "POST",
+        data : JSON.stringify(matchResultRequest),
         contentType: 'application/json',
         success: function (serverResponse)
         {
-            let addMatchOperation = serverResponse.responseMessage;
-            switch (addMatchOperation)
+            let addMatchServerResult = serverResponse.responseMessage;
+            switch (addMatchServerResult)
             {
-                case 0:
+                case 1:
+                    location.href = "../endGamePage.html";
                     //console.log("The match has been successfully added into DB.");
                     break;
-                case 1:
-                    //console.log("We're Sorry, an Error occurred during adding operation." +
-                     //   " The match has not been successfully added into DB");
+                case -1:
+                    console.log("We're Sorry, an Error occurred during adding operation." +
+                       " The match has not been successfully added into DB");
+                    location.href = "../loggedPlayerPage.html";
+                    break;
+                case -2:
+                    console.log("il server non ha il mio match. Forse non ce l'avevo nemmeno io");
+                    location.href = "../loggedPlayerPage.html";
                     break;
                 default:
                     break;
@@ -445,6 +463,7 @@ function addNewMatch()
             alert("Error: " + responseMessage);
         }
     });
+
 }
 
 function extractMyPrompterName()
@@ -521,7 +540,7 @@ function updateViewScoreCounter()
 
 function updateViewPassCounter()
 {
-    document.getElementById("p").innerText = score;
+    document.getElementById("pass-card").innerText = PASS - prompterData.passCounter;
 }
 function updateViewRole()
 {
@@ -576,18 +595,3 @@ function emptyTable(table)
     while(table.childElementCount > 0)   // Delete all the old elements (if there are)
         table.removeChild(table.firstChild);
 }
-
-
-
-/*
-    ALLA LOGIN DI OGNI PROCESSO, BISOGNA METTERE NELLA 1° POSIZIONE SEMPRE IL PROMPTER!
-    Solo dopo invii a Erlang la lista degli amici.
-
-
-fra2 cia2 gsf2
- G    G    P
-
-fra2 LOGIN G gsf2,cia2
-cia2 LOGIN G gsf2,fra2
-gsf2 LOGIN P fra2,cia2
-*/

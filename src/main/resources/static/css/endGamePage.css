@@ -36,7 +36,11 @@ h1 {
     color: #48054d;
 }
 
-h3 {
+#resultMatch
+{
+    font-weight: bold;
+    font-size: 22px;
+    padding-bottom: 10px;
     color: #d44848;
 }
 

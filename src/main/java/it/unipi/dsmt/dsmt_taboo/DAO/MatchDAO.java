@@ -10,6 +10,7 @@ import it.unipi.dsmt.dsmt_taboo.model.DTO.MatchDTO;
 
 public class MatchDAO extends BaseDAO
 {
+    private static final int MYSQL_DUPLICATE_PK = 1062;
     public MatchDAO() { }
 
     public boolean addNewMatch(MatchDTO match)
@@ -38,7 +39,13 @@ public class MatchDAO extends BaseDAO
             else
                 return false;
 
-        } catch (SQLException ex) {
+        } catch (SQLException ex)
+        {
+            if(ex.getErrorCode() == MYSQL_DUPLICATE_PK)
+            {
+                System.out.println("*** Dovrebbe essere duplicate entry -> " + ex.getMessage() + " *** FINE ");
+                return true;
+            }
             ex.printStackTrace();
             return false;
         }

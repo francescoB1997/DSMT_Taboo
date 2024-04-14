@@ -52,7 +52,7 @@ CREATE TABLE `match` (
   `Team2` varchar(200) DEFAULT NULL,
   `ScoreTeam1` int DEFAULT NULL,
   `ScoreTeam2` int DEFAULT NULL,
-  `Timestamp` datetime DEFAULT NULL,
+  `Timestamp` varchar(50) UNIQUE DEFAULT NULL,
   PRIMARY KEY (`idMatch`)
 ) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;

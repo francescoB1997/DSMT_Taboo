@@ -8,7 +8,6 @@ $(document).ready(function ()
         return;
     }
     ajaxGetMatchResult();
-    displayMatchResult();
     document.getElementById("returnHomeBtn").onclick = function (e) { onClickListenerBtnReturnToHP(); };
 });
 
@@ -34,17 +33,66 @@ function checkLogin()
 
 function ajaxGetMatchResult()
 {
+    const match = JSON.parse(sessionStorage.getItem("match"));
+    const myTeam = sessionStorage.getItem("myTeam");
 
+    if(myTeam == null || match == null)
+        return;
+
+    let matchResultRequest = {
+        matchId : match.matchId,
+        usernameRequester: username,
+        scoreInviterTeam : null,
+        scoreRivalTeam : null
+    };
+
+    $.ajax({
+        url : "http://localhost:8080/getMatchResult",
+        type : "POST",
+        data : JSON.stringify(matchResultRequest),
+        contentType: 'application/json',
+        success: function (serverResponse)
+        {
+            const receivedMatchResult = serverResponse.responseMessage;
+            //alert("io sono di " + myTeam +  ": ScoreInv=" + receivedMatchResult.scoreInviterTeam + " | ScorRiv=" + receivedMatchResult.scoreRivalTeam);
+
+            if(myTeam === "inviterTeam")
+            {
+                if(receivedMatchResult.scoreInviterTeam > receivedMatchResult.scoreRivalTeam)
+                    displayMatchResult(1, receivedMatchResult.scoreInviterTeam, receivedMatchResult.scoreRivalTeam);
+                else if(receivedMatchResult.scoreInviterTeam < receivedMatchResult.scoreRivalTeam)
+                    displayMatchResult(-1, receivedMatchResult.scoreInviterTeam, receivedMatchResult.scoreRivalTeam);
+                else
+                    displayMatchResult(0, receivedMatchResult.scoreInviterTeam, receivedMatchResult.scoreRivalTeam);
+            }
+            else if(myTeam === "rivalTeam")
+            {
+                if(receivedMatchResult.scoreRivalTeam > receivedMatchResult.scoreInviterTeam )
+                    displayMatchResult(1, receivedMatchResult.scoreInviterTeam, receivedMatchResult.scoreRivalTeam);
+                else if(receivedMatchResult.scoreRivalTeam < receivedMatchResult.scoreInviterTeam )
+                    displayMatchResult(-1, receivedMatchResult.scoreInviterTeam, receivedMatchResult.scoreRivalTeam);
+                else
+                    displayMatchResult(0, receivedMatchResult.scoreInviterTeam, receivedMatchResult.scoreRivalTeam);
+            }
+            else
+            {
+                displayMatchResult(-2, null, null); // <-- Warning message
+                alert("strano valore myTeam: " + myTeam);
+            }
+        },
+        error: function (xhr)
+        {
+            displayMatchResult(-2, null, null); // <-- Warning message
+        }
+    });
 
 
 
     sessionStorage.removeItem("matchResult");
 }
 
-function displayMatchResult(resultMatch)
+function displayMatchResult(resultMatch, scoreInviterTeam, scoreRivalTeam)
 {
-    //const resultMatch = parseInt(sessionStorage.getItem("matchResult"));
-
     let divResult = document.getElementById("resultMatch");
     switch (resultMatch)
     {
@@ -59,6 +107,8 @@ function displayMatchResult(resultMatch)
             break;
         default:
             divResult.innerText = "Are you sure you've played a game?";
-            break;
+            return;
     };
+    //Inviter 0 - 0 Rival
+    divResult.innerText += "\n\n MATCH RESULT\n Team RED " + scoreInviterTeam + " - " + scoreRivalTeam + " Team BLUE";
 }

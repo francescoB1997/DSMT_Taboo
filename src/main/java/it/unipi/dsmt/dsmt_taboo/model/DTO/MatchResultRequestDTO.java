@@ -3,14 +3,16 @@ package it.unipi.dsmt.dsmt_taboo.model.DTO;
 public class MatchResultRequestDTO
 {
     private String matchId;
+    private String usernameRequester;
     private Integer scoreInviterTeam;
     private Integer scoreRivalTeam;
 
     public MatchResultRequestDTO(){}
 
-    public MatchResultRequestDTO(String matchId, Integer scoreInviterTeam, Integer scoreRivalTeam)
+    public MatchResultRequestDTO(String matchId, String usernameRequester, Integer scoreInviterTeam, Integer scoreRivalTeam)
     {
         this.matchId = matchId;
+        this.usernameRequester = usernameRequester;
         this.scoreRivalTeam = scoreRivalTeam;
         this.scoreInviterTeam = scoreInviterTeam;
     }
@@ -39,4 +41,11 @@ public class MatchResultRequestDTO
         this.scoreRivalTeam = scoreRivalTeam;
     }
 
+    public String getUsernameRequester() {
+        return usernameRequester;
+    }
+
+    public void setUsernameRequester(String usernameRequester) {
+        this.usernameRequester = usernameRequester;
+    }
 }

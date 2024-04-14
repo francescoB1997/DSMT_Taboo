@@ -6,12 +6,13 @@ import java.util.Arrays;
 import java.util.List;
 
 import it.unipi.dsmt.dsmt_taboo.model.DTO.MatchDTO;
+import it.unipi.dsmt.dsmt_taboo.model.DTO.MatchResultRequestDTO;
 
 
 public class MatchDAO extends BaseDAO
 {
     private static final int MYSQL_DUPLICATE_PK = 1062;
-    public MatchDAO() { }
+    public MatchDAO() {super();}
 
     public boolean addNewMatch(MatchDTO match)
     // Insert in BD a new Match
@@ -19,7 +20,7 @@ public class MatchDAO extends BaseDAO
         String insertQuery = "INSERT INTO " + DB_NAME + ".match " +
                 "(Team1, Team2, ScoreTeam1, ScoreTeam2, Timestamp) " + "VALUES (?, ?, ?, ?, ?)";
 
-        Timestamp timestamp = Timestamp.valueOf(match.getMatchId());
+        //Timestamp timestamp = Timestamp.valueOf(match.getMatchId());
 
         try (Connection connection = getConnection();
              PreparedStatement preparedStatement = connection.
@@ -30,16 +31,20 @@ public class MatchDAO extends BaseDAO
             preparedStatement.setString(2, match.getRivalTeam().toString());
             preparedStatement.setInt(3, match.getScoreInviterTeam());
             preparedStatement.setInt(4, match.getScoreRivalTeam());
-            preparedStatement.setTimestamp(5, timestamp);
+            //preparedStatement.setTimestamp(5, timestamp);
+            preparedStatement.setString(5, match.getMatchId());
 
             int rowsAffected = preparedStatement.executeUpdate();
 
-            if (rowsAffected > 0)
+            if (rowsAffected > 0) {
+                System.out.println("***************************************** Tupla realmente inserita");
                 return true;
+            }
             else
                 return false;
 
-        } catch (SQLException ex)
+        }
+        catch (SQLException ex)
         {
             if(ex.getErrorCode() == MYSQL_DUPLICATE_PK)
             {
@@ -91,6 +96,46 @@ public class MatchDAO extends BaseDAO
                 return null;
             }
         return listMatches;
+    }
+
+
+    public MatchResultRequestDTO getMatchResult(String matchId, String usernameRequester)
+    {
+        MatchResultRequestDTO mathResultToReturn = null;
+
+        String getMatchQuery = "SELECT * FROM " + DB_NAME + ".match " +
+                "WHERE (Timestamp = ?)"; //AND (Team1 LIKE ? OR Team2 LIKE ?)";
+
+        try (Connection connection = getConnection();
+             PreparedStatement preparedStatement = connection.
+                     prepareStatement(getMatchQuery,
+                             PreparedStatement.RETURN_GENERATED_KEYS))
+        {
+            //Timestamp timestamp = Timestamp.valueOf(matchId);
+            //System.out.println("timestamp t string = " + timestamp.toString());
+            preparedStatement.setString(1, matchId);
+            //preparedStatement.setString(2, "%" + usernameRequester + "%");
+            //preparedStatement.setString(3, "%" + usernameRequester + "%");
+            try (ResultSet resultSet = preparedStatement.executeQuery())
+            {
+                if(resultSet.next())
+                {
+                    String idMatch = resultSet.getString("Timestamp"); //Timestamp
+                    Integer scoreInviterTeam = resultSet.getInt("ScoreTeam1");
+                    Integer scoreRivalTeam = resultSet.getInt("ScoreTeam2");
+
+                    System.out.println("MatchID= " + idMatch + "scoreInviterTeam= " + scoreInviterTeam + " | scoreRivalTeam= " + scoreRivalTeam);
+
+                    mathResultToReturn =
+                            new MatchResultRequestDTO (idMatch, usernameRequester , scoreInviterTeam,  scoreRivalTeam);
+                }
+                else
+                    System.out.println("Else resultSet.nect()");
+            }
+        } catch (SQLException ex) {
+            System.out.println("getMatchResult() eccezione query:" + ex.getMessage());
+        }
+        return mathResultToReturn;
     }
 
 }

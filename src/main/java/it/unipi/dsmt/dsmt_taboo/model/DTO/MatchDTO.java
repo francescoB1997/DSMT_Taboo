@@ -22,9 +22,7 @@ public class MatchDTO
         this.matchId = matchId;
         this.inviterTeam = inviterTeam;
         this.rivalTeam = rivalTeam;
-        this.pendingMatchResult = new PendingMatchResult();
-        //this.scoreInviterTeam = scoreInviterTeam; // ELIMINARE ?
-        //this.scoreRivalTeam = scoreRivalTeam; // ELIMINARE ?
+        this.pendingMatchResult = new PendingMatchResult(scoreInviterTeam, scoreRivalTeam);
     }
 
     public MatchDTO(String matchId, ArrayList<String> inviterTeam, ArrayList<String> rolesInviterTeam,
@@ -65,10 +63,6 @@ public class MatchDTO
     {
         this.pendingMatchResult.setScoreRivalTeam( scoreRivalTeam);
     }
-
-    public Boolean canINonBlock() { return this.pendingMatchResult.canINonBlock(); }
-
-
     public ArrayList<String> getRolesInviterTeam() {
         return this.rolesInviterTeam;
     }
@@ -83,6 +77,11 @@ public class MatchDTO
 
     public void setRolesRivalTeam(ArrayList<String> rolesRivalTeam) {
         this.rolesRivalTeam = rolesRivalTeam;
+    }
+
+    public Boolean infoMatchIsComplete()
+    {
+        return ( (this.getScoreRivalTeam() != null) && (this.getScoreInviterTeam() != null) );
     }
 
 }

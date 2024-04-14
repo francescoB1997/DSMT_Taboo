@@ -1,5 +1,5 @@
 -module(player_handler).
--export([login/2, send_msg_to_friends/2, attemptGuessWord/2, wakeUpAllGuessers/1, assignTabooCard/1, getRandomTabooCard/0, send_result_checkWord/2, sendMatchResult/2]).
+-export([login/2, send_msg_to_friends/2, attemptGuessWord/2, wakeUpAllGuessers/1, assignTabooCard/1, getRandomTabooCard/0, send_result_checkWord/2]).
 
 
 login (DecodedJson, State = {EmptyUser, EmptyRole, EmptyPrompterName, EmptyFriends, GenericMessage, EmptyTabooCard}) ->
@@ -103,13 +103,6 @@ send_start_msg(FriendName) ->
             io:format("Invio start FALLITO per ~p~n", [FriendName]),
             send_no
     end.
-
-sendMatchResult( DecodedJson, State) ->
-    Score = maps:get(<<"score">>, DecodedJson),
-    RivalTeam = maps:get(<<"team">>, DecodedJson),
-    [ send_msg(scoreTeam, Score, Rival) || Rival <- RivalTeam ], % Foreach equivalent
-    JsonResponse = jsx:encode([{<<"action">>, ignore}]),
-    { {text, JsonResponse} , State}.
 
 
 send_msg(Atom, Msg, Friend) ->

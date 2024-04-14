@@ -15,15 +15,25 @@ public class PendingMatchResult
         this.scoreRivalTeam = null;
     }
 
+    public PendingMatchResult(Integer scoreInviterTeam, Integer scoreRivalTeam)
+    {
+        if(scoreInviterTeam != null && scoreRivalTeam != null)
+        {
+            this.scoreInviterTeam = scoreInviterTeam;
+            this.scoreRivalTeam = scoreRivalTeam;
+            this.latch = null;
+        }
+    }
+
     public Integer getScoreInviterTeam() { return this.scoreInviterTeam; }
 
     public void setScoreInviterTeam(Integer scoreInviterTeam) // BLOCKING SETTER if you cannot bypass the Lock (bypassLock = false)
     {
         this.scoreInviterTeam = scoreInviterTeam;
         this.latch.countDown();
-        try { this.latch.await(); }
-        catch (Exception e) { System.out.println("Errore eccezione await() latch score [Inviter] -> " + e.getMessage()); }
-
+        try { this.latch.await(); } catch (Exception e) {
+            System.out.println("Errore eccezione await() latch score [Inviter] -> " + e.getMessage());
+        }
     }
 
     public Integer getScoreRivalTeam() { return this.scoreRivalTeam; }
@@ -32,12 +42,8 @@ public class PendingMatchResult
     {
         this.scoreRivalTeam = scoreRivalTeam;
         this.latch.countDown();
-        try { this.latch.await(); }
-        catch (Exception e) { System.out.println("Errore eccezione await() latch score [Rival] -> " + e.getMessage()); }
-    }
-
-    public Boolean canINonBlock()
-    {
-        return (this.latch.getCount() == 1);
+        try { this.latch.await(); } catch (Exception e) {
+            System.out.println("Errore eccezione await() latch score [Rival] -> " + e.getMessage());
+        }
     }
 }

@@ -11,10 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Vector;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
 
@@ -181,9 +178,6 @@ public class LoggedUserControllerImpl implements LoggedUserControllerInterface
                     assert (!invite.getGameId().equals(request.getGameId())); // DBG. Se va storto, la remove ha funzionato!
                 });
                 invites.add(new InviteFriends(request)); //add the complete invite (with rivals list and rivalsRoles)
-                //InviteFriends X = invites.stream().filter(inviteFriends -> inviteFriends.getGameId() == request.getGameId()).toList().get(0);
-                //X.printInfoInvite();
-                //request.printInfoInvite();
             }
             responseHttp = HttpStatus.OK;
         } else {
@@ -266,12 +260,12 @@ public class LoggedUserControllerImpl implements LoggedUserControllerInterface
             else
                 pendingMatchMap.get(replyInvite.getGameId()).addWaitingRival(replyInvite.getSenderUsername());
 
-            // l'aggiornamento di r è NECESSARIO, perchè altrimenti gli users che erano entrati in attesa prima che
-            // il rivale costruisse la sua squadra, manterrebero il riferimento all'invito INCOMPLETO.
-            r = invites.stream().filter(invite -> invite.getGameId().equals(replyInvite.getGameId())).toList().get(0);
             PendingMatch pendingMatch = pendingMatchMap.get(replyInvite.getGameId()); // retrieve the PendingMatch related to this reply
-
-            if (pendingMatch != null && r != null) {
+            if (pendingMatch != null && r != null)
+            {
+                // l'aggiornamento di r è NECESSARIO, perchè altrimenti gli users che erano entrati in attesa prima che
+                // il rivale costruisse la sua squadra, manterrebero il riferimento all'invito INCOMPLETO.
+                r = invites.stream().filter(invite -> invite.getGameId().equals(replyInvite.getGameId())).toList().get(0);
                 MatchDTO matchDTO = new MatchDTO(replyInvite.getGameId(),
                         pendingMatch.getInviterTeamMember(), r.getRoles(),
                         pendingMatch.getRivalsTeamMember(), r.getRivalsRoles());
@@ -318,9 +312,10 @@ public class LoggedUserControllerImpl implements LoggedUserControllerInterface
 
     @PostMapping("/addNewMatch")
     @Override
-    public ResponseEntity<ServerResponseDTO<Integer>> addNewMatch(@RequestBody MatchResultRequestDTO userMatchResult) {
+    public ResponseEntity<ServerResponseDTO<Integer>> addNewMatch(@RequestBody MatchResultRequestDTO userMatchResult)
+    {
         System.out.println("AddMatch: " + userMatchResult.getMatchId() + "PunteggioInv" + userMatchResult.getScoreInviterTeam() + " | PunteggioRiv"
-                + userMatchResult.getScoreRivalTeam());
+                + userMatchResult.getScoreRivalTeam() + " ! Requester: " + userMatchResult.getUsernameRequester());
         HttpStatus responseHttp = HttpStatus.OK;
         ServerResponseDTO<Integer> addMatchResponse = new ServerResponseDTO<>(1);
 
@@ -331,38 +326,42 @@ public class LoggedUserControllerImpl implements LoggedUserControllerInterface
         }
 
         MatchDTO matchInfo = runningMatch.get(userMatchResult.getMatchId());
-        if (matchInfo != null) {
-            // ***** Io thread, posso non bloccarmi ? Ossia l'altro thread è bloccato nel Lock del pendingResultMatch?
+        if (matchInfo != null)
+        {
             if (userMatchResult.getScoreInviterTeam() != null) {
                 System.out.println("Sono il prompter dell'inviter. Abbiamo fatto: " + userMatchResult.getScoreInviterTeam());
-                matchInfo.setScoreInviterTeam(userMatchResult.getScoreInviterTeam());
-            } else {
+                matchInfo.setScoreInviterTeam(userMatchResult.getScoreInviterTeam()); // SET BLOCCANTE SE IL SERVER NON HA L'INFORMAZIONE COMPLETA
+            }
+            else
+            {
                 System.out.println("Sono il prompter del rival. Abbiamo fatto: " + userMatchResult.getScoreRivalTeam());
-                matchInfo.setScoreRivalTeam(userMatchResult.getScoreRivalTeam());
+                matchInfo.setScoreRivalTeam(userMatchResult.getScoreRivalTeam());  // SET BLOCCANTE SE IL SERVER NON HA L'INFORMAZIONE COMPLETA
             }
 
             matchInfo = runningMatch.get(userMatchResult.getMatchId());
 
-            if (matchInfo.getScoreRivalTeam() != null && matchInfo.getScoreInviterTeam() != null) // questo if dovrebbe essere inutile
+            if (matchInfo.infoMatchIsComplete()) // questo if dovrebbe essere inutile, perchè vuol dire che il latch è a 0 e quindi ho entrambe le info
             {
                 System.out.println("Server: Informazione completa -> I[" + matchInfo.getScoreInviterTeam() + "] R[" + matchInfo.getScoreRivalTeam() + "]");
                 MatchDAO matchDAO = new MatchDAO();
                 boolean addOpStatus = matchDAO.addNewMatch(matchInfo);
 
-                if (addOpStatus) {
+                if (addOpStatus)
+                {
                     //System.out.println("\nThe match has been successfully added into DB\n");
-                    //addMatchResponse = new ServerResponseDTO<>(1);
-                    runningMatch.remove(userMatchResult.getMatchId());
+
+                    //  NON RIMUOVERE IL MATCH APPENA INSERITO NEL DB dai RunningMatch, altrimenti quando ricevi una richiesta di getResult non sai se hai già l'info completa
+                    //runningMatch.remove(userMatchResult.getMatchId());
                 } else {
                     System.out.println("\nError occurred during adding opration:" +
                             "The match has NOT been added into DB\n");
                     addMatchResponse = new ServerResponseDTO<>(-1);
                     responseHttp = HttpStatus.BAD_REQUEST;
                 }
-
-            } else
-                System.out.println("Non puoi svegliarti con ancora uno a NULL");
-        } else {
+            }
+        }
+        else
+        {
             responseHttp = HttpStatus.BAD_REQUEST;
             addMatchResponse = new ServerResponseDTO<>(-2);
         }
@@ -374,9 +373,41 @@ public class LoggedUserControllerImpl implements LoggedUserControllerInterface
     @Override
     public ResponseEntity<ServerResponseDTO<MatchResultRequestDTO>> getMatchResult(@RequestBody MatchResultRequestDTO matchResultRequestDTO)
     {
+        ServerResponseDTO<MatchResultRequestDTO> response;
+        HttpStatus httpStatus;
 
+        System.out.println("getMatchResult -> idMatch=" + matchResultRequestDTO.getMatchId() + "| DA= " +
+                matchResultRequestDTO.getUsernameRequester());
 
-        return null;
+        if(matchResultRequestDTO == null)
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+
+        MatchDTO matchDTO = runningMatch.get(matchResultRequestDTO.getMatchId());
+        if(matchDTO == null)
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+
+        while(!matchDTO.infoMatchIsComplete())
+        {
+            // Se il server non ha ancora l'info completa, allora il thread dovrà aspettare per averla.
+            try { Thread.sleep(2000); } catch (Exception e) {}
+            System.out.println("Sono un thread che sta aspettando perchè l'info non è completa");
+        }
+
+        MatchDAO matchDAO = new MatchDAO();
+        MatchResultRequestDTO matchResult = matchDAO.getMatchResult(matchResultRequestDTO.getMatchId(), matchResultRequestDTO.getUsernameRequester());
+
+        if(matchResult != null)
+        {
+            response = new ServerResponseDTO<>(matchResult);
+            httpStatus  = HttpStatus.OK;
+        }
+        else
+        {
+            response = new ServerResponseDTO<>(null);
+            httpStatus  = HttpStatus.BAD_REQUEST;
+        }
+
+        return new ResponseEntity<>(response, httpStatus);
     }
 
 

@@ -1,5 +1,6 @@
 package it.unipi.dsmt.dsmt_taboo.model.DTO;
 
+import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
@@ -34,7 +35,7 @@ public class InviteFriendRequestDTO //InviteFriendRequestDTO
 
     public void setAutoGameId()
     {
-        if (gameId == "")
+        if (this.gameId == "")
             this.gameId = getUniqueGameId();
     }
 

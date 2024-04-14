@@ -1,5 +1,5 @@
 const IP_SERVER_ERLANG = "127.0.0.1:8090";
-const GAME_DURATION = 5;
+const GAME_DURATION = 20;
 const PASS = 3;
 
 const username = sessionStorage.getItem("userLog");
@@ -132,10 +132,7 @@ function timerHandler()
             {
                 addNewMatch();
             }
-            else if(myRole === "Guesser")
-            {
-                location.href = "../endGamePage.html";
-            }
+            location.href = "../endGamePage.html";
             return;
         }
         restartGame();
@@ -249,19 +246,6 @@ function msgOnSocketRecevedListener (event)
                 divAreaGioco.innerText = divAreaGioco.innerText + '\n' + (objectFromErlang.msg.join(' '));
                 //console.log("Message from friend: " + objectFromErlang.msg);
             }
-            break;
-        case "matchRivalResult":
-            const rivalScore  = objectFromErlang.scoreRivalTeam;
-            if(score > rivalScore)
-                //vinto
-                sessionStorage.setItem("matchResult", "1");
-            else if(score < rivalScore)
-                //perso
-                sessionStorage.setItem("matchResult", "-1");
-            else
-                sessionStorage.setItem("matchResult", "0");
-
-            location.href="../endGamePage.html";
             break;
         case "attemptGuessWord":
             if(myRole === "Guesser")
@@ -399,29 +383,6 @@ function changeRoles()
     document.getElementById("txtboxGenericMsg").value = "";
 }
 
-/*
-Funzione ABOLITA: la sincronizzazione del punteggio veniva fatta tramite erlang. Ma poi abbiamo ritenuto opportuno
-che doveva essere il WebServer ad occuparsi di questa informazione. Ma come fare a sapere quando il server ha
-l'info completa ? -> Ricorda perchè il matchDTO adesso ha il PendingResult...
-function sendMatchResult(myTeam, match)
-{
-    let matchInfoResult = {
-        action: "matchResult",
-        team: [],
-        score: score
-    };
-    if(myTeam === "inviterTeam")
-    {
-        matchInfoResult.team = match.rivalTeam;
-    }
-    else if(myTeam === "rivalTeam")
-    {
-        matchInfoResult.team = match.inviterTeam;
-    }
-    socket.send(JSON.stringify(matchInfoResult));
-}
- */
-
 function addNewMatch()
 {
     let match = JSON.parse(sessionStorage.getItem("match"));
@@ -429,6 +390,7 @@ function addNewMatch()
 
     let matchResultRequest = {
         matchId : match.matchId,
+        usernameRequester : username,
         scoreInviterTeam : (myTeam === "inviterTeam") ? score : null,
         scoreRivalTeam : (myTeam === "rivalTeam") ? score : null
     };

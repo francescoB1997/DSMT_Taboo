@@ -13,7 +13,7 @@ public class FriendDAO extends BaseDAO
 
     public FriendDAO(String username)
     {
-        System.out.println("FriendDAO: " + username);
+        //System.out.println("FriendDAO: " + username);
         this.username = username;
     }
 
@@ -77,9 +77,7 @@ public class FriendDAO extends BaseDAO
             preparedStatement.setString(1, username);
             ResultSet resultSet = preparedStatement.executeQuery();
             while (resultSet.next())
-            {
                 result = (resultSet.getInt("Exists_") == 1) ? true : false;
-            }
         }
         catch (SQLException ex)
         {
@@ -98,6 +96,9 @@ public class FriendDAO extends BaseDAO
             return -1;
         }
 
+        if(isAlreadyFriend(usernameToAdd))
+            return 0;
+
         try (Connection connection = getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(addFriendQuery))
         {
@@ -115,6 +116,27 @@ public class FriendDAO extends BaseDAO
             System.out.println("addFriend query exception: " + ex.getMessage());
             return -1;
         }
+    }
+
+    private Boolean isAlreadyFriend(String username2)
+    {
+        Boolean alreadyFriend = false;
+        String userExistsQuery = "SELECT alreadyFriend(?, ?) as IsAlreadyFriend;";
+
+        try (Connection connection = getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(userExistsQuery))
+        {
+            preparedStatement.setString(1, this.username);
+            preparedStatement.setString(2, username2);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while (resultSet.next())
+                alreadyFriend = (resultSet.getInt("IsAlreadyFriend") > 0) ? true : false;
+        }
+        catch (SQLException ex)
+        {
+            System.out.println("checkIfUserExists query exception: " + ex.getMessage());
+        }
+        return alreadyFriend;
     }
 
 }

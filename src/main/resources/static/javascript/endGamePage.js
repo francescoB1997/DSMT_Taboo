@@ -97,18 +97,18 @@ function displayMatchResult(resultMatch, scoreInviterTeam, scoreRivalTeam)
     switch (resultMatch)
     {
         case 1:
-            divResult.innerText = "You and Your team are the *** WINNERS *** of the Game";
+            divResult.innerText = "You and your Team are\n\n *** WINNERS ***";
             break;
         case -1:
-            divResult.innerText = "You and Your team are the *** LOSERS *** of the Game";
+            divResult.innerText = "You and your Team  are\n\n *** LOSERS ***";
             break;
         case 0:
             divResult.innerText = "The Game Ended in a *** TIE ***";
             break;
         default:
-            divResult.innerText = "Are you sure you've played a game?";
+            divResult.innerText = "Are you sure you've played a Game?";
             return;
     };
     //Inviter 0 - 0 Rival
-    divResult.innerText += "\n\n MATCH RESULT\n Team RED " + scoreInviterTeam + " - " + scoreRivalTeam + " Team BLUE";
+    divResult.innerText += "\n\n Match Result:\n Team RED " + scoreInviterTeam + " - " + scoreRivalTeam + " Team BLUE\n";
 }

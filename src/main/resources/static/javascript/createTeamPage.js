@@ -1,4 +1,6 @@
 const username = sessionStorage.getItem("userLog");
+const IP_Server = "10.2.1.130:5050";
+
 let checkedCheckbox = [];
 
 $(document).ready(function ()
@@ -91,7 +93,7 @@ function emptyTable(table)
 function ajaxGetFriendList()
 {
     $.ajax({
-        url: "http://localhost:8080/getFriendList",
+        url: "http://" + IP_Server +  "/getFriendList",
         type: "POST",
         data: username,
         contentType: 'application/json',

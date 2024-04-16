@@ -1,3 +1,4 @@
+const IP_Server = "10.2.1.130:5050";
 
 $(document).ready(function ()
 {
@@ -25,7 +26,7 @@ function onClickListenerBtnLogin()
     };
 
     $.ajax({
-        url : "http://localhost:8080/login",
+        url : "http://" + IP_Server +  "/login",
         data : JSON.stringify(loginRequest),
         type : "POST",
         dataType: "json",

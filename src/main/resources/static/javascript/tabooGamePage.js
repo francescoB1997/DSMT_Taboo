@@ -1,5 +1,4 @@
-//const IP_SERVER_ERLANG = "127.0.0.1:8090";
-const IP_SERVER_ERLANG = "10.2.1.110:8090";
+const IP_Server_ERLANG = "10.2.1.110:8090";
 const GAME_DURATION = 20;
 const GAME_DURATION = 60;
 const PASS = 3;
@@ -98,7 +97,7 @@ function handlerEnterKeyPress(event)
 
 function initAndConfigureSocket(event)
 {
-    socket = new WebSocket("ws://" + IP_SERVER_ERLANG + "/erlServer");
+    socket = new WebSocket("ws://" + " + IP_Server +  "_ERLANG + "/erlServer");
     socket.addEventListener("open", (event) => { sendInitMsg();});
     socket.addEventListener("message", (event) => { msgOnSocketRecevedListener(event);});
 
@@ -398,7 +397,7 @@ function addNewMatch()
     };
 
     $.ajax({
-        url : "http://localhost:8080/addNewMatch",
+        url : "http://" + IP_Server +  "/addNewMatch",
         type : "POST",
         data : JSON.stringify(matchResultRequest),
         contentType: 'application/json',

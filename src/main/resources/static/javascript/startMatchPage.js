@@ -1,4 +1,6 @@
 const username = sessionStorage.getItem("userLog");
+const IP_Server = "10.2.1.130:5050";
+
 $(document).ready(function ()
 {
     if(!checkLogin())
@@ -45,7 +47,7 @@ function onClickListenerBtnCheckInvite()
 function ajaxCheckInvite(isCreatYourTeamBtn)
 {
     $.ajax({
-        url: "http://localhost:8080/checkInvite",
+        url: "http://" + IP_Server +  "/checkInvite",
         type: "POST",
         data: username,
         contentType: 'application/json',

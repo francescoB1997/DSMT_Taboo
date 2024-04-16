@@ -11,7 +11,7 @@ import com.mysql.cj.jdbc.MysqlDataSource;
 
 public class BaseDAO {
     public static final String DB_NAME = "taboo";
-    private static final String DB_IP = "127.0.0.1"; //"10.2.1.111"; //
+    private static final String DB_IP = /*"127.0.0.1";*/ "10.2.1.111";
     //private static final String DB_URL = "jdbc:mysql://" + DB_IP + ":3306/" + DB_NAME;
     private static final String DB_URL = "jdbc:mysql://" + DB_IP + ":3306/taboo";// + DB_NAME;
     private static final String DB_USERNAME = "root";

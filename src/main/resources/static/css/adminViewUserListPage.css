@@ -24,6 +24,7 @@ table
     background-color: #eee;
     border: 1px solid #666666;
     text-align: center;
+    border-radius: 10px;
 }
 
 #btnShowSearchUser

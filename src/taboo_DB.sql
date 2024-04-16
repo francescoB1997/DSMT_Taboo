@@ -19,6 +19,10 @@
 -- Table structure for table `friendship`
 --
 
+DROP DATABASE IF EXISTS taboo;
+CREATE DATABASE taboo;
+USE taboo;
+
 DROP TABLE IF EXISTS `friendship`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
@@ -107,7 +111,7 @@ UNLOCK TABLES;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-CREATE DEFINER=`root`@`localhost` FUNCTION `alreadyFriend`(username VARCHAR(45), usernameFriend VARCHAR(45)) RETURNS tinyint(1)
+CREATE FUNCTION `alreadyFriend`(username VARCHAR(45), usernameFriend VARCHAR(45)) RETURNS tinyint(1)
     DETERMINISTIC
 BEGIN
     DECLARE alreadyFriend_ INT;
@@ -135,7 +139,7 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-CREATE DEFINER=`root`@`localhost` FUNCTION `userExists`(username VARCHAR(45)) RETURNS tinyint(1)
+CREATE FUNCTION `userExists`(username VARCHAR(45)) RETURNS tinyint(1)
     DETERMINISTIC
 BEGIN
     DECLARE exists_ INT;

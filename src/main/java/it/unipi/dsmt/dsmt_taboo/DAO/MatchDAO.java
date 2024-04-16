@@ -106,6 +106,8 @@ public class MatchDAO extends BaseDAO
         String getMatchQuery = "SELECT * FROM " + DB_NAME + ".match " +
                 "WHERE (Timestamp = ?)"; //AND (Team1 LIKE ? OR Team2 LIKE ?)";
 
+        int attempt = 0;
+
         try (Connection connection = getConnection();
              PreparedStatement preparedStatement = connection.
                      prepareStatement(getMatchQuery,
@@ -116,22 +118,34 @@ public class MatchDAO extends BaseDAO
             preparedStatement.setString(1, matchId);
             //preparedStatement.setString(2, "%" + usernameRequester + "%");
             //preparedStatement.setString(3, "%" + usernameRequester + "%");
-            try (ResultSet resultSet = preparedStatement.executeQuery())
+            do
             {
-                if(resultSet.next())
-                {
-                    String idMatch = resultSet.getString("Timestamp"); //Timestamp
-                    Integer scoreInviterTeam = resultSet.getInt("ScoreTeam1");
-                    Integer scoreRivalTeam = resultSet.getInt("ScoreTeam2");
+                try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                    if (resultSet.next())
+                    {
+                        String idMatch = resultSet.getString("Timestamp"); //Timestamp
+                        Integer scoreInviterTeam = resultSet.getInt("ScoreTeam1");
+                        Integer scoreRivalTeam = resultSet.getInt("ScoreTeam2");
 
-                    System.out.println("MatchID= " + idMatch + "scoreInviterTeam= " + scoreInviterTeam + " | scoreRivalTeam= " + scoreRivalTeam);
+                        System.out.println("MatchID= " + idMatch + "scoreInviterTeam= " + scoreInviterTeam +
+                                " | scoreRivalTeam= " + scoreRivalTeam);
 
-                    mathResultToReturn =
-                            new MatchResultRequestDTO (idMatch, usernameRequester , scoreInviterTeam,  scoreRivalTeam);
+                        mathResultToReturn =
+                                new MatchResultRequestDTO(idMatch, usernameRequester, scoreInviterTeam, scoreRivalTeam);
+                        attempt = 10;
+                    }
+                    else
+                    {
+                        attempt++;
+                        System.out.println("Else resultSet.nect(). Tentativo: " + attempt);
+                        Thread.sleep(1500);
+                    }
+                } catch (InterruptedException e) {
+                    //throw new RuntimeException(e);
                 }
-                else
-                    System.out.println("Else resultSet.nect()");
             }
+            while(attempt < 3);
+
         } catch (SQLException ex) {
             System.out.println("getMatchResult() eccezione query:" + ex.getMessage());
         }

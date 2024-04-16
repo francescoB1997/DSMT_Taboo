@@ -9,5 +9,5 @@ public class DsmtTabooApplication {
     {
         SpringApplication.run(DsmtTabooApplication.class, args);
     }
-
 }
+

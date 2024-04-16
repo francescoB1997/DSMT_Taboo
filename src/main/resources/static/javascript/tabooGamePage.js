@@ -1,5 +1,6 @@
-const IP_SERVER_ERLANG = "127.0.0.1:8090";
-const GAME_DURATION = 60;
+//const IP_SERVER_ERLANG = "127.0.0.1:8090";
+const IP_SERVER_ERLANG = "10.2.1.110:8090";
+const GAME_DURATION = 20;
 const PASS = 3;
 
 const username = sessionStorage.getItem("userLog");

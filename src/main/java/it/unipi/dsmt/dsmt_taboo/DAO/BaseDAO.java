@@ -8,9 +8,12 @@ import java.sql.*;
 import javax.sql.DataSource;
 import com.mysql.cj.jdbc.MysqlDataSource;
 
+
 public class BaseDAO {
     public static final String DB_NAME = "taboo";
-    private static final String DB_URL = "jdbc:mysql://localhost:3306/" + DB_NAME;
+    private static final String DB_IP = "127.0.0.1"; //"10.2.1.111"; //
+    //private static final String DB_URL = "jdbc:mysql://" + DB_IP + ":3306/" + DB_NAME;
+    private static final String DB_URL = "jdbc:mysql://" + DB_IP + ":3306/taboo";// + DB_NAME;
     private static final String DB_USERNAME = "root";
     private static final String DB_PASSWORD = "root";
     private DataSource dataSource = null;
@@ -39,19 +42,19 @@ public class BaseDAO {
             return dataSource.getConnection();
         } catch (SQLException e) {
             System.out.println("BaseFunctionalitiesDB: Can't get connection");
-            // e.printStackTrace();
+            e.printStackTrace();
             return null;
         }
     }
 }
 
-
 /*
+
 public class BaseDAO
     // Base functionalities to interact with DB
 {
     public static final String DB_NAME = "taboo";
-    private static final String DB_URL = "jdbc:mysql://localhost:3306/" + DB_NAME;
+    private static final String DB_URL = "jdbc:mysql://10.2.1.111:3306/" + DB_NAME;
     private static final String DB_USERNAME = "root";
     private static final String DB_PASSWORD = "root";
     private Connection connection = null;
@@ -91,4 +94,5 @@ public class BaseDAO
 
 }
 
- */
+
+*/

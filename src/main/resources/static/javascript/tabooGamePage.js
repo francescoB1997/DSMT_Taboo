@@ -1,5 +1,5 @@
 const IP_Server_ERLANG = "10.2.1.110:8090";
-const GAME_DURATION = 20;
+const IP_Server = "10.2.1.130:5050";
 const GAME_DURATION = 60;
 const PASS = 3;
 
@@ -97,7 +97,7 @@ function handlerEnterKeyPress(event)
 
 function initAndConfigureSocket(event)
 {
-    socket = new WebSocket("ws://" + " + IP_Server +  "_ERLANG + "/erlServer");
+    socket = new WebSocket("ws://" + IP_Server_ERLANG + "/erlServer");
     socket.addEventListener("open", (event) => { sendInitMsg();});
     socket.addEventListener("message", (event) => { msgOnSocketRecevedListener(event);});
 

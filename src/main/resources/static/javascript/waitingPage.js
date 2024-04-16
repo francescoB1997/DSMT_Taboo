@@ -34,7 +34,7 @@ function ajaxSendReplyInvitation()
     }
 
     $.ajax({
-        url: "http://" + IP_Server " + "/replyInvite",
+        url: "http://" + IP_Server + "/replyInvite",
         type: "POST",
         data: inviteReplyJSON, // this inviteReply is alreay a JSON string
         contentType: 'application/json',

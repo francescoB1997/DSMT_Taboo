@@ -1,4 +1,6 @@
 const username = sessionStorage.getItem("userLog");
+const IP_Server = "10.2.1.130:5050";
+
 let showUsersList = true;
 
 $(document).ready(function ()
@@ -79,7 +81,7 @@ function ajaxGetUserList()
         parameter : ""
     };
     $.ajax({
-        url: "http://localhost:8080/getUsers",
+        url: "http://" + IP_Server + "/getUsers",
         type: "POST",
         data: JSON.stringify(userListRequest),
         dataType: "json",
@@ -168,7 +170,7 @@ function onClickListenerBtnDeleteUser(button)
         };
 
         $.ajax({
-            url: "http://localhost:8080/deleteUser",
+            url: "http://" + IP_Server + "/deleteUser",
             type: "POST",
             data:  JSON.stringify(removeUserRequest),
             dataType: "json",
@@ -216,7 +218,7 @@ function onClickBtnSearchUser(event)
     };
 
     $.ajax({
-        url: "http://localhost:8080/getUsers",
+        url: "http://" + IP_Server + "/getUsers",
         type: "POST",
         data: JSON.stringify(userSearchRequestDTO),
         dataType: "json",

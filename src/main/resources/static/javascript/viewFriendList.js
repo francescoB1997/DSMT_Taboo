@@ -1,4 +1,6 @@
 const username = sessionStorage.getItem("userLog");
+const IP_Server = "10.2.1.130:5050";
+
 let showFriendList = true;
 
 $(document).ready(function ()
@@ -78,7 +80,7 @@ function ajaxGetFriendList()
     // Per ogni amico, va creato a runTime un elemento HTML per mostrarlo.
 
     $.ajax({
-        url: "http://localhost:8080/getFriendList",
+        url: "http://" + IP_Server +  "/getFriendList",
         type: "POST",
         data: username,
         contentType: 'application/json',
@@ -165,7 +167,7 @@ function onClickListenerBtnRemoveFriends(button)
         };
 
         $.ajax({
-            url: "http://localhost:8080/removeFriend",
+            url: "http://" + IP_Server +  "/removeFriend",
             type: "POST",
             data:  JSON.stringify(removeFriendRequest),
             contentType: 'application/json',
@@ -214,7 +216,7 @@ function onClickBtnSearchUser(event)
 
     //alert("userSearchRequestDTO: " + userSearchRequestDTO.requesterUsername + ", " + userSearchRequestDTO.usernameToSearch);
     $.ajax({
-        url: "http://localhost:8080/searchUser",
+        url: "http://" + IP_Server +  "/searchUser",
         type: "POST",
         data: JSON.stringify(userSearchRequestDTO),
         dataType: "json",
@@ -306,7 +308,7 @@ function onClickListenerBtnAddFriends(button)
         usernameFriend : usernameFriendToAdd
     };
     $.ajax({
-        url: "http://localhost:8080/addFriend",
+        url: "http://" + IP_Server +  "/addFriend",
         type: "POST",
         data: JSON.stringify(addFriendRequest),
         dataType: "json",

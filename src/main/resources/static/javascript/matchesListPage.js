@@ -1,4 +1,5 @@
 const username = sessionStorage.getItem("userLog");
+const IP_Server = "10.2.1.130:5050";
 
 $(document).ready(function ()
 {
@@ -24,7 +25,7 @@ function checkLogin()
 function ajaxGetMatchesList()
 {
     $.ajax({
-        url: "http://localhost:8080/getMyMatches",
+        url: "http://" + IP_Server +  "/getMyMatches",
         type: "POST",
         data: username,
         contentType: 'application/json',

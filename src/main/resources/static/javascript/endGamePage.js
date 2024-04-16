@@ -1,4 +1,5 @@
 const username = sessionStorage.getItem("userLog");
+const IP_Server = "10.2.1.130:5050";
 
 $(document).ready(function ()
 {
@@ -47,7 +48,7 @@ function ajaxGetMatchResult()
     };
 
     $.ajax({
-        url : "http://localhost:8080/getMatchResult",
+        url : "http://" + IP_Server +  "/getMatchResult",
         type : "POST",
         data : JSON.stringify(matchResultRequest),
         contentType: 'application/json',

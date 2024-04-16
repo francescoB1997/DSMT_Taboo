@@ -1,3 +1,4 @@
+const IP_Server = "10.2.1.130:5050";
 
 $(document).ready(function ()
 {
@@ -39,7 +40,7 @@ function onClickListenerBtnSignup()
 
 
     $.ajax({
-        url : "http://localhost:8080/signup",
+        url : "http://" + IP_Server +  "/signup",
         data : JSON.stringify(newUser),
         type : "POST",
         contentType: 'application/json',

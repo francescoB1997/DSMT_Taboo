@@ -1,4 +1,6 @@
 const username = sessionStorage.getItem("userLog");
+const IP_Server = "10.2.1.130:5050";
+
 let inviteFriendRequest;
 
 $(document).ready(function ()
@@ -122,7 +124,7 @@ function emptyTable(table)
 function ajaxGetFriendList()
 {
     $.ajax({
-        url: "http://localhost:8080/getFriendList",
+        url: "http://" + IP_Server +  "/getFriendList",
         type: "POST",
         data: username,
         contentType: 'application/json',
@@ -153,7 +155,7 @@ function onClickListenerBtnInvite()
     inviteFriendRequest.rivals.push(usernameRival);
     sessionStorage.setItem("myRole", inviteFriendRequest.roles[0]);
     $.ajax({
-        url: "http://localhost:8080/inviteFriends",
+        url: "http://" + IP_Server +  "/inviteFriends",
         type: "POST",
         data: JSON.stringify(inviteFriendRequest),
         contentType: 'application/json',

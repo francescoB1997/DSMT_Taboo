@@ -26,7 +26,7 @@ websocket_handle(Frame = {text, JsonMsg}, State = {Username, Role, PrompterName,
                 player_handler:attemptGuessWord(DecodedJson, State);
 
             UserAction == <<"keepAlive">> ->
-                io:format("keepAlive di ~p~n", [Username]),
+                %io:format("KEEP_ALIVE of ~p~n", [Username]),
                 {Frame, State}
 
         end,
@@ -34,7 +34,7 @@ websocket_handle(Frame = {text, JsonMsg}, State = {Username, Role, PrompterName,
 	{reply, [Response], UpdatedState}.
 
     websocket_info( { start }, State = {Username, Role, PrompterName, FriendList, GenericMessage, TabooCard}) ->
-        io:format("Invocata websocket_info da parte di ~p~n", [Username]),
+        %io:format("Invocata websocket_info da parte di ~p~n", [Username]),
         JsonMessage = jsx:encode([{<<"action">>, wakeUpGuesser}]),
         {[{text, JsonMessage}], State};
 

@@ -18,6 +18,9 @@
 --
 -- Table structure for table `friendship`
 --
+DROP DATABASE IF EXISTS taboo;
+CREATE DATABASE taboo;
+USE taboo;
 
 DROP TABLE IF EXISTS `friendship`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;

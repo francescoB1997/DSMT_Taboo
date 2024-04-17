@@ -18,9 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class LoginControllerImpl implements LoginControllerInterface
 {
-    @Autowired
     SessionManagement session;
-    private final UserDAO user = new UserDAO();
 
     @PostMapping("/login")
     @Override
@@ -33,23 +31,18 @@ public class LoginControllerImpl implements LoginControllerInterface
         ServerResponseDTO <String> loginResponse;
         HttpStatus responseHttp;
 
+        UserDAO user = new UserDAO();
+
         System.out.println("LoginController: login request from [" + usernameRequester + "]");
 
-        if(usernameRequester.equals(Constant.usernameAdmin)
-                && passwordRequester.equals(Constant.passwordAdmin))
+        try
         {
-            loginResponse = new ServerResponseDTO<>("LoginAdminOK");
-            responseHttp = HttpStatus.OK;
-            session.setLogUser(usernameRequester);
-
-            System.out.println("LoginController: the user [" + usernameRequester + "] logged successfully");
-
-            return new ResponseEntity<>(loginResponse, responseHttp);
-        }
-
-        try {
             user.login(usernameRequester, passwordRequester);
-            loginResponse = new ServerResponseDTO<>("LoginOK");
+            if(usernameRequester.equals(Constant.usernameAdmin)
+                    && passwordRequester.equals(Constant.passwordAdmin))
+                loginResponse = new ServerResponseDTO<>("LoginAdminOK");
+            else
+                loginResponse = new ServerResponseDTO<>("LoginOK");
             responseHttp = HttpStatus.OK;
             session.setLogUser(usernameRequester);
 
@@ -60,6 +53,11 @@ public class LoginControllerImpl implements LoginControllerInterface
             loginResponse = new ServerResponseDTO<>(e.getMessage());
             responseHttp = HttpStatus.BAD_REQUEST;
             System.out.println("LoginControllerImpl -> " + e.getMessage());
+        }
+        catch (Exception e)
+        {
+            loginResponse = new ServerResponseDTO<>("User not exists");
+            responseHttp = HttpStatus.BAD_REQUEST;
         }
 
         return new ResponseEntity<>(loginResponse, responseHttp);
@@ -98,8 +96,16 @@ public class LoginControllerImpl implements LoginControllerInterface
     public ResponseEntity<ServerResponseDTO<String>> signUp(@RequestBody UserDTO userToSignup)
         // This function is responsible for the signup action
     {
+        UserDAO user = new UserDAO();
         System.out.println("LoginController: signup request from [" + userToSignup.getUsername() + "]");
-        int control = user.signup(userToSignup);
+        int control;
+
+        if(userToSignup.getUsername().contains(Constant.usernameAdmin)
+            || userToSignup.getUsername().equals(Constant.usernameAdmin)) // non fare il furbo
+            control = -1;
+        else
+            control = user.signup(userToSignup);
+
         ServerResponseDTO<String> signupResponse;
         HttpStatus responseHttp;
         if (control == 1)

@@ -32,7 +32,10 @@ public class LoggedUserControllerImpl implements LoggedUserControllerInterface
         {
             FriendDAO friendDAO = new FriendDAO(username);
             getFriendListResponse = new ServerResponseDTO<>(friendDAO.getFriendList());
-            responseHttp = HttpStatus.OK;
+            if(getFriendListResponse == null)
+                responseHttp = HttpStatus.BAD_REQUEST;
+            else
+                responseHttp = HttpStatus.OK;
         } else {
             getFriendListResponse = new ServerResponseDTO<>(null);
             responseHttp = HttpStatus.UNAUTHORIZED;
@@ -51,30 +54,39 @@ public class LoggedUserControllerImpl implements LoggedUserControllerInterface
                 "Searching [" + userSearchRequestDTO.getUsernameToSearch() + "]" + "\n");
 
         HttpStatus responseHttp;
-        ServerResponseDTO<List<UserDTO>> userListResponse;
+        ServerResponseDTO<List<UserDTO>> userListResponse = new ServerResponseDTO<>(null);
         boolean checkLogin = SessionManagement.getInstance().
                 isUserLogged(userSearchRequestDTO.getRequesterUsername());
 
         if (checkLogin) //Check if requesterUsername is logged or Not.
         {
             UserDAO userDAO = new UserDAO();
-            List<UserDTO> userList = userDAO.globalSearchUser(userSearchRequestDTO.
-                    getUsernameToSearch());
-            if (userList.isEmpty()) {
-                System.out.println("\nLoggedUserController: - NOT FOUND - Database NOT contains the user: "
-                        + userSearchRequestDTO.getUsernameToSearch() + "\n");
-                userListResponse = new ServerResponseDTO<>(null);
+            List<UserDTO> userList = userDAO.globalSearchUser(userSearchRequestDTO.getUsernameToSearch());
 
-            } else {
-                System.out.println("\nLoggedUserController: - OK - Database contains the user: "
-                        + userSearchRequestDTO.getUsernameToSearch() + "\n");
-                userListResponse = new ServerResponseDTO<>(userList);
+            if(userList != null)
+            {
+                if (userList.isEmpty())
+                {
+                    System.out.println("\nLoggedUserController: - NOT FOUND - Database NOT contains the user: "
+                            + userSearchRequestDTO.getUsernameToSearch() + "\n");
+                }
+                else
+                {
+                    System.out.println("\nLoggedUserController: - OK - Database contains the user: "
+                            + userSearchRequestDTO.getUsernameToSearch() + "\n");
+                    userListResponse = new ServerResponseDTO<>(userList);
+                }
+                responseHttp = HttpStatus.OK;
+            }
+            else
+            {
+                System.out.println("**** searchUser -> DB not reachable");
+                responseHttp = HttpStatus.BAD_REQUEST;
             }
 
-            responseHttp = HttpStatus.OK;
-            return new ResponseEntity<>(userListResponse, responseHttp);
-
-        } else {
+        }
+        else
+        {
             System.out.println("\nLoggedUserController: searchUser request from a NonLogged user\n");
             userListResponse = new ServerResponseDTO<>(null);
             responseHttp = HttpStatus.UNAUTHORIZED;

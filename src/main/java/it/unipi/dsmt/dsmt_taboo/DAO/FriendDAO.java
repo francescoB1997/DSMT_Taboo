@@ -19,7 +19,7 @@ public class FriendDAO extends BaseDAO
 
     public List<FriendDTO> getFriendList()
     {
-        List<FriendDTO> friendList = new ArrayList<>();
+        List<FriendDTO> friendList = null;
 
         String getAllFriendQuery = "SELECT CASE WHEN F.Username1 = ? then F.Username2 else F.Username1 END as FriendUsername FROM " +
                 DB_NAME + ".friendship as F where Username1 = ? OR Username2 = ? ";
@@ -33,6 +33,7 @@ public class FriendDAO extends BaseDAO
             checkStatement.setString(3, this.username);
             try (ResultSet resultSet = checkStatement.executeQuery())
             {
+                friendList = new ArrayList<>();
                 while (resultSet.next())
                 {
                     String friendUsername = resultSet.getString("FriendUsername");
@@ -42,7 +43,6 @@ public class FriendDAO extends BaseDAO
         } catch (SQLException ex)
         {
             System.out.println("searchUserInDB eccezione query:" + ex.getMessage());
-            return  null;
         }
 
         return friendList;

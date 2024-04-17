@@ -1,5 +1,6 @@
 package it.unipi.dsmt.dsmt_taboo.controller;
 
+import it.unipi.dsmt.dsmt_taboo.exceptions.DatabaseNotReachableException;
 import it.unipi.dsmt.dsmt_taboo.model.DTO.LoginRequestDTO;
 import it.unipi.dsmt.dsmt_taboo.model.DTO.ServerResponseDTO;
 import it.unipi.dsmt.dsmt_taboo.DAO.UserDAO;
@@ -7,8 +8,6 @@ import it.unipi.dsmt.dsmt_taboo.model.DTO.UserDTO;
 import it.unipi.dsmt.dsmt_taboo.exceptions.UserNotExistsException;
 import it.unipi.dsmt.dsmt_taboo.utility.Constant;
 import it.unipi.dsmt.dsmt_taboo.utility.SessionManagement;
-import org.apache.tomcat.util.bcel.Const;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,9 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class LoginControllerImpl implements LoginControllerInterface
 {
-    @Autowired
     SessionManagement session;
-    private final UserDAO user = new UserDAO();
 
     @PostMapping("/login")
     @Override
@@ -33,30 +30,31 @@ public class LoginControllerImpl implements LoginControllerInterface
         ServerResponseDTO <String> loginResponse;
         HttpStatus responseHttp;
 
+        UserDAO user = new UserDAO();
+
         System.out.println("LoginController: login request from [" + usernameRequester + "]");
 
-        if(usernameRequester.equals(Constant.usernameAdmin)
-                && passwordRequester.equals(Constant.passwordAdmin))
+        try
         {
-            loginResponse = new ServerResponseDTO<>("LoginAdminOK");
-            responseHttp = HttpStatus.OK;
-            session.setLogUser(usernameRequester);
-
-            System.out.println("LoginController: the user [" + usernameRequester + "] logged successfully");
-
-            return new ResponseEntity<>(loginResponse, responseHttp);
-        }
-
-        try {
             user.login(usernameRequester, passwordRequester);
-            loginResponse = new ServerResponseDTO<>("LoginOK");
+            if(usernameRequester.equals(Constant.usernameAdmin)
+                    && passwordRequester.equals(Constant.passwordAdmin))
+                loginResponse = new ServerResponseDTO<>("LoginAdminOK");
+            else
+                loginResponse = new ServerResponseDTO<>("LoginOK");
             responseHttp = HttpStatus.OK;
             session.setLogUser(usernameRequester);
 
             System.out.println("LoginController: the user [" + usernameRequester + "] logged successfully");
 
-        } catch (UserNotExistsException e) {
-
+        } catch (UserNotExistsException e)
+        {
+            loginResponse = new ServerResponseDTO<>(e.getMessage());
+            responseHttp = HttpStatus.BAD_REQUEST;
+            System.out.println("LoginControllerImpl -> " + e.getMessage());
+        }
+        catch (DatabaseNotReachableException e)
+        {
             loginResponse = new ServerResponseDTO<>(e.getMessage());
             responseHttp = HttpStatus.BAD_REQUEST;
             System.out.println("LoginControllerImpl -> " + e.getMessage());
@@ -98,8 +96,16 @@ public class LoginControllerImpl implements LoginControllerInterface
     public ResponseEntity<ServerResponseDTO<String>> signUp(@RequestBody UserDTO userToSignup)
         // This function is responsible for the signup action
     {
+        UserDAO user = new UserDAO();
         System.out.println("LoginController: signup request from [" + userToSignup.getUsername() + "]");
-        int control = user.signup(userToSignup);
+        int control;
+
+        if(userToSignup.getUsername().contains(Constant.usernameAdmin)
+            || userToSignup.getUsername().equals(Constant.usernameAdmin)) // non fare il furbo
+            control = -1;
+        else
+            control = user.signup(userToSignup);
+
         ServerResponseDTO<String> signupResponse;
         HttpStatus responseHttp;
         if (control == 1)

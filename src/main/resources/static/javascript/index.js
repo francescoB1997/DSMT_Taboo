@@ -1,4 +1,5 @@
-const IP_Server = "10.2.1.130:8084/DSMT_Taboo-0.0.1";
+//const IP_Server = "localhost:8084/DSMT_Taboo-0.0.1";
+const IP_Server = "localhost:8084";
 
 $(document).ready(function ()
 {
@@ -20,13 +21,19 @@ function onClickListenerBtnLogin()
     let username = document.getElementById('txtboxUsername').value
     let password = document.getElementById('txtboxPassword').value
 
+    if(username === "" || password === "")
+    {
+        alert("Please, complete all fields");
+        return;
+    }
+
     let loginRequest = {
         username : username,
         password : password
     };
 
     $.ajax({
-        url : "http://" + IP_Server +  "/login",
+        url : "./login",
         data : JSON.stringify(loginRequest),
         type : "POST",
         dataType: "json",
@@ -37,12 +44,12 @@ function onClickListenerBtnLogin()
             if(responseMsg === "LoginAdminOK"){
                 sessionStorage.setItem("userLog", username);
                 //sessionStorage.setItem("gameId","");
-                location.href = "../adminHomePage.html";
+                location.href = "./adminHomePage.html";
                 return;
             } else {
                 sessionStorage.setItem("userLog", username);
                 //sessionStorage.setItem("gameId","");
-                location.href = "../loggedPlayerPage.html";
+                location.href = "./loggedPlayerPage.html";
                 return;
             }
         },

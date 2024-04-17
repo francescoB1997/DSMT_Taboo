@@ -1,7 +1,7 @@
 package it.unipi.dsmt.dsmt_taboo.DAO;
 
+import it.unipi.dsmt.dsmt_taboo.exceptions.DatabaseNotReachableException;
 import it.unipi.dsmt.dsmt_taboo.exceptions.UserNotExistsException;
-import it.unipi.dsmt.dsmt_taboo.model.DTO.FriendDTO;
 import it.unipi.dsmt.dsmt_taboo.model.DTO.UserDTO;
 import it.unipi.dsmt.dsmt_taboo.utility.SessionManagement;
 
@@ -17,11 +17,12 @@ public class UserDAO extends BaseDAO
 {
     public UserDAO() { super(); }
 
-    public int signup(UserDTO user) {
-
+    public int signup(UserDTO user)
+    {
         String checkIfUserExistsQuery = "SELECT COUNT(*) as AccountExists FROM " + DB_NAME + ".user as u WHERE (u.username = ?);";
         String signupUserQuery = "INSERT INTO " + DB_NAME + ".user VALUES(?,?,?,?);";
-        try (Connection connection = getConnection()) {
+        try (Connection connection = getConnection())
+        {
             connection.setAutoCommit(false);
             // Check if the username already exists
             try (PreparedStatement checkStatement = connection.prepareStatement(checkIfUserExistsQuery)) {
@@ -56,14 +57,17 @@ public class UserDAO extends BaseDAO
                 //ex.printStackTrace();
                 return -1;
             }
-        } catch (SQLException ex) {
-            ex.printStackTrace();
+        }
+        catch (SQLException ex)
+        {
+            System.out.println("**** Signup Exception --> " + ex.getMessage());
+            //ex.printStackTrace();
             return -1;
         }
         return 1;
     }
 
-    public void login(String username, String password) throws UserNotExistsException {
+    public void login(String username, String password) throws UserNotExistsException, DatabaseNotReachableException {
 
         String loginQuery = "SELECT COUNT(*) as AccountExists FROM " + DB_NAME + ".user as u WHERE (u.username = ? AND u.password = ?);";
         try (
@@ -79,11 +83,13 @@ public class UserDAO extends BaseDAO
                         throw new UserNotExistsException();
                 }
             }
-        } catch (Exception e) {
+        }
+        catch (Exception e)
+        {
             if (e.getClass() == UserNotExistsException.class)
                 throw new UserNotExistsException();
             else
-                System.out.println("UserDAO login Exception: " + e.getMessage());
+                throw new DatabaseNotReachableException();
         }
     }
 

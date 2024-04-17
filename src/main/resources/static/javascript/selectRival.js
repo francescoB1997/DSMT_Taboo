@@ -1,5 +1,5 @@
 const username = sessionStorage.getItem("userLog");
-const IP_Server = "10.2.1.130:5050";
+const IP_Server = "10.2.1.130:8084/DSMT_Taboo-0.0.1";
 
 let inviteFriendRequest;
 

@@ -1,5 +1,5 @@
 const IP_Server_ERLANG = "10.2.1.110:8090";
-const IP_Server = "10.2.1.130:5050";
+const IP_Server = "10.2.1.130:8084/DSMT_Taboo-0.0.1";
 const GAME_DURATION = 60;
 const PASS = 3;
 

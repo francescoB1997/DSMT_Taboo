@@ -26,7 +26,7 @@ public class PendingMatch
     public void addWaitingRival(String usernameRival)
     // This function add a new RivalWaiting only if it does not waiting yet
     {
-        if (this.rivalsTeamWaiting.stream().filter(rivalWaiting -> rivalWaiting.equals(usernameRival)).toList().isEmpty())
+        if (this.rivalsTeamWaiting.stream().filter(rivalWaiting -> rivalWaiting.equals(usernameRival)).collect(Collectors.toList()).isEmpty())
         {
             this.rivalsTeamWaiting.add(usernameRival);
             this.latch.countDown();
@@ -40,7 +40,7 @@ public class PendingMatch
     public void addWaitingFriend(String usernameFriend)
     // This function add a new FriendWaiting only if it does not waiting yet
     {
-        if (this.inviterTeamWaiting.stream().filter(friendWaiting -> friendWaiting.equals(usernameFriend)).toList().isEmpty())
+        if (this.inviterTeamWaiting.stream().filter(friendWaiting -> friendWaiting.equals(usernameFriend)).collect(Collectors.toList()).isEmpty())
         {
             this.inviterTeamWaiting.add(usernameFriend);
             this.latch.countDown();

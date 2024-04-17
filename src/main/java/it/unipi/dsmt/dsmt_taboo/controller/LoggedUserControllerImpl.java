@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
+import java.util.stream.Collectors;
 
 @RestController
 public class LoggedUserControllerImpl implements LoggedUserControllerInterface
@@ -235,7 +236,7 @@ public class LoggedUserControllerImpl implements LoggedUserControllerInterface
     {
         ServerResponseDTO<MatchDTO> response = null;
         HttpStatus httpStatus = HttpStatus.OK;
-        InviteFriends r = invites.stream().filter(invite -> invite.getGameId().equals(replyInvite.getGameId())).toList().get(0);
+        InviteFriends r = invites.stream().filter(invite -> invite.getGameId().equals(replyInvite.getGameId())).collect(Collectors.toList()).get(0);
 
         if (!replyInvite.getInviteState()) // If the invite has been refused...
         {
@@ -265,7 +266,7 @@ public class LoggedUserControllerImpl implements LoggedUserControllerInterface
             {
                 // l'aggiornamento di r è NECESSARIO, perchè altrimenti gli users che erano entrati in attesa prima che
                 // il rivale costruisse la sua squadra, manterrebero il riferimento all'invito INCOMPLETO.
-                r = invites.stream().filter(invite -> invite.getGameId().equals(replyInvite.getGameId())).toList().get(0);
+                r = invites.stream().filter(invite -> invite.getGameId().equals(replyInvite.getGameId())).collect(Collectors.toList()).get(0);
                 MatchDTO matchDTO = new MatchDTO(replyInvite.getGameId(),
                         pendingMatch.getInviterTeamMember(), r.getRoles(),
                         pendingMatch.getRivalsTeamMember(), r.getRivalsRoles());
@@ -319,7 +320,7 @@ public class LoggedUserControllerImpl implements LoggedUserControllerInterface
         HttpStatus responseHttp = HttpStatus.OK;
         ServerResponseDTO<Integer> addMatchResponse = new ServerResponseDTO<>(1);
 
-        List<InviteFriends> r = invites.stream().filter(invite -> invite.getGameId().equals(userMatchResult.getMatchId())).toList();
+        List<InviteFriends> r = invites.stream().filter(invite -> invite.getGameId().equals(userMatchResult.getMatchId())).collect(Collectors.toList());
         if (r != null && !r.isEmpty()) {
             InviteFriends inviteToRemove = r.get(0);
             invites.remove(inviteToRemove);

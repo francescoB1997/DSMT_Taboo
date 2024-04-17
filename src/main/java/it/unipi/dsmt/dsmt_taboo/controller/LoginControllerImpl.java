@@ -56,7 +56,7 @@ public class LoginControllerImpl implements LoginControllerInterface
         }
         catch (Exception e)
         {
-            loginResponse = new ServerResponseDTO<>("User not exists");
+            loginResponse = new ServerResponseDTO<>("Login error");
             responseHttp = HttpStatus.BAD_REQUEST;
         }
 

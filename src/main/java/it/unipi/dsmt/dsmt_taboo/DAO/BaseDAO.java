@@ -14,8 +14,8 @@ public class BaseDAO
     public static final String DB_NAME = "taboo";
     private static final String DB_IP = "10.2.1.131";
     private static final String DB_URL = "jdbc:mysql://" + DB_IP + ":3306/" + DB_NAME;
-    private static final String DB_USERNAME = "root";
-    private static final String DB_PASSWORD = "root";
+    private static final String DB_USERNAME = "db_user";
+    private static final String DB_PASSWORD = "dbu";
     private DataSource dataSource = null;
 
     public BaseDAO() {

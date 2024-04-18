@@ -9,13 +9,13 @@ import javax.sql.DataSource;
 import com.mysql.cj.jdbc.MysqlDataSource;
 
 
-public class BaseDAO {
+public class BaseDAO
+{
     public static final String DB_NAME = "taboo";
-    //private static final String DB_IP = "10.2.1.111";
-    private static final String DB_IP = "127.0.0.1";
-    private static final String DB_URL = "jdbc:mysql://" + DB_IP + ":3306/taboo";// + DB_NAME;
-    private static final String DB_USERNAME = "root";
-    private static final String DB_PASSWORD = "root";
+    private static final String DB_IP = "10.2.1.131";
+    private static final String DB_URL = "jdbc:mysql://" + DB_IP + ":3306/" + DB_NAME;
+    private static final String DB_USERNAME = "db_user";
+    private static final String DB_PASSWORD = "dbu";
     private DataSource dataSource = null;
 
     public BaseDAO() {
@@ -49,6 +49,8 @@ public class BaseDAO {
 }
 
 /*
+Precendete versione della BaseDAO. Si utilizzava la classe DriverManager per ottenre la connessione verso
+il DB ma non è ThreadSafe, a differenza della DataScource.
 
 public class BaseDAO
     // Base functionalities to interact with DB

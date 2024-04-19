@@ -23,6 +23,8 @@ public class AdminControllerImpl implements AdminControllerInterface
     @Override
     public ResponseEntity<ServerResponseDTO<Integer>> deleteUser(@RequestBody AdminRequestDTO userToDeleteRequest)
     {
+
+        System.out.println("deleteUser: request from [" + userToDeleteRequest.getUsername() + "]");
         HttpStatus responseHttp;
         ServerResponseDTO<Integer> userToDeleteResponse;
         boolean checkAdminLogin = SessionManagement.getInstance().isUserLogged(Constant.usernameAdmin);
@@ -66,6 +68,7 @@ public class AdminControllerImpl implements AdminControllerInterface
     public ResponseEntity<ServerResponseDTO<List<UserDTO>>>
     getAllSignedUsers(@RequestBody AdminRequestDTO getUserRequest)
     {
+        System.out.println("getUsers: request from [" + getUserRequest.getUsername() + "]");
         HttpStatus responseHttp;
         ServerResponseDTO<List<UserDTO>> getUserResponse = null;
         boolean checkAdminLogin = SessionManagement.getInstance().isUserLogged(Constant.usernameAdmin);
@@ -107,6 +110,7 @@ public class AdminControllerImpl implements AdminControllerInterface
     @Override
     public ResponseEntity<ServerResponseDTO<List<MatchDTO>>> getAllMatches(@RequestBody AdminRequestDTO getAllMatchesRequest) {
 
+        System.out.println("getAllMatches: request from [" + getAllMatchesRequest.getUsername() + "]");
         HttpStatus responseHttp;
         ServerResponseDTO<List<MatchDTO>> getAllMatchesResponse = null;
         boolean checkAdminLogin = SessionManagement.getInstance().isUserLogged(Constant.usernameAdmin);

@@ -129,9 +129,7 @@ function timerHandler()
         {
             //Stop The Game and insert match into MySQL DB
             if(myRole === "Prompter")
-            {
                 addNewMatch();
-            }
             location.href = "./endGamePage.html";
             return;
         }
@@ -310,7 +308,7 @@ function onClickListenerBtnGuess()
     let actionGuess =
         {
             action : "attemptGuessWord",
-            word : attemptedWord
+            word : attemptedWord.toLowerCase()
         };
     socket.send(JSON.stringify(actionGuess));
     document.getElementById("txtboxGenericMsg").value = "";

@@ -293,7 +293,8 @@ function onClickListenerBtnSendMsg()
 function onClickListenerBtnGuess()
 {
     let attemptedWord = document.getElementById("txtboxGenericMsg").value;
-    if(attemptedWord === ""){
+    if(attemptedWord === "")
+    {
         alert("WARNING\nThe text-box is empty");
         return;
     }

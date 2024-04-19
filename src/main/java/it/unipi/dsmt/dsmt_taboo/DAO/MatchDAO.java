@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import com.fasterxml.jackson.databind.ser.std.DateTimeSerializerBase;
 import it.unipi.dsmt.dsmt_taboo.exceptions.DatabaseNotReachableException;
 import it.unipi.dsmt.dsmt_taboo.model.DTO.MatchDTO;
 import it.unipi.dsmt.dsmt_taboo.model.DTO.MatchResultRequestDTO;
@@ -47,14 +48,17 @@ public class MatchDAO extends BaseDAO
                 return false;
 
         }
-        catch (SQLException ex)
+        catch (Exception ex)
         {
-            if(ex.getErrorCode() == MYSQL_DUPLICATE_PK)
+            if(ex.getClass() == DatabaseNotReachableException.class)
+                System.out.println("addNewMatch: DatabaseNotReachableException");
+            else if(ex.getClass() == SQLException.class && ((SQLException)ex).getErrorCode() == MYSQL_DUPLICATE_PK)
             {
-                System.out.println("*** Dovrebbe essere duplicate entry -> " + ex.getMessage() + " *** FINE ");
+                //System.out.println("addNewMatch: Dovrebbe essere duplicate entry -> " + ex.getMessage());
                 return true;
             }
-            ex.printStackTrace();
+            else
+                System.out.println("addNewMatch Ex: " + ex.getMessage());
             return false;
         }
     }
@@ -94,6 +98,7 @@ public class MatchDAO extends BaseDAO
                                                       scoreTeam2);
                         listMatches.add(match);
                     }
+                    System.out.println("getMatches: OK");
                 }
             }
         catch (Exception ex)

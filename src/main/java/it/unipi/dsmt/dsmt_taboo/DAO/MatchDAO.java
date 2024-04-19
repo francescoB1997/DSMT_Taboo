@@ -52,10 +52,19 @@ public class MatchDAO extends BaseDAO
         {
             if(ex.getClass() == DatabaseNotReachableException.class)
                 System.out.println("addNewMatch: DatabaseNotReachableException");
-            else if(ex.getClass() == SQLException.class && ((SQLException)ex).getErrorCode() == MYSQL_DUPLICATE_PK)
+            else if(ex.getClass() == SQLException.class)
             {
+                SQLException e = (SQLException)ex;
+
+                System.out.print("addNewMatch: Ex classe SQLException");
+                if(e.getErrorCode() == MYSQL_DUPLICATE_PK) {
+                    System.out.println("--> ritornato true");
+                    return true;
+                }
+                System.out.println("--> ritornato false");
+                return false;
                 //System.out.println("addNewMatch: Dovrebbe essere duplicate entry -> " + ex.getMessage());
-                return true;
+
             }
             else
                 System.out.println("addNewMatch Ex: " + ex.getMessage());

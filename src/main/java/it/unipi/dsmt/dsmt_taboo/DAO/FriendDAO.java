@@ -3,6 +3,8 @@ package it.unipi.dsmt.dsmt_taboo.DAO;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+
+import it.unipi.dsmt.dsmt_taboo.exceptions.DatabaseNotReachableException;
 import it.unipi.dsmt.dsmt_taboo.model.DTO.FriendDTO;
 import it.unipi.dsmt.dsmt_taboo.utility.SessionManagement;
 
@@ -40,9 +42,13 @@ public class FriendDAO extends BaseDAO
                     friendList.add(new FriendDTO(friendUsername, SessionManagement.getInstance().isUserLogged(friendUsername)));
                 }
             }
-        } catch (SQLException ex)
+        }
+        catch (Exception ex)
         {
-            System.out.println("searchUserInDB eccezione query:" + ex.getMessage());
+            if(ex.getClass() == DatabaseNotReachableException.class)
+                System.out.println("getFriendList: DatabaseNotReachableException");
+            else
+                System.out.println("getFriendList Ex: " + ex.getMessage());
         }
 
         return friendList;
@@ -59,9 +65,16 @@ public class FriendDAO extends BaseDAO
             preparedStatement.setString(3, usernameToRemove);
             preparedStatement.setString(4, this.username);
 
+            System.out.println("removeFriendDB: OK");
+
             return preparedStatement.executeUpdate() > 0;
-        } catch (SQLException ex) {
-            ex.printStackTrace();
+        }
+        catch (Exception ex)
+        {
+            if(ex.getClass() == DatabaseNotReachableException.class)
+                System.out.println("removeFriendDB: DatabaseNotReachableException");
+            else
+                System.out.println("removeFriendDB Ex: " + ex.getMessage());
             return false;
         }
     }
@@ -79,9 +92,12 @@ public class FriendDAO extends BaseDAO
             while (resultSet.next())
                 result = (resultSet.getInt("Exists_") == 1) ? true : false;
         }
-        catch (SQLException ex)
+        catch (Exception ex)
         {
-            System.out.println("checkIfUserExists query exception: " + ex.getMessage());
+            if(ex.getClass() == DatabaseNotReachableException.class)
+                System.out.println("checkIfUserExists: DatabaseNotReachableException");
+            else
+                System.out.println("checkIfUserExists Ex: " + ex.getMessage());
         }
         return result;
     }
@@ -111,9 +127,12 @@ public class FriendDAO extends BaseDAO
             System.out.println("addFriend query exception: già amici");
             return 0;
         }
-        catch (SQLException ex)
+        catch (Exception ex)
         {
-            System.out.println("addFriend query exception: " + ex.getMessage());
+            if(ex.getClass() == DatabaseNotReachableException.class)
+                System.out.println("addFriend: DatabaseNotReachableException");
+            else
+                System.out.println("addFriend Ex: " + ex.getMessage());
             return -1;
         }
     }

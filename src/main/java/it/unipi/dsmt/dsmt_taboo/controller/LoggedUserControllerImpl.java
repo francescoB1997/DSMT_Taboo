@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CountDownLatch;
 import java.util.stream.Collectors;
 
 @RestController
@@ -25,7 +24,7 @@ public class LoggedUserControllerImpl implements LoggedUserControllerInterface
     public ResponseEntity<ServerResponseDTO<List<FriendDTO>>> viewFriendList(@RequestBody String username)
     // The server response is a JSON message that contains a list of FriendDTO
     {
-        System.out.println("LoggedUserController: getFriendList request from [" + username + "]");
+        System.out.println("getFriendList: request from [" + username + "]");
         ServerResponseDTO<List<FriendDTO>> getFriendListResponse;
         HttpStatus responseHttp;
         if (SessionManagement.getInstance().isUserLogged(username))  //Check if that user is logged
@@ -49,7 +48,7 @@ public class LoggedUserControllerImpl implements LoggedUserControllerInterface
     searchUser(@RequestBody UserSearchRequestDTO userSearchRequestDTO)
     // The server response is a JSON message that contains the list of user, checking before that the requesterUser is 'OK'.
     {
-        System.out.println("\nLoggedUserController: searchUser request from " +
+        System.out.println("\nsearchUser: request from " +
                 "[" + userSearchRequestDTO.getRequesterUsername() + "] -> " +
                 "Searching [" + userSearchRequestDTO.getUsernameToSearch() + "]" + "\n");
 
@@ -67,27 +66,23 @@ public class LoggedUserControllerImpl implements LoggedUserControllerInterface
             {
                 if (userList.isEmpty())
                 {
-                    System.out.println("\nLoggedUserController: - NOT FOUND - Database NOT contains the user: "
+                    System.out.println("\nsearchUser: NOT FOUND - Database NOT contains the user: "
                             + userSearchRequestDTO.getUsernameToSearch() + "\n");
                 }
                 else
                 {
-                    System.out.println("\nLoggedUserController: - OK - Database contains the user: "
-                            + userSearchRequestDTO.getUsernameToSearch() + "\n");
+                    //System.out.println("\nsearchUser: OK - Database contains the user: "
+                    //        + userSearchRequestDTO.getUsernameToSearch() + "\n");
                     userListResponse = new ServerResponseDTO<>(userList);
                 }
                 responseHttp = HttpStatus.OK;
             }
             else
-            {
-                System.out.println("**** searchUser -> DB not reachable");
                 responseHttp = HttpStatus.BAD_REQUEST;
-            }
-
         }
         else
         {
-            System.out.println("\nLoggedUserController: searchUser request from a NonLogged user\n");
+            System.out.println("\nsearchUser: SearchUser request from a NonLogged user\n");
             userListResponse = new ServerResponseDTO<>(null);
             responseHttp = HttpStatus.UNAUTHORIZED;
         }
@@ -99,7 +94,7 @@ public class LoggedUserControllerImpl implements LoggedUserControllerInterface
     @Override
     public ResponseEntity<ServerResponseDTO<Integer>>
     removeFriend(@RequestBody FriendshipRequestDTO requesterUsername) {
-        System.out.println("\nLoggedUserController: removeUser request from " +
+        System.out.println("\nremoveFriend: Request from " +
                 "[" + requesterUsername.getUsername() + "] -> " +
                 "Removing [" + requesterUsername.getUsernameFriend() + "]" + "\n");
 
@@ -114,24 +109,24 @@ public class LoggedUserControllerImpl implements LoggedUserControllerInterface
             FriendDAO friendDAO = new FriendDAO(requesterUsername.getUsername());
             boolean removeOpStatus = friendDAO.removeFriendDB(requesterUsername.
                     getUsernameFriend());
-            if (removeOpStatus) {
-                System.out.println("\nThe user "
+            if (removeOpStatus)
+            {
+                System.out.println("\nremoveFriend: The user "
                         + requesterUsername.getUsernameFriend() +
                         " has been successfully removed\n");
                 removeFriendResponse = new ServerResponseDTO<>(requestStatus);
                 responseHttp = HttpStatus.OK;
 
             } else {
-                System.out.println("\nError occurred during remove operation." +
-                        requesterUsername.getUsernameFriend() +
-                        " has NOT been removed from your friend list\n");
+                System.out.println("\nremoveFriend: Error occurred during remove operation." +
+                        requesterUsername.getUsernameFriend());
                 requestStatus++;
                 removeFriendResponse = new ServerResponseDTO<>(requestStatus);
                 responseHttp = HttpStatus.BAD_REQUEST;
             }
             return new ResponseEntity<>(removeFriendResponse, responseHttp);
         } else {
-            System.out.println("\nLoggedUserController: searchUser request from a NonLogged user\n");
+            System.out.println("\nremoveFriend: request from a NonLogged user\n");
             removeFriendResponse = new ServerResponseDTO<>(null);
             responseHttp = HttpStatus.UNAUTHORIZED;
         }
@@ -140,20 +135,25 @@ public class LoggedUserControllerImpl implements LoggedUserControllerInterface
 
     @PostMapping("/addFriend")
     @Override
-    public ResponseEntity<ServerResponseDTO<Integer>> addFriend(@RequestBody FriendshipRequestDTO addFriendRequest) {
-        ServerResponseDTO<Integer> addFriendResponse;
+    public ResponseEntity<ServerResponseDTO<Integer>> addFriend(@RequestBody FriendshipRequestDTO addFriendRequest)
+    {
+        ServerResponseDTO<Integer> addFriendResponse = null;
         HttpStatus responseHttp;
         boolean checkLogin = SessionManagement.getInstance().isUserLogged(addFriendRequest.getUsername());
-        if (checkLogin) {
+        if (checkLogin)
+        {
             FriendDAO me = new FriendDAO(addFriendRequest.getUsername());
             int friendRequestStatus = me.addFriend(addFriendRequest.getUsernameFriend());
+
             addFriendResponse = new ServerResponseDTO<>(friendRequestStatus);
             if (friendRequestStatus >= 0)
                 responseHttp = HttpStatus.OK;
             else
                 responseHttp = HttpStatus.BAD_REQUEST;
-        } else {
-            System.out.println("\nLoggedUserController: addFriend request from a NonLogged user\n");
+        }
+        else
+        {
+            System.out.println("\naddFriend: request from a NonLogged user\n");
             addFriendResponse = new ServerResponseDTO<>(-2);
             responseHttp = HttpStatus.UNAUTHORIZED;
         }
@@ -167,29 +167,36 @@ public class LoggedUserControllerImpl implements LoggedUserControllerInterface
     @Async
     @PostMapping("/inviteFriends")
     @Override
-    public ResponseEntity<ServerResponseDTO<String>> inviteFriends(@RequestBody InviteFriendRequestDTO request) {
+    public ResponseEntity<ServerResponseDTO<String>> inviteFriends(@RequestBody InviteFriendRequestDTO request)
+    {
         ServerResponseDTO<String> responseMessage = null;
         HttpStatus responseHttp;
         boolean checkLogin = SessionManagement.getInstance().isUserLogged(request.getUserInviter());
-        if (checkLogin) {
+        if (checkLogin)
+        {
             if (request.getGameId().isEmpty()) // If it is first time that i receive that invite...
             {
                 request.setAutoGameId();
                 invites.add(new InviteFriends(request));
 
+                System.out.print("inviteFriends: Received invite from " + request.getUserInviter());
+
                 PendingMatch myPendingMatch = new PendingMatch();
                 pendingMatchMap.put(request.getGameId(), myPendingMatch);
-
                 responseMessage = new ServerResponseDTO<>(request.getGameId());
-            } else // Else, if the gameId is already setted, then it means the Rival sent this POST
+            }
+            else // Else, if the gameId is already setted, then it means the Rival sent this POST request
             {
-                System.out.print("<R> ");
                 responseMessage = new ServerResponseDTO<>(request.getGameId());
                 invites.removeIf((invite -> invite.getGameId().equals(request.getGameId()))); // remove the incomplete invite
+                System.out.print("inviteFriends: Received invite from Rival " + request.getUserInviter());
+                /* SOLO PER DEBUG
                 invites.forEach(invite ->
                 {
                     assert (!invite.getGameId().equals(request.getGameId())); // DBG. Se va storto, la remove ha funzionato!
                 });
+                 */
+
                 invites.add(new InviteFriends(request)); //add the complete invite (with rivals list and rivalsRoles)
             }
             responseHttp = HttpStatus.OK;
@@ -203,15 +210,19 @@ public class LoggedUserControllerImpl implements LoggedUserControllerInterface
     @Async
     @PostMapping("/checkInvite")
     @Override
-    public ResponseEntity<ServerResponseDTO<InviteFriends>> checkInvite(@RequestBody String usernameRequester) {
+    public ResponseEntity<ServerResponseDTO<InviteFriends>> checkInvite(@RequestBody String usernameRequester)
+    {
         ServerResponseDTO<InviteFriends> receivedInvite = null;
         HttpStatus httpStatus = HttpStatus.OK;
         Boolean checkLogin = SessionManagement.getInstance().isUserLogged(usernameRequester);
-        if (checkLogin) {
+        if (checkLogin)
+        {
             for (InviteFriends invite : invites) // Search for any invite (inTeam or Rival)
             {
-                for (String usernameRival : invite.getRivals()) {
-                    if (usernameRequester.equals(usernameRival)) {
+                for (String usernameRival : invite.getRivals())
+                {
+                    if (usernameRequester.equals(usernameRival))
+                    {
                         receivedInvite = new ServerResponseDTO<>(invite);
                         //System.out.println("True in if RIVAL");
                         break;
@@ -230,12 +241,13 @@ public class LoggedUserControllerImpl implements LoggedUserControllerInterface
 
         // -------------------- ONLY FOR DEBUG --------------------
         if ((receivedInvite != null) && (httpStatus == HttpStatus.OK)) {
-            System.out.println("Invite found for [" + usernameRequester + "] received by [" +
+            System.out.println("checkInvite: Invite found for [" + usernameRequester + "] received by [" +
                     receivedInvite.getResponseMessage().getUserInviter() + "]");
-        } else if (httpStatus == HttpStatus.UNAUTHORIZED)
-            System.out.println("No logged user");
+        }
+        else if (httpStatus == HttpStatus.UNAUTHORIZED)
+            System.out.println("checkInvite: No logged user");
         else
-            System.out.println("No invite found for [" + usernameRequester + "]");
+            System.out.println("checkInvite: No invite found for [" + usernameRequester + "]");
         // ----------------------------------------------------------
         return new ResponseEntity<>(receivedInvite, httpStatus);
     }
@@ -252,7 +264,7 @@ public class LoggedUserControllerImpl implements LoggedUserControllerInterface
 
         if (!replyInvite.getInviteState()) // If the invite has been refused...
         {
-            System.out.println("replyInvite:  [" + replyInvite.getSenderUsername() + "] ha rifiutato l'invito di [" + r.getUserInviter() + "]");
+            System.out.println("replyInvite: " + replyInvite.getSenderUsername() + " refused the invite made by " + r.getUserInviter() );
             //invites.removeIf(invite -> invite.getGameId().equals(replyInvite.getGameId()));
             invites.remove(r);
             // -------------------- ONLY FOR DEBUG --------------------
@@ -265,8 +277,7 @@ public class LoggedUserControllerImpl implements LoggedUserControllerInterface
             //response = new ServerResponseDTO<>(0); // The 0, means that someone have refused the invite
             pendingMatchMap.remove(replyInvite.getGameId()); // Free the memory for the old pendingMatch
         } else {
-            System.out.println("replyInvite:  [" + replyInvite.getSenderUsername() + "] ha accettato l'invito di [" + r.getUserInviter() + "]");
-
+            System.out.println("replyInvite: " + replyInvite.getSenderUsername() + "accepted the invite made by " + r.getUserInviter());
             // Metto in attesa il replySender
             if (replyInvite.getInvitedAsFriend())
                 pendingMatchMap.get(replyInvite.getGameId()).addWaitingFriend(replyInvite.getSenderUsername());
@@ -300,12 +311,11 @@ public class LoggedUserControllerImpl implements LoggedUserControllerInterface
                 response = new ServerResponseDTO<>(matchDTO); // The 1, means that all of users have accepted the invite
             }
             else // The else means that, someone of the invited user has refused the invite"
-            {
+            {    // So each thread that was waiting in the latch, now has been wakedUp BUT beacuse someone has rejected the invite
                 if (pendingMatch == null)
-                    System.out.println("Invito rifiutato");
+                    System.out.println("replyInvite: sending Refused Invitation MSG to " + replyInvite.getSenderUsername());
             }
         }
-
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -335,8 +345,8 @@ public class LoggedUserControllerImpl implements LoggedUserControllerInterface
     @Override
     public ResponseEntity<ServerResponseDTO<Integer>> addNewMatch(@RequestBody MatchResultRequestDTO userMatchResult)
     {
-        System.out.println("AddMatch: " + userMatchResult.getMatchId() + "PunteggioInv" + userMatchResult.getScoreInviterTeam() + " | PunteggioRiv"
-                + userMatchResult.getScoreRivalTeam() + " ! Requester: " + userMatchResult.getUsernameRequester());
+        System.out.println("addNewMatch: " + userMatchResult.getMatchId() + "ScoreInv" + userMatchResult.getScoreInviterTeam() + " | ScoreRiv"
+                + userMatchResult.getScoreRivalTeam() + " | Requester: " + userMatchResult.getUsernameRequester());
         HttpStatus responseHttp = HttpStatus.OK;
         ServerResponseDTO<Integer> addMatchResponse = new ServerResponseDTO<>(1);
 
@@ -350,12 +360,12 @@ public class LoggedUserControllerImpl implements LoggedUserControllerInterface
         if (matchInfo != null)
         {
             if (userMatchResult.getScoreInviterTeam() != null) {
-                System.out.println("Sono il prompter dell'inviter. Abbiamo fatto: " + userMatchResult.getScoreInviterTeam());
+                System.out.println("addNewMatch: I'm the Inviter Prompter. We scored: " + userMatchResult.getScoreInviterTeam());
                 matchInfo.setScoreInviterTeam(userMatchResult.getScoreInviterTeam()); // SET BLOCCANTE SE IL SERVER NON HA L'INFORMAZIONE COMPLETA
             }
             else
             {
-                System.out.println("Sono il prompter del rival. Abbiamo fatto: " + userMatchResult.getScoreRivalTeam());
+                System.out.println("addNewMatch: I'm the Rival Prompter. We scored: " + userMatchResult.getScoreRivalTeam());
                 matchInfo.setScoreRivalTeam(userMatchResult.getScoreRivalTeam());  // SET BLOCCANTE SE IL SERVER NON HA L'INFORMAZIONE COMPLETA
             }
 
@@ -363,18 +373,21 @@ public class LoggedUserControllerImpl implements LoggedUserControllerInterface
 
             if (matchInfo.infoMatchIsComplete()) // questo if dovrebbe essere inutile, perchè vuol dire che il latch è a 0 e quindi ho entrambe le info
             {
-                System.out.println("Server: Informazione completa -> I[" + matchInfo.getScoreInviterTeam() + "] R[" + matchInfo.getScoreRivalTeam() + "]");
+                System.out.println("addNewMatch: COMPLETE INFORMATION ON MATCH -> Inv[" + matchInfo.getScoreInviterTeam() + "] Riv[" + matchInfo.getScoreRivalTeam() + "]");
                 MatchDAO matchDAO = new MatchDAO();
                 boolean addOpStatus = matchDAO.addNewMatch(matchInfo);
 
                 if (addOpStatus)
                 {
-                    //System.out.println("\nThe match has been successfully added into DB\n");
+                    System.out.println("addNewMatch: The match has been successfully added into DB");
 
-                    //  NON RIMUOVERE IL MATCH APPENA INSERITO NEL DB dai RunningMatch, altrimenti quando ricevi una richiesta di getResult non sai se hai già l'info completa
-                    //runningMatch.remove(userMatchResult.getMatchId());
-                } else {
-                    System.out.println("\nError occurred during adding opration:" +
+                    //  NON RIMUOVERE IL MATCH APPENA INSERITO NEL DB dai RunningMatch, altrimenti quando ricevi una richiesta di getResult
+                    //  non sai se hai già l'info completa.
+                    // runningMatch.remove(userMatchResult.getMatchId());
+                }
+                else
+                {
+                    System.out.println("addNewMatch: Error occurred during adding opration:" +
                             "The match has NOT been added into DB\n");
                     addMatchResponse = new ServerResponseDTO<>(-1);
                     responseHttp = HttpStatus.BAD_REQUEST;
@@ -397,7 +410,7 @@ public class LoggedUserControllerImpl implements LoggedUserControllerInterface
         ServerResponseDTO<MatchResultRequestDTO> response;
         HttpStatus httpStatus;
 
-        System.out.println("getMatchResult -> idMatch=" + matchResultRequestDTO.getMatchId() + "| DA= " +
+        System.out.println("getMatchResult: IdMatch=" + matchResultRequestDTO.getMatchId() + "| DA= " +
                 matchResultRequestDTO.getUsernameRequester());
 
         if(matchResultRequestDTO == null)
@@ -411,7 +424,7 @@ public class LoggedUserControllerImpl implements LoggedUserControllerInterface
         {
             // Se il server non ha ancora l'info completa, allora il thread dovrà aspettare per averla.
             try { Thread.sleep(2000); } catch (Exception e) {}
-            System.out.println("Sono un thread che sta aspettando perchè l'info non è completa");
+            System.out.println("getMatchResult: i'm a thread waiting for the info (SCORES) completion");
         }
 
         MatchDAO matchDAO = new MatchDAO();

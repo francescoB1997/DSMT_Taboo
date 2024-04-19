@@ -1,4 +1,3 @@
-//const IP_Server = "localhost:8084/DSMT_Taboo-0.0.1";
 const IP_Server = "localhost:8084";
 
 $(document).ready(function ()
@@ -44,7 +43,7 @@ function onClickListenerBtnLogin()
             if(responseMsg === "LoginAdminOK"){
                 sessionStorage.setItem("userLog", username);
                 //sessionStorage.setItem("gameId","");
-                location.href = "./adminHomePage.html";
+                location.href = "./adminHomePage.html"; // Il Path corretto è questo perchè sei sempre nel ContextPath -> /DSMT-Taboo
                 return;
             } else {
                 sessionStorage.setItem("userLog", username);

@@ -1,5 +1,5 @@
 const username = sessionStorage.getItem("userLog");
-const IP_Server = "10.2.1.130:8084/DSMT_Taboo-0.0.1";
+const IP_Server = "localhost:8084";
 
 let showUsersList = true;
 
@@ -90,16 +90,14 @@ function ajaxGetUserList()
         {
             let userDTOList = serverResponse.responseMessage;
             if(userDTOList)
-            {
                 createUserListInHtml(userDTOList);
-            }
             else
-                alert("User not found");
+                alert("No users in the DB");
         },
         error: function (xhr)
         {
             alert("Unauthorized Here Request!");
-            location.href = "../";
+            location.href = "./";
         }
     });
 }
@@ -237,7 +235,7 @@ function onClickBtnSearchUser(event)
         error: function (serverResponse)
         {
             alert("Unauthorized Request! You must be logged to navigate this page");
-            location.href = "../";
+            location.href = "./";
         }
     });
 }

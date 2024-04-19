@@ -4,18 +4,18 @@ Guida per installare e configurare mysql-server per i container assegnati dal Pr
 
     +--------------------------------------------------------------------------------------------------------------------------+
     |                                            TOOL OPZIONALE                                                                |
-    |   Avendo problemi, è stato molto utile capire se i pacchetti con destinazione IP_DB:3306 venissero cancellati da         |
-    |   un firewall posto in rete. Tool utilizzato per capire se almeno le richieste di connessione arrivassero al container   |
+    |   Avendo problemi, è stato molto utile capire se i pacchetti con destinazione IP_DB:3306 venissero bloccati da           |
+    |   un firewall posto in rete. Il Tool utilizzato per capire se almeno le richieste di connessione arrivassero al container|
     |    è stato ngrep. Quindi, consiglio:                                                                                     |
     |       installa ngrep -----------------------------------------> sudo apt-install ngrep                                   |
-    |       osserva tuttie le richieste in ingresso su porta 3306 --> ngrep -d any port 3306                                   |
+    |       osserva tutte le richieste in ingresso su porta 3306 --> ngrep -d any port 3306                                    |
     +--------------------------------------------------------------------------------------------------------------------------+
 
 Per l'installazione e creazione di un account apposito per effettuare le query della tua applicazione, dai questi comandi:
 
 ---> sudo apt-install mysql-server
 
-Loggati con password 'roo' --> /usr/bin/mysql -u root -p
+Loggati con password 'root' --> /usr/bin/mysql -u root -p
 
 Una volta nella shell di mysql dai i seguenti comandi per crearti uno user ad-hoc per la tua applicazione:
 

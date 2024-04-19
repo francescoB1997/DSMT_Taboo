@@ -1,5 +1,5 @@
 const username = sessionStorage.getItem("userLog");
-const IP_Server = "10.2.1.130:8084/DSMT_Taboo-0.0.1";
+const IP_Server = "localhost:8084";
 
 $(document).ready(function ()
 {
@@ -39,12 +39,12 @@ function ajaxGetMatchesList()
             if(matchesList)
                 createMatchesListInHtml(matchesList);
             else
-                alert("matchesList vuota");
+                alert("No matches in the List");
         },
         error: function ()
         {
             alert("Unauthorized Request!");
-            location.href = "../";
+            location.href = "./"; // --> Percorso base del ContextPath, ossia la home -> index.html
         }
     });
 }

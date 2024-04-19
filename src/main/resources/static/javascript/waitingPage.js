@@ -49,7 +49,7 @@ function ajaxSendReplyInvitation()
             }
             else
             {
-                alert("Qualcuno ha rifiutato");
+                alert("Someone has rejected the invite");
                 sessionStorage.removeItem("myRole");
                 sessionStorage.removeItem("inviteReply");
                 sessionStorage.removeItem("invite");

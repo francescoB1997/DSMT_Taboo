@@ -130,7 +130,8 @@ function timerHandler()
             //Stop The Game and insert match into MySQL DB
             if(myRole === "Prompter")
                 addNewMatch();
-            location.href = "./endGamePage.html";
+            else
+                location.href = "./endGamePage.html";
             return;
         }
         restartGame();

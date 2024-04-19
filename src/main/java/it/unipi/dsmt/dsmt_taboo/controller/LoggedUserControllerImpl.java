@@ -179,7 +179,7 @@ public class LoggedUserControllerImpl implements LoggedUserControllerInterface
                 request.setAutoGameId();
                 invites.add(new InviteFriends(request));
 
-                System.out.print("inviteFriends: Received invite from " + request.getUserInviter());
+                System.out.println("inviteFriends: Received invite from " + request.getUserInviter());
 
                 PendingMatch myPendingMatch = new PendingMatch();
                 pendingMatchMap.put(request.getGameId(), myPendingMatch);
@@ -273,10 +273,12 @@ public class LoggedUserControllerImpl implements LoggedUserControllerInterface
                 assert (!invite.getGameId().equals(replyInvite.getGameId())); // DBG. Se va storto, la remove non funziona!
             });
             // ----------------------------------------------------------
+            pendingMatchMap.remove(replyInvite.getGameId()); // Free the memory for the old pendingMatch
             pendingMatchMap.get(replyInvite.getGameId()).wakeUpAllThreads();
             //response = new ServerResponseDTO<>(0); // The 0, means that someone have refused the invite
-            pendingMatchMap.remove(replyInvite.getGameId()); // Free the memory for the old pendingMatch
-        } else {
+        }
+        else
+        {
             System.out.println("replyInvite: " + replyInvite.getSenderUsername() + "accepted the invite made by " + r.getUserInviter());
             // Metto in attesa il replySender
             if (replyInvite.getInvitedAsFriend())
@@ -289,7 +291,16 @@ public class LoggedUserControllerImpl implements LoggedUserControllerInterface
             {
                 // l'aggiornamento di r è NECESSARIO, perchè altrimenti gli users che erano entrati in attesa prima che
                 // il rivale costruisse la sua squadra, manterrebero il riferimento all'invito INCOMPLETO.
+
                 r = invites.stream().filter(invite -> invite.getGameId().equals(replyInvite.getGameId())).collect(Collectors.toList()).get(0);
+                /*
+                if(tempList != null && !tempList.isEmpty())
+                {
+                    r = tempList.get(0);
+                }
+                */
+
+
                 MatchDTO matchDTO = new MatchDTO(replyInvite.getGameId(),
                         pendingMatch.getInviterTeamMember(), r.getRoles(),
                         pendingMatch.getRivalsTeamMember(), r.getRivalsRoles());
@@ -347,8 +358,9 @@ public class LoggedUserControllerImpl implements LoggedUserControllerInterface
     @Override
     public ResponseEntity<ServerResponseDTO<Integer>> addNewMatch(@RequestBody MatchResultRequestDTO userMatchResult)
     {
-        System.out.println("addNewMatch: " + userMatchResult.getMatchId() + "ScoreInv" + userMatchResult.getScoreInviterTeam() + " | ScoreRiv"
+        System.out.println("addNewMatch: " + userMatchResult.getMatchId() + " ScoreInv" + userMatchResult.getScoreInviterTeam() + " | ScoreRiv"
                 + userMatchResult.getScoreRivalTeam() + " | Requester: " + userMatchResult.getUsernameRequester());
+
         HttpStatus responseHttp = HttpStatus.OK;
         ServerResponseDTO<Integer> addMatchResponse = new ServerResponseDTO<>(1);
 

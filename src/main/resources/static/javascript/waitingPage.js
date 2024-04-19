@@ -1,11 +1,10 @@
 const username = sessionStorage.getItem("userLog");
-const IP_Server = "10.2.1.130:8084/DSMT_Taboo-0.0.1";
 
 $(document).ready(function ()
 {
     if(!checkLogin())
     {
-        location.href = "../";
+        location.href = "./";
         return;
     }
 
@@ -29,12 +28,12 @@ function ajaxSendReplyInvitation()
     if(!inviteReplyJSON)
     {
         alert("No invite to wait");
-        location.href = "../createTeamPage.html";
+        location.href = "./createTeamPage.html";
         return;
     }
 
     $.ajax({
-        url: "http://" + IP_Server + "/replyInvite",
+        url: "./replyInvite",
         type: "POST",
         data: inviteReplyJSON, // this inviteReply is alreay a JSON string
         contentType: 'application/json',
@@ -45,7 +44,7 @@ function ajaxSendReplyInvitation()
                 //alert("Tutti hanno accettato");
                 sessionStorage.setItem("match", JSON.stringify(serverResponse.responseMessage));
                 sessionStorage.removeItem("invite");
-                location.href = "../tabooGamePage.html";
+                location.href = "./tabooGamePage.html";
                 // redirect alla pagina di gioco
             }
             else
@@ -54,13 +53,13 @@ function ajaxSendReplyInvitation()
                 sessionStorage.removeItem("myRole");
                 sessionStorage.removeItem("inviteReply");
                 sessionStorage.removeItem("invite");
-                location.href = "../startMatchPage.html";
+                location.href = "./startMatchPage.html";
             }
         },
         error: function ()
         {
             alert("Unauthorized Request!");
-            location.href = "../";
+            location.href = "./";
         }
     });
     sessionStorage.removeItem("inviteReply");

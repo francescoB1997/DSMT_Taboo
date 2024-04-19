@@ -1,5 +1,4 @@
 const username = sessionStorage.getItem("userLog");
-const IP_Server = "10.2.1.130:8084/DSMT_Taboo-0.0.1";
 
 let checkedCheckbox = [];
 
@@ -7,7 +6,7 @@ $(document).ready(function ()
 {
     if(!checkLogin())
     {
-        location.href = "../";
+        location.href = "./";
         return;
     }
     ajaxGetFriendList();
@@ -46,7 +45,7 @@ function loadFriendsInTable(friendList)
         let tdUserIcon = document.createElement("td");
         let imgUserIcon = document.createElement("img");
         imgUserIcon.className = "imgUserIcon";
-        imgUserIcon.src = "../img/user_icon.png";
+        imgUserIcon.src = "./img/user_icon.png";
         imgUserIcon.alt = "user icon image";
         tdUserIcon.append(imgUserIcon);
         trFriend.append(tdUserIcon);
@@ -63,7 +62,7 @@ function loadFriendsInTable(friendList)
         tdStatus.className = "";
         let imgUserState = document.createElement("img");
         imgUserState.className = "img";
-        imgUserState.src = "../img/online.png";
+        imgUserState.src = "./img/online.png";
         imgUserState.alt = "img user state (online or offline)";
         tdStatus.append(imgUserState);
         trFriend.append(tdStatus);
@@ -93,7 +92,7 @@ function emptyTable(table)
 function ajaxGetFriendList()
 {
     $.ajax({
-        url: "http://" + IP_Server +  "/getFriendList",
+        url: "./getFriendList",
         type: "POST",
         data: username,
         contentType: 'application/json',
@@ -107,7 +106,7 @@ function ajaxGetFriendList()
         {
             alert("Unauthorized Request!");
             sessionStorage.removeItem("userLog");
-            location.href = "../";
+            location.href = "./";
         }
     });
 }
@@ -159,7 +158,7 @@ function onClickListenerBtnInvite()
 
     //alert("Array: " + inviteFriendRequest.roles);
     sessionStorage.setItem("inviteFriendRequest", JSON.stringify(inviteFriendRequest));
-    location.href = "../selectRivalPage.html";
+    location.href = "./selectRivalPage.html";
 
 }
 

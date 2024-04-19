@@ -1,13 +1,11 @@
 const username = sessionStorage.getItem("userLog");
-const IP_Server = "localhost:8084";
-
 let showUsersList = true;
 
 $(document).ready(function ()
 {
     if(!checkLogin())
     {
-        location.href = "../";
+        location.href = "./";
         return;
     }
 
@@ -81,7 +79,7 @@ function ajaxGetUserList()
         parameter : ""
     };
     $.ajax({
-        url: "http://" + IP_Server + "/getUsers",
+        url: "./getUsers",
         type: "POST",
         data: JSON.stringify(userListRequest),
         dataType: "json",
@@ -115,7 +113,7 @@ function createUserListInHtml(userDTOList)
         let tdUserIcon = document.createElement("td");
         let imgUserIcon = document.createElement("img");
         imgUserIcon.className = "imgUserIcon";
-        imgUserIcon.src = "../img/user_icon.png";
+        imgUserIcon.src = "./img/user_icon.png";
         imgUserIcon.alt = "user icon image";
         tdUserIcon.append(imgUserIcon);
         trUser.append(tdUserIcon);
@@ -131,7 +129,7 @@ function createUserListInHtml(userDTOList)
         tdStatus.className = "";
         let imgUserState = document.createElement("img");
         imgUserState.className = "imgUserState";
-        imgUserState.src = (user.logged) ? "../img/online.png" : "../img/offline.png";
+        imgUserState.src = (user.logged) ? "./img/online.png" : "./img/offline.png";
         imgUserState.alt ="img user state (online or offline)";
         tdStatus.append(imgUserState);
         trUser.append(tdStatus);
@@ -168,7 +166,7 @@ function onClickListenerBtnDeleteUser(button)
         };
 
         $.ajax({
-            url: "http://" + IP_Server + "/deleteUser",
+            url: "./deleteUser",
             type: "POST",
             data:  JSON.stringify(removeUserRequest),
             dataType: "json",
@@ -216,7 +214,7 @@ function onClickBtnSearchUser(event)
     };
 
     $.ajax({
-        url: "http://" + IP_Server + "/getUsers",
+        url: "./getUsers",
         type: "POST",
         data: JSON.stringify(userSearchRequestDTO),
         dataType: "json",
@@ -253,7 +251,7 @@ function createTableSearchedUserInHtml(searchedUserList)
         let tdUserIcon = document.createElement("td");
         let imgUserIcon = document.createElement("img");
         imgUserIcon.className = "imgUserIcon";
-        imgUserIcon.src = "../img/user_icon.png";
+        imgUserIcon.src = "./img/user_icon.png";
         imgUserIcon.alt = "user icon image";
         tdUserIcon.append(imgUserIcon);
         trUser.append(tdUserIcon);

@@ -1,5 +1,4 @@
 const username = sessionStorage.getItem("userLog");
-const IP_Server = "10.2.1.130:8084/DSMT_Taboo-0.0.1";
 
 let invite = null;
 let checkedCheckbox = [];
@@ -9,14 +8,14 @@ $(document).ready(function ()
 
     if(!checkLogin())
     {
-        location.href = "../";
+        location.href = "./";
         return;
     }
 
     if(!sessionStorage.getItem("invite"))
     {
         alert("invite object non è in SessionStorage -> Non sei stato invitato ma vuoi fare il furbo!");
-        location.href = "../";
+        location.href = "./";
         return;
     }
 
@@ -86,7 +85,7 @@ function onClickListenerBtnInvite()
 
     //alert("Rivals: " + invite.rivals);
     $.ajax({
-        url: "http://" + IP_Server +  "/inviteFriends",
+        url: "./inviteFriends",
         type: "POST",
         data: JSON.stringify(invite),
         contentType: 'application/json',
@@ -98,7 +97,7 @@ function onClickListenerBtnInvite()
         error: function ()
         {
             alert("HTTP error");
-            location.href = "../";
+            location.href = "./";
         }
     });
 
@@ -114,13 +113,13 @@ function storeInvitation(accepted, inviteId, invitedAsFriend)
             invitedAsFriend: invitedAsFriend
         };
     sessionStorage.setItem("inviteReply", JSON.stringify(inviteReply));
-    location.href = "../waitingPage.html";
+    location.href = "./waitingPage.html";
 }
 
 function ajaxGetFriendList()
 {
     $.ajax({
-        url: "http://" + IP_Server +  "/getFriendList",
+        url: "./getFriendList",
         type: "POST",
         data: username,
         contentType: 'application/json',
@@ -133,7 +132,7 @@ function ajaxGetFriendList()
         error: function ()
         {
             alert("Unauthorized Request!");
-            location.href = "../";
+            location.href = "./";
         }
     });
 }
@@ -157,7 +156,7 @@ function loadRivalFriendsInTable(friendList)
         let tdUserIcon = document.createElement("td");
         let imgUserIcon = document.createElement("img");
         imgUserIcon.className = "imgUserIcon";
-        imgUserIcon.src = "../img/user_icon.png";
+        imgUserIcon.src = "./img/user_icon.png";
         imgUserIcon.alt = "user icon image";
         tdUserIcon.append(imgUserIcon);
         trFriend.append(tdUserIcon);
@@ -174,7 +173,7 @@ function loadRivalFriendsInTable(friendList)
         tdStatus.className = "";
         let imgUserState = document.createElement("img");
         imgUserState.className = "img";
-        imgUserState.src = "../img/online.png";
+        imgUserState.src = "./img/online.png";
         imgUserState.alt = "img user state (online or offline)";
         tdStatus.append(imgUserState);
         trFriend.append(tdStatus);
@@ -222,7 +221,7 @@ function loadInviterTeam()
         let tdUserIcon = document.createElement("td");
         let imgUserIcon = document.createElement("img");
         imgUserIcon.className = "imgUserIcon";
-        imgUserIcon.src = "../img/user_icon.png";
+        imgUserIcon.src = "./img/user_icon.png";
         imgUserIcon.alt = "user icon image";
         tdUserIcon.append(imgUserIcon);
         trInviterFriend.append(tdUserIcon);
@@ -239,7 +238,7 @@ function loadInviterTeam()
         tdStatus.className = "";
         let imgUserState = document.createElement("img");
         imgUserState.className = "img";
-        imgUserState.src = "../img/online.png";
+        imgUserState.src = "./img/online.png";
         imgUserState.alt = "img user state (online or offline)";
         tdStatus.append(imgUserState);
         trInviterFriend.append(tdStatus);

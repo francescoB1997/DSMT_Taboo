@@ -1,11 +1,10 @@
 const username = sessionStorage.getItem("userLog");
-const IP_Server = "10.2.1.130:8084/DSMT_Taboo-0.0.1";
 
 $(document).ready(function ()
 {
     if(!checkLogin())
     {
-        location.href = "../";
+        location.href = "./";
         return;
     }
     ajaxGetMatchesList();
@@ -25,7 +24,7 @@ function checkLogin()
 function ajaxGetMatchesList()
 {
     $.ajax({
-        url: "http://" + IP_Server +  "/getMyMatches",
+        url: "./getMyMatches",
         type: "POST",
         data: username,
         contentType: 'application/json',
@@ -40,7 +39,7 @@ function ajaxGetMatchesList()
         error: function ()
         {
             alert("Unauthorized Request!");
-            location.href = "../";
+            location.href = "./";
         }
     });
 }

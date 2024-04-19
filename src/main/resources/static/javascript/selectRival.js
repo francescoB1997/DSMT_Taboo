@@ -1,5 +1,4 @@
 const username = sessionStorage.getItem("userLog");
-const IP_Server = "10.2.1.130:8084/DSMT_Taboo-0.0.1";
 
 let inviteFriendRequest;
 
@@ -7,13 +6,13 @@ $(document).ready(function ()
 {
     if(!checkLogin())
     {
-        location.href = "../";
+        location.href = "./";
         return;
     }
 
     if(!checkInviteInSessionStorage())
     {
-        location.href = "../createTeamPage.html";
+        location.href = "./createTeamPage.html";
         return;
     }
     //alert("CheckLogin & checkInvite: OK");
@@ -67,7 +66,7 @@ function loadFriendsInTable(friendList)
         let tdUserIcon = document.createElement("td");
         let imgUserIcon = document.createElement("img");
         imgUserIcon.className = "imgUserIcon";
-        imgUserIcon.src = "../img/user_icon.png";
+        imgUserIcon.src = "./img/user_icon.png";
         imgUserIcon.alt = "user icon image";
         tdUserIcon.append(imgUserIcon);
         trFriend.append(tdUserIcon);
@@ -84,7 +83,7 @@ function loadFriendsInTable(friendList)
         tdStatus.className = "";
         let imgUserState = document.createElement("img");
         imgUserState.className = "img";
-        imgUserState.src = "../img/online.png";
+        imgUserState.src = "./img/online.png";
         imgUserState.alt = "img user state (online or offline)";
         tdStatus.append(imgUserState);
         trFriend.append(tdStatus);
@@ -124,7 +123,7 @@ function emptyTable(table)
 function ajaxGetFriendList()
 {
     $.ajax({
-        url: "http://" + IP_Server +  "/getFriendList",
+        url: "./getFriendList",
         type: "POST",
         data: username,
         contentType: 'application/json',
@@ -137,7 +136,7 @@ function ajaxGetFriendList()
         error: function ()
         {
             alert("Unauthorized Request!");
-            location.href = "../";
+            location.href = "./";
         }
     });
 }
@@ -155,7 +154,7 @@ function onClickListenerBtnInvite()
     inviteFriendRequest.rivals.push(usernameRival);
     sessionStorage.setItem("myRole", inviteFriendRequest.roles[0]);
     $.ajax({
-        url: "http://" + IP_Server +  "/inviteFriends",
+        url: "./inviteFriends",
         type: "POST",
         data: JSON.stringify(inviteFriendRequest),
         contentType: 'application/json',
@@ -166,7 +165,7 @@ function onClickListenerBtnInvite()
         },
         error: function () {
             alert("HTTP error");
-            //location.href = "../";
+            //location.href = "./";
         }
     });
     sessionStorage.removeItem("inviteFriendRequest");
@@ -182,5 +181,5 @@ function storeInvitation(accepted, inviteId, invitedAsFriend)
             invitedAsFriend: invitedAsFriend
         };
     sessionStorage.setItem("inviteReply", JSON.stringify(inviteReply));
-    location.href = "../waitingPage.html";
+    location.href = "./waitingPage.html";
 }

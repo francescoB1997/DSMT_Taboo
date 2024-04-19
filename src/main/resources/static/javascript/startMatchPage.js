@@ -1,11 +1,10 @@
 const username = sessionStorage.getItem("userLog");
-const IP_Server = "10.2.1.130:8084/DSMT_Taboo-0.0.1";
 
 $(document).ready(function ()
 {
     if(!checkLogin())
     {
-        location.href = "../";
+        location.href = "./";
         return;
     }
 
@@ -27,7 +26,7 @@ function onClickListenerBtnCreateTeam()
 {
     if(!checkLogin())
     {
-        location.href = "../";
+        location.href = "./";
         return;
     }
 
@@ -38,7 +37,7 @@ function onClickListenerBtnCheckInvite()
 {
     if(!checkLogin())
     {
-        location.href = "../";
+        location.href = "./";
         return;
     }
     ajaxCheckInvite();
@@ -47,7 +46,7 @@ function onClickListenerBtnCheckInvite()
 function ajaxCheckInvite(isCreatYourTeamBtn)
 {
     $.ajax({
-        url: "http://" + IP_Server +  "/checkInvite",
+        url: "./checkInvite",
         type: "POST",
         data: username,
         contentType: 'application/json',
@@ -58,7 +57,7 @@ function ajaxCheckInvite(isCreatYourTeamBtn)
             {
                 sessionStorage.removeItem("invite");
                 sessionStorage.removeItem("myRole");
-                location.href = "../createTeamPage.html";
+                location.href = "./createTeamPage.html";
                 return;
             } else if (invite === undefined)
             {
@@ -76,7 +75,7 @@ function ajaxCheckInvite(isCreatYourTeamBtn)
                 if (inviteResponse)
                 {
                     sessionStorage.setItem("invite", JSON.stringify(invite));
-                    location.href = "../createRivalTeamPage.html";
+                    location.href = "./createRivalTeamPage.html";
                 }
                 else
                 {
@@ -136,7 +135,7 @@ function ajaxCheckInvite(isCreatYourTeamBtn)
         error: function ()
         {
             alert("Unauthorized Request!");
-            location.href = "../";
+            location.href = "./";
         }
     });
 }
@@ -151,5 +150,5 @@ function storeInvitation(accepted, inviteId, invitedAsFriend)
             invitedAsFriend: invitedAsFriend
         };
     sessionStorage.setItem("inviteReply", JSON.stringify(inviteReply));
-    location.href = "../waitingPage.html";
+    location.href = "./waitingPage.html";
 }

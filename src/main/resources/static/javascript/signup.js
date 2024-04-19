@@ -1,5 +1,3 @@
-const IP_Server = "10.2.1.130:8084/DSMT_Taboo-0.0.1";
-
 $(document).ready(function ()
 {
     document.getElementById('btnSignUp').onclick = function (e) { onClickListenerBtnSignup(); }
@@ -40,14 +38,14 @@ function onClickListenerBtnSignup()
 
 
     $.ajax({
-        url : "http://" + IP_Server +  "/signup",
+        url : "./signup",
         data : JSON.stringify(newUser),
         type : "POST",
         contentType: 'application/json',
         success: function ()
         {
             alert("You're been successfully registered");
-            location.href = "../";
+            location.href = "./";
         },
         error: function(xhr)
         {

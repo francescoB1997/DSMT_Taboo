@@ -1,5 +1,4 @@
 const IP_Server_ERLANG = "10.2.1.110:8090";
-const IP_Server = "10.2.1.130:8084/DSMT_Taboo-0.0.1";
 const GAME_DURATION = 60;
 const PASS = 3;
 
@@ -21,7 +20,7 @@ $(document).ready(function ()
 
     if (false && !checkLogin()) // Da togliere il false dalla condizione
     {
-        location.href = "../";
+        location.href = "./";
         return;
     }
 
@@ -133,7 +132,7 @@ function timerHandler()
             {
                 addNewMatch();
             }
-            location.href = "../endGamePage.html";
+            location.href = "./endGamePage.html";
             return;
         }
         restartGame();
@@ -397,7 +396,7 @@ function addNewMatch()
     };
 
     $.ajax({
-        url : "http://" + IP_Server +  "/addNewMatch",
+        url : "./addNewMatch",
         type : "POST",
         data : JSON.stringify(matchResultRequest),
         contentType: 'application/json',
@@ -407,17 +406,17 @@ function addNewMatch()
             switch (addMatchServerResult)
             {
                 case 1:
-                    location.href = "../endGamePage.html";
+                    location.href = "./endGamePage.html";
                     //console.log("The match has been successfully added into DB.");
                     break;
                 case -1:
                     console.log("We're Sorry, an Error occurred during adding operation." +
                        " The match has not been successfully added into DB");
-                    location.href = "../loggedPlayerPage.html";
+                    location.href = "./loggedPlayerPage.html";
                     break;
                 case -2:
                     console.log("il server non ha il mio match. Forse non ce l'avevo nemmeno io");
-                    location.href = "../loggedPlayerPage.html";
+                    location.href = "./loggedPlayerPage.html";
                     break;
                 default:
                     break;
@@ -537,7 +536,7 @@ function loadTablesTeams()
             let tdUserIcon = document.createElement("td");
             let imgUserIcon = document.createElement("img");
             imgUserIcon.className = "imgUserIcon";
-            imgUserIcon.src = "../img/user_icon.png";
+            imgUserIcon.src = "./img/user_icon.png";
             imgUserIcon.alt = "user icon image";
             tdUserIcon.append(imgUserIcon);
             trFriend.append(tdUserIcon);

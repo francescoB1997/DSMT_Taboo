@@ -1,5 +1,4 @@
 const username = sessionStorage.getItem("userLog");
-const IP_Server = "10.2.1.130:8084/DSMT_Taboo-0.0.1";
 
 let showFriendList = true;
 
@@ -7,7 +6,7 @@ $(document).ready(function ()
 {
     if(!checkLogin())
     {
-        location.href = "../";
+        location.href = "./";
         return;
     }
     ajaxGetFriendList();
@@ -80,7 +79,7 @@ function ajaxGetFriendList()
     // Per ogni amico, va creato a runTime un elemento HTML per mostrarlo.
 
     $.ajax({
-        url: "http://" + IP_Server +  "/getFriendList",
+        url: "./getFriendList",
         type: "POST",
         data: username,
         contentType: 'application/json',
@@ -97,7 +96,7 @@ function ajaxGetFriendList()
         error: function ()
         {
             alert("Unauthorized Request!");
-            location.href = "../";
+            location.href = "./";
         }
     });
 }
@@ -115,7 +114,7 @@ function createFriendListInHtml(friendDTOList)
         let tdUserIcon = document.createElement("td");
         let imgUserIcon = document.createElement("img");
         imgUserIcon.className = "imgUserIcon";
-        imgUserIcon.src = "../img/user_icon.png";
+        imgUserIcon.src = "./img/user_icon.png";
         imgUserIcon.alt = "user icon image";
         tdUserIcon.append(imgUserIcon);
         trFriend.append(tdUserIcon);
@@ -131,7 +130,7 @@ function createFriendListInHtml(friendDTOList)
         tdStatus.className = "";
         let imgUserState = document.createElement("img");
         imgUserState.className = "imgUserState";
-        imgUserState.src = (friend.logged) ? "../img/online.png" : "../img/offline.png";
+        imgUserState.src = (friend.logged) ? "./img/online.png" : "./img/offline.png";
         imgUserState.alt ="img user state (online or offline)";
         tdStatus.append(imgUserState);
         trFriend.append(tdStatus);
@@ -167,7 +166,7 @@ function onClickListenerBtnRemoveFriends(button)
         };
 
         $.ajax({
-            url: "http://" + IP_Server +  "/removeFriend",
+            url: "./removeFriend",
             type: "POST",
             data:  JSON.stringify(removeFriendRequest),
             contentType: 'application/json',
@@ -216,7 +215,7 @@ function onClickBtnSearchUser(event)
 
     //alert("userSearchRequestDTO: " + userSearchRequestDTO.requesterUsername + ", " + userSearchRequestDTO.usernameToSearch);
     $.ajax({
-        url: "http://" + IP_Server +  "/searchUser",
+        url: "./searchUser",
         type: "POST",
         data: JSON.stringify(userSearchRequestDTO),
         dataType: "json",
@@ -238,7 +237,7 @@ function onClickBtnSearchUser(event)
         {
             //alert(serverResponse);
             alert("Unauthorized Request! You must be logged to navigate this page");
-            location.href = "../";
+            location.href = "./";
         }
     });
 }
@@ -256,7 +255,7 @@ function createTableSearchedUserInHtml(searchedUserList)
         let tdUserIcon = document.createElement("td");
         let imgUserIcon = document.createElement("img");
         imgUserIcon.className = "imgUserIcon";
-        imgUserIcon.src = "../img/user_icon.png";
+        imgUserIcon.src = "./img/user_icon.png";
         imgUserIcon.alt = "user icon image";
         tdUserIcon.append(imgUserIcon);
         trUser.append(tdUserIcon);
@@ -308,7 +307,7 @@ function onClickListenerBtnAddFriends(button)
         usernameFriend : usernameFriendToAdd
     };
     $.ajax({
-        url: "http://" + IP_Server +  "/addFriend",
+        url: "./addFriend",
         type: "POST",
         data: JSON.stringify(addFriendRequest),
         dataType: "json",

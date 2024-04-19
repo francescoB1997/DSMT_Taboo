@@ -5,7 +5,7 @@ $(document).ready(function ()
 {
     if(!checkLogin())
     {
-        location.href = "../";
+        location.href = "./";
         return;
     }
     setWelcomeText();

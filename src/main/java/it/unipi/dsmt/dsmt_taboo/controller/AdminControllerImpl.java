@@ -115,10 +115,19 @@ public class AdminControllerImpl implements AdminControllerInterface
         {
             MatchDAO matchDAO = new MatchDAO();
             getAllMatchesResponse = new ServerResponseDTO<>(matchDAO.getMatches(""));
-            responseHttp = HttpStatus.OK;
+            if(getAllMatchesResponse.getResponseMessage() == null) // If there was any problem with DB, then ...
+                responseHttp = HttpStatus.BAD_REQUEST;
+            else
+            {
+                System.out.println("AdminController: getAllMatches OK");
+                responseHttp = HttpStatus.OK;
+            }
         }
         else
+        {
             responseHttp = HttpStatus.UNAUTHORIZED;
+            System.out.println("AdminController: getAllMatches UNAUTHORIZED");
+        }
 
         return new ResponseEntity<>(getAllMatchesResponse, responseHttp);
     }

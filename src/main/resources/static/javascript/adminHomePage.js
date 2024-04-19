@@ -34,7 +34,7 @@ function onClickListenerBtnLogout()
 {
     let username = sessionStorage.getItem("userLog");
     $.ajax({
-        url: "http://" + IP_Server + "/logout",
+        url: "./logout",
         type: "POST",
         data: username,
         dataType: "text",

@@ -5,7 +5,7 @@ $(document).ready(function ()
 {
     if(!checkAdminLogin())
     {
-        location.href = "../";
+        location.href = "./";
         return;
     }
     ajaxGetMatchesList();
@@ -29,7 +29,7 @@ function ajaxGetMatchesList()
         parameter : ""
     };
     $.ajax({
-        url: "http://" + IP_Server + "/getAllMatches",
+        url: "./getAllMatches",
         type: "POST",
         data: JSON.stringify(adminRequest),
         contentType: 'application/json',

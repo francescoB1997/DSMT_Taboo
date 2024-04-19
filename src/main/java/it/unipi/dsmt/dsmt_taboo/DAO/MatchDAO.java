@@ -77,7 +77,7 @@ public class MatchDAO extends BaseDAO
             {
                 preparedStatement.setString(1, "%" + username + "%");
                 preparedStatement.setString(2, "%" + username + "%");
-                try (ResultSet resultSet = preparedStatement.executeQuery();)
+                try (ResultSet resultSet = preparedStatement.executeQuery())
                 {
                     listMatches = new ArrayList<>();
                     while (resultSet.next())

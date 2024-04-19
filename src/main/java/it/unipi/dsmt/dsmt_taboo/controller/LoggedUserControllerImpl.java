@@ -323,6 +323,8 @@ public class LoggedUserControllerImpl implements LoggedUserControllerInterface
     @Override
     public ResponseEntity<ServerResponseDTO<List<MatchDTO>>> getMyMatches(@RequestBody String usernameRequester)
     {
+
+        System.out.println("getMyMatches: request from [" + usernameRequester + "]");
         HttpStatus responseHttp;
         ServerResponseDTO<List<MatchDTO>> getAllMatchesResponse = null;
         boolean checkLogin = SessionManagement.getInstance().isUserLogged(usernameRequester);

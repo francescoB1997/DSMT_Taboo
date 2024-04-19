@@ -273,8 +273,8 @@ public class LoggedUserControllerImpl implements LoggedUserControllerInterface
                 assert (!invite.getGameId().equals(replyInvite.getGameId())); // DBG. Se va storto, la remove non funziona!
             });
             // ----------------------------------------------------------
-            pendingMatchMap.remove(replyInvite.getGameId()); // Free the memory for the old pendingMatch
             pendingMatchMap.get(replyInvite.getGameId()).wakeUpAllThreads();
+            pendingMatchMap.remove(replyInvite.getGameId()); // Free the memory for the old pendingMatch
             //response = new ServerResponseDTO<>(0); // The 0, means that someone have refused the invite
         }
         else
@@ -292,20 +292,24 @@ public class LoggedUserControllerImpl implements LoggedUserControllerInterface
                 // l'aggiornamento di r è NECESSARIO, perchè altrimenti gli users che erano entrati in attesa prima che
                 // il rivale costruisse la sua squadra, manterrebero il riferimento all'invito INCOMPLETO.
 
-                r = invites.stream().filter(invite -> invite.getGameId().equals(replyInvite.getGameId())).collect(Collectors.toList()).get(0);
-                /*
+                List<InviteFriends> tempList = invites.stream().filter(invite -> invite.getGameId().equals(replyInvite.getGameId())).collect(Collectors.toList());
+
+                MatchDTO matchDTO;
                 if(tempList != null && !tempList.isEmpty())
                 {
                     r = tempList.get(0);
+                    matchDTO = new MatchDTO(replyInvite.getGameId(),
+                            pendingMatch.getInviterTeamMember(), r.getRoles(),
+                            pendingMatch.getRivalsTeamMember(), r.getRivalsRoles());
+
+                    runningMatch.putIfAbsent(replyInvite.getGameId(), matchDTO);
                 }
-                */
-
-
-                MatchDTO matchDTO = new MatchDTO(replyInvite.getGameId(),
-                        pendingMatch.getInviterTeamMember(), r.getRoles(),
-                        pendingMatch.getRivalsTeamMember(), r.getRivalsRoles());
-
-                MatchDTO returned = runningMatch.putIfAbsent(replyInvite.getGameId(), matchDTO); // Il returned è solo per DGB
+                else // I go in to this else, because there is one user that refused the invite and due to race condition and
+                     // i(this thread) waked up with the pendingMatch still in memory.
+                {
+                    System.out.println("replyInvite: sending Refused Invitation MSG to " + replyInvite.getSenderUsername());
+                    matchDTO = null;
+                }
                 /*
                 // -------------------- ONLY FOR DEBUG --------------------
                 System.out.println("matchDTO = { InviterTeam = [ " + matchDTO.getInviterTeam() + " ]\n" +

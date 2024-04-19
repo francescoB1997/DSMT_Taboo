@@ -113,6 +113,7 @@ function restartGame()
     socket.close();
 }
 
+
 function timerHandler()
 {
     seconds -= 1;

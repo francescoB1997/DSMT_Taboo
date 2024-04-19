@@ -8,7 +8,6 @@ $(document).ready(function ()
         return;
     }
     ajaxGetMatchesList();
-
 });
 
 function checkAdminLogin()

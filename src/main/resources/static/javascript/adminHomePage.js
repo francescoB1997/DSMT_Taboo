@@ -1,5 +1,5 @@
 const username = sessionStorage.getItem("userLog");
-const IP_Server = "10.2.1.130:8084/DSMT_Taboo-0.0.1";
+const IP_Server = "localhost:8084";
 
 $(document).ready(function ()
 {
@@ -42,24 +42,24 @@ function onClickListenerBtnLogout()
         success: function ()
         {
             sessionStorage.removeItem("userLog");
-            location.href = "../";
+            location.href = "./";
         },
         error: function (xhr)
         {
             let serverResponse = JSON.parse(xhr.responseText);
             alert(serverResponse.responseMessage);
-            location.href = "../";
+            location.href = "./";
         }
     });
 }
 
 function onClickListenerBtnBrowesGames()
 {
-    location.href = "../adminMatchesListPage.html";
+    location.href = "./adminMatchesListPage.html";
 }
 
 function onClickListenerBtnViewUsers()
 {
-    location.href = "../adminUserListPage.html";
+    location.href = "./adminUserListPage.html";
 }
 

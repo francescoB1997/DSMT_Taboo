@@ -298,7 +298,8 @@ public class LoggedUserControllerImpl implements LoggedUserControllerInterface
 
                  */
                 response = new ServerResponseDTO<>(matchDTO); // The 1, means that all of users have accepted the invite
-            } else // The else means that, someone of the invited user has refused the invite"
+            }
+            else // The else means that, someone of the invited user has refused the invite"
             {
                 if (pendingMatch == null)
                     System.out.println("Invito rifiutato");
@@ -310,14 +311,21 @@ public class LoggedUserControllerImpl implements LoggedUserControllerInterface
 
     @PostMapping("/getMyMatches")
     @Override
-    public ResponseEntity<ServerResponseDTO<List<MatchDTO>>> getMyMatches(@RequestBody String usernameRequester) {
+    public ResponseEntity<ServerResponseDTO<List<MatchDTO>>> getMyMatches(@RequestBody String usernameRequester)
+    {
         HttpStatus responseHttp;
         ServerResponseDTO<List<MatchDTO>> getAllMatchesResponse = null;
         boolean checkLogin = SessionManagement.getInstance().isUserLogged(usernameRequester);
-        if (checkLogin) {
+        if (checkLogin)
+        {
             MatchDAO matchDAO = new MatchDAO();
             getAllMatchesResponse = new ServerResponseDTO<>(matchDAO.getMatches(usernameRequester));
-            responseHttp = HttpStatus.OK;
+
+            if(getAllMatchesResponse.getResponseMessage() == null)
+                responseHttp = HttpStatus.BAD_REQUEST;
+            else
+                responseHttp = HttpStatus.OK;
+
         } else
             responseHttp = HttpStatus.UNAUTHORIZED;
         return new ResponseEntity<>(getAllMatchesResponse, responseHttp);

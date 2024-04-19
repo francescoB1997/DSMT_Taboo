@@ -5,8 +5,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import it.unipi.dsmt.dsmt_taboo.exceptions.DatabaseNotReachableException;
 import it.unipi.dsmt.dsmt_taboo.model.DTO.MatchDTO;
 import it.unipi.dsmt.dsmt_taboo.model.DTO.MatchResultRequestDTO;
+import it.unipi.dsmt.dsmt_taboo.model.DTO.ServerResponseDTO;
+import org.springframework.http.HttpStatus;
 
 
 public class MatchDAO extends BaseDAO
@@ -58,7 +61,7 @@ public class MatchDAO extends BaseDAO
 
     public List<MatchDTO> getMatches(String username)
     {
-        List<MatchDTO> listMatches = new ArrayList<>();
+        List<MatchDTO> listMatches = null;
 
         String userMatchesQuery = "SELECT * FROM " + DB_NAME + ".match " +
                                   "WHERE Team1 LIKE ? OR Team2 LIKE ?";
@@ -70,10 +73,11 @@ public class MatchDAO extends BaseDAO
             {
                 preparedStatement.setString(1, "%" + username + "%");
                 preparedStatement.setString(2, "%" + username + "%");
-
                 try (ResultSet resultSet = preparedStatement.executeQuery();)
                 {
-                    while (resultSet.next()) {
+                    listMatches = new ArrayList<>();
+                    while (resultSet.next())
+                    {
                         String idMatch = resultSet.getString("Timestamp"); //Timestamp
                         String team1 = resultSet.getString("Team1");
                         String team2 = resultSet.getString("Team2");
@@ -91,10 +95,16 @@ public class MatchDAO extends BaseDAO
                         listMatches.add(match);
                     }
                 }
-            } catch (SQLException ex) {
-                System.out.println("(User) searchMatchesInDB eccezione query:" + ex.getMessage());
-                return null;
             }
+        catch (Exception ex)
+        {
+            if(ex.getClass() == DatabaseNotReachableException.class)
+                System.out.println("getMatches: DatabaseNotReachableException ");
+            else
+                System.out.println("getMatches: Query Ex: " + ex.getMessage());
+            return null;
+        }
+
         return listMatches;
     }
 
@@ -146,8 +156,13 @@ public class MatchDAO extends BaseDAO
             }
             while(attempt < 3);
 
-        } catch (SQLException ex) {
-            System.out.println("getMatchResult() eccezione query:" + ex.getMessage());
+        }
+        catch (Exception ex)
+        {
+            if(ex.getClass() == DatabaseNotReachableException.class)
+                System.out.println("getMatchResult: DatabaseNotReachableException");
+            else
+                System.out.println("getMatchResult: Query Ex: " + ex.getMessage());
         }
         return mathResultToReturn;
     }

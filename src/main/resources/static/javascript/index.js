@@ -1,4 +1,3 @@
-const IP_Server = "localhost:8084";
 
 $(document).ready(function ()
 {

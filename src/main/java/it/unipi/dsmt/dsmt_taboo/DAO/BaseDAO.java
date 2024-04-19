@@ -1,10 +1,7 @@
 package it.unipi.dsmt.dsmt_taboo.DAO;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
-
-import java.sql.*;
 import javax.sql.DataSource;
 import com.mysql.cj.jdbc.MysqlDataSource;
 

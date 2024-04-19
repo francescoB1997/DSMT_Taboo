@@ -58,9 +58,12 @@ public class UserDAO extends BaseDAO
                 return -1;
             }
         }
-        catch (SQLException ex)
+        catch (Exception ex)
         {
-            System.out.println("**** Signup Exception --> " + ex.getMessage());
+            if(ex.getClass() == DatabaseNotReachableException.class)
+                System.out.println("Signup: DatabaseNotReachableException");
+            else
+                System.out.println("Signup Ex: " + ex.getMessage());
             //ex.printStackTrace();
             return -1;
         }
@@ -105,16 +108,19 @@ public class UserDAO extends BaseDAO
             return preparedStatement.executeUpdate() > 0;
 
         }
-        catch (SQLException ex)
+        catch (Exception ex)
         {
-            System.out.println("Eccezione query RemoveUser --> " + ex.getMessage());
+            if(ex.getClass() == DatabaseNotReachableException.class)
+                System.out.println("removeUser: DatabaseNotReachableException");
+            else
+                System.out.println("removeUser Ex: " + ex.getMessage());
             return false;
         }
     }
 
     public List<UserDTO> globalSearchUser(String userToSearch)
     {
-        List<UserDTO> globalSearchUserList = new ArrayList<>();
+        List<UserDTO> globalSearchUserList = null;
 
         String searchUserQuery = "SELECT U.Username, U.Name, U.Surname FROM " + DB_NAME + ".user as U " +
                 "WHERE U.Username LIKE ? ;";
@@ -126,6 +132,7 @@ public class UserDAO extends BaseDAO
             checkStatement.setString(1, "%" + userToSearch + "%");
             try(ResultSet resultSet = checkStatement.executeQuery())
             {
+                globalSearchUserList = new ArrayList<>();
                 while (resultSet.next())
                 {
                     String username = resultSet.getString("Username");
@@ -135,9 +142,13 @@ public class UserDAO extends BaseDAO
                     globalSearchUserList.add(new UserDTO(username, name, surname, SessionManagement.getInstance().isUserLogged(username)));
                 }
             }
-        } catch (SQLException ex)
+        }
+        catch (Exception ex)
         {
-            System.out.println("searchUserInDB eccezione query:" + ex.getMessage());
+            if(ex.getClass() == DatabaseNotReachableException.class)
+                System.out.println("searchUserInDB: DatabaseNotReachableException");
+            else
+                System.out.println("searchUserInDB Ex: " + ex.getMessage());
             return  null;
         }
 

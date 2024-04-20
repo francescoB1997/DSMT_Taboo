@@ -39,7 +39,7 @@ public class BaseDAO
             return dataSource.getConnection();
         } catch (SQLException e) {
             System.out.println("BaseFunctionalitiesDB: Can't get connection");
-            e.printStackTrace();
+            //e.printStackTrace();
             return null;
         }
     }

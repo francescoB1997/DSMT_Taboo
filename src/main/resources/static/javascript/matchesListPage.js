@@ -36,10 +36,15 @@ function ajaxGetMatchesList()
             else
                 alert("matchesList vuota");
         },
-        error: function ()
+        error: function (xhr)
         {
-            alert("Unauthorized Request!");
-            location.href = "./";
+            if(xhr.status === 400)
+                alert("Service temporary unavailable");
+            else
+            {
+                alert("Unauthorized Request!");
+                location.href = "./";
+            }
         }
     });
 }

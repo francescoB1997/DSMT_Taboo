@@ -4,11 +4,14 @@ let showFriendList = true;
 
 $(document).ready(function ()
 {
+    /*
     if(!checkLogin())
     {
         location.href = "./";
         return;
     }
+
+     */
     ajaxGetFriendList();
     document.getElementById("btnShowSearchUser").onclick = function (e) { onClickListenerBtnShowSearchFunctions(); };
     document.getElementById("btnSearchUser").onclick = function (e) { onClickBtnSearchUser(e); };
@@ -93,10 +96,15 @@ function ajaxGetFriendList()
             else
                 alert("friendList vuota");
         },
-        error: function ()
+        error: function (xhr)
         {
-            alert("Unauthorized Request!");
-            location.href = "./";
+            if(xhr.status === 400)
+                alert("Service temporary unavailable");
+            else
+            {
+                alert("Unauthorized Request!");
+                location.href = "./";
+            }
         }
     });
 }
@@ -191,8 +199,13 @@ function onClickListenerBtnRemoveFriends(button)
             },
             error: function (xhr)
             {
-                let responseMessage = xhr.responseText;
-                alert("Error: " + responseMessage);
+                if(xhr.status === 400)
+                    alert("Service temporary unavailable");
+                else
+                {
+                    alert("Unauthorized Request!");
+                    location.href = "./";
+                }
             }
         });
     }
@@ -233,11 +246,15 @@ function onClickBtnSearchUser(event)
                 alert("- NOT FOUND - : The user  [" + usernameToSearch + "] was not found into db");
             }
         },
-        error: function (serverResponse)
+        error: function (xhr)
         {
-            //alert(serverResponse);
-            alert("Unauthorized Request! You must be logged to navigate this page");
-            location.href = "./";
+            if(xhr.status === 400)
+                alert("Service temporary unavailable");
+            else
+            {
+                alert("Unauthorized Request!");
+                location.href = "./";
+            }
         }
     });
 }
@@ -330,9 +347,13 @@ function onClickListenerBtnAddFriends(button)
         },
         error: function (xhr)
         {
-            //alert(serverResponse);
-            let responseMessage = xhr.responseText;
-            alert("Error: " + responseMessage);
+            if(xhr.status === 400)
+                alert("Service temporary unavailable");
+            else
+            {
+                alert("Unauthorized Request!");
+                location.href = "./";
+            }
         }
     });
 }

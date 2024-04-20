@@ -94,8 +94,8 @@ function ajaxGetUserList()
         },
         error: function (xhr)
         {
-            alert("Unauthorized Here Request!");
-            location.href = "./";
+            alert("Service temporarily not available");
+            //location.href = "./";
         }
     });
 }

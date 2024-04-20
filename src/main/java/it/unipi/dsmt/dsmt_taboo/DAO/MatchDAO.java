@@ -39,8 +39,9 @@ public class MatchDAO extends BaseDAO
             preparedStatement.setString(5, match.getMatchId());
 
             int rowsAffected = preparedStatement.executeUpdate();
-            if (rowsAffected > 0) {
-                System.out.println("***************************************** Tupla realmente inserita");
+            if (rowsAffected > 0)
+            {
+                System.out.println("addNewMatch: Match-Tuple truly inserted in DB");
                 return true;
             }
             else
@@ -49,21 +50,16 @@ public class MatchDAO extends BaseDAO
         }
         catch (Exception ex)
         {
-            if(ex.getClass() == DatabaseNotReachableException.class)
+            //if(ex.getClass() == DatabaseNotReachableException.class)
+            if(ex instanceof DatabaseNotReachableException)
                 System.out.println("addNewMatch: DatabaseNotReachableException");
             else if(ex instanceof SQLException)
             {
                 SQLException e = (SQLException)ex;
-
-                System.out.print("addNewMatch: Ex classe SQLException");
-                if(e.getErrorCode() == MYSQL_DUPLICATE_PK) {
-                    System.out.println("--> ritornato true");
+                if(e.getErrorCode() == MYSQL_DUPLICATE_PK)
                     return true;
-                }
-                System.out.println("--> ritornato false");
+                System.out.println("addNewMatch SQLException: " + e.getMessage());
                 return false;
-                //System.out.println("addNewMatch: Dovrebbe essere duplicate entry -> " + ex.getMessage());
-
             }
             else
                 System.out.println("addNewMatch Ex: " + ex.getMessage());

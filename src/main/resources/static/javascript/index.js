@@ -58,7 +58,7 @@ function onClickListenerBtnLogin()
             if(xhr.status === 400) // BAD REQUEST
                 alert("Login Error. Please, check the Username or Password");
             else if(xhr.status === 502) // BAD GATEWAY
-                alert("Service temporary unavailable");
+                alert("Service Temporary Unavailable");
             else
             {
                 alert("Unauthorized Request!");

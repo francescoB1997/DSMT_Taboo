@@ -60,7 +60,8 @@ public class UserDAO extends BaseDAO
         }
         catch (Exception ex)
         {
-            if(ex.getClass() == DatabaseNotReachableException.class)
+            //if(ex.getClass() == DatabaseNotReachableException.class)
+            if(ex instanceof DatabaseNotReachableException)
                 System.out.println("Signup: DatabaseNotReachableException");
             else
                 System.out.println("Signup Ex: " + ex.getMessage());

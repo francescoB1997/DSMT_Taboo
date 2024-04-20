@@ -47,7 +47,8 @@ public class LoginControllerImpl implements LoginControllerInterface
 
             System.out.println("LoginController: the user [" + usernameRequester + "] logged successfully");
 
-        } catch (UserNotExistsException e)
+        }
+        catch (UserNotExistsException e)
         {
             loginResponse = new ServerResponseDTO<>(e.getMessage());
             responseHttp = HttpStatus.BAD_REQUEST;

@@ -32,7 +32,7 @@ public class LoginControllerImpl implements LoginControllerInterface
 
         UserDAO user = new UserDAO();
 
-        System.out.println("LoginController: login request from [" + usernameRequester + "]");
+        System.out.println("login: request from [" + usernameRequester + "]");
 
         try
         {
@@ -45,22 +45,20 @@ public class LoginControllerImpl implements LoginControllerInterface
             responseHttp = HttpStatus.OK;
             session.setLogUser(usernameRequester);
 
-            System.out.println("LoginController: the user [" + usernameRequester + "] logged successfully");
+            System.out.println("login: the user [" + usernameRequester + "] logged successfully");
 
         }
-        catch (UserNotExistsException e)
+        catch (Exception e)
         {
+            if(e instanceof UserNotExistsException)
+                System.out.println("login UserNotExistsException: " + e.getMessage());
+            else if (e instanceof DatabaseNotReachableException)
+                System.out.println("login DatabaseNotReachableException: " + e.getMessage());
+            else
+                System.out.println("login Ex: " + e.getMessage());
             loginResponse = new ServerResponseDTO<>(e.getMessage());
             responseHttp = HttpStatus.BAD_REQUEST;
-            System.out.println("LoginControllerImpl -> " + e.getMessage());
         }
-        catch (DatabaseNotReachableException e)
-        {
-            loginResponse = new ServerResponseDTO<>(e.getMessage());
-            responseHttp = HttpStatus.BAD_REQUEST;
-            System.out.println("LoginControllerImpl -> " + e.getMessage());
-        }
-
         return new ResponseEntity<>(loginResponse, responseHttp);
     }
 

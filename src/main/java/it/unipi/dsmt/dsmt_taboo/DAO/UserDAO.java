@@ -51,27 +51,27 @@ public class UserDAO extends BaseDAO
                     return -1;
                 }
                 connection.commit();
-            } catch (SQLException ex) {
+            }
+            catch (SQLException ex)
+            {
                 connection.rollback();
-                System.out.println("Eccezione query");
-                //ex.printStackTrace();
+                System.out.println("Signup: Query EX during insert: " + ex.getMessage());
                 return -1;
             }
         }
         catch (Exception ex)
         {
-            if(ex.getClass() == DatabaseNotReachableException.class)
+            if(ex instanceof DatabaseNotReachableException)
                 System.out.println("Signup: DatabaseNotReachableException");
             else
                 System.out.println("Signup Ex: " + ex.getMessage());
-            //ex.printStackTrace();
             return -1;
         }
         return 1;
     }
 
-    public void login(String username, String password) throws UserNotExistsException, DatabaseNotReachableException {
-
+    public void login(String username, String password) throws UserNotExistsException, DatabaseNotReachableException, SQLException
+    {
         String loginQuery = "SELECT COUNT(*) as AccountExists FROM " + DB_NAME + ".user as u WHERE (u.username = ? AND u.password = ?);";
         try (
                 Connection connection = this.getConnection();
@@ -89,10 +89,12 @@ public class UserDAO extends BaseDAO
         }
         catch (Exception e)
         {
-            if (e.getClass() == UserNotExistsException.class)
+            if (e instanceof UserNotExistsException)
                 throw new UserNotExistsException();
-            else
+            else if(e instanceof DatabaseNotReachableException)
                 throw new DatabaseNotReachableException();
+            else
+                throw new SQLException();
         }
     }
 
@@ -110,7 +112,7 @@ public class UserDAO extends BaseDAO
         }
         catch (Exception ex)
         {
-            if(ex.getClass() == DatabaseNotReachableException.class)
+            if(ex instanceof DatabaseNotReachableException)
                 System.out.println("removeUser: DatabaseNotReachableException");
             else
                 System.out.println("removeUser Ex: " + ex.getMessage());
@@ -145,10 +147,10 @@ public class UserDAO extends BaseDAO
         }
         catch (Exception ex)
         {
-            if(ex.getClass() == DatabaseNotReachableException.class)
-                System.out.println("searchUserInDB: DatabaseNotReachableException");
+            if(ex instanceof DatabaseNotReachableException)
+                System.out.println("globalSearchUser: DatabaseNotReachableException");
             else
-                System.out.println("searchUserInDB Ex: " + ex.getMessage());
+                System.out.println("globalSearchUser Ex: " + ex.getMessage());
             return  null;
         }
 

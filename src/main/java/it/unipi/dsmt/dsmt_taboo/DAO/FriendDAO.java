@@ -45,7 +45,7 @@ public class FriendDAO extends BaseDAO
         }
         catch (Exception ex)
         {
-            if(ex.getClass() == DatabaseNotReachableException.class)
+            if(ex instanceof DatabaseNotReachableException)
                 System.out.println("getFriendList: DatabaseNotReachableException");
             else
                 System.out.println("getFriendList Ex: " + ex.getMessage());
@@ -71,7 +71,7 @@ public class FriendDAO extends BaseDAO
         }
         catch (Exception ex)
         {
-            if(ex.getClass() == DatabaseNotReachableException.class)
+            if(ex instanceof DatabaseNotReachableException)
                 System.out.println("removeFriendDB: DatabaseNotReachableException");
             else
                 System.out.println("removeFriendDB Ex: " + ex.getMessage());
@@ -94,7 +94,7 @@ public class FriendDAO extends BaseDAO
         }
         catch (Exception ex)
         {
-            if(ex.getClass() == DatabaseNotReachableException.class)
+            if(ex instanceof DatabaseNotReachableException)
                 System.out.println("checkIfUserExists: DatabaseNotReachableException");
             else
                 System.out.println("checkIfUserExists Ex: " + ex.getMessage());
@@ -107,10 +107,7 @@ public class FriendDAO extends BaseDAO
         String addFriendQuery = "INSERT INTO " + DB_NAME + ".friendship (Username1, Username2) VALUES (?, ?)";
 
         if(!checkIfUserExists(usernameToAdd))
-        {
-            System.out.println("Non esiste");
             return -1;
-        }
 
         if(isAlreadyFriend(usernameToAdd))
             return 0;
@@ -129,7 +126,7 @@ public class FriendDAO extends BaseDAO
         }
         catch (Exception ex)
         {
-            if(ex.getClass() == DatabaseNotReachableException.class)
+            if(ex instanceof DatabaseNotReachableException)
                 System.out.println("addFriend: DatabaseNotReachableException");
             else
                 System.out.println("addFriend Ex: " + ex.getMessage());
@@ -154,6 +151,10 @@ public class FriendDAO extends BaseDAO
         catch (SQLException ex)
         {
             System.out.println("checkIfUserExists query exception: " + ex.getMessage());
+        }
+        catch (DatabaseNotReachableException ex)
+        {
+            System.out.println("isAlreadyFriend: DatabaseNotReachableException");
         }
         return alreadyFriend;
     }

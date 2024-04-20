@@ -31,7 +31,7 @@ public class LoggedUserControllerImpl implements LoggedUserControllerInterface
         {
             FriendDAO friendDAO = new FriendDAO(username);
             getFriendListResponse = new ServerResponseDTO<>(friendDAO.getFriendList());
-            if(getFriendListResponse == null)
+            if(getFriendListResponse.getResponseMessage() == null)
                 responseHttp = HttpStatus.BAD_REQUEST;
             else
                 responseHttp = HttpStatus.OK;
@@ -111,21 +111,25 @@ public class LoggedUserControllerImpl implements LoggedUserControllerInterface
                     getUsernameFriend());
             if (removeOpStatus)
             {
-                System.out.println("\nremoveFriend: The user "
+                /*System.out.println("\nremoveFriend: The user "
                         + requesterUsername.getUsernameFriend() +
-                        " has been successfully removed\n");
+                        " has been successfully removed\n");*/
                 removeFriendResponse = new ServerResponseDTO<>(requestStatus);
                 responseHttp = HttpStatus.OK;
 
-            } else {
+            }
+            else
+            {/*
                 System.out.println("\nremoveFriend: Error occurred during remove operation." +
-                        requesterUsername.getUsernameFriend());
+                        requesterUsername.getUsernameFriend());*/
                 requestStatus++;
                 removeFriendResponse = new ServerResponseDTO<>(requestStatus);
                 responseHttp = HttpStatus.BAD_REQUEST;
             }
             return new ResponseEntity<>(removeFriendResponse, responseHttp);
-        } else {
+        }
+        else
+        {
             System.out.println("\nremoveFriend: request from a NonLogged user\n");
             removeFriendResponse = new ServerResponseDTO<>(null);
             responseHttp = HttpStatus.UNAUTHORIZED;
@@ -405,7 +409,7 @@ public class LoggedUserControllerImpl implements LoggedUserControllerInterface
                 }
                 else
                 {
-                    System.out.println("addNewMatch: Error occurred during adding opration:" +
+                    System.out.println("addNewMatch: Error occurred during adding operation:" +
                             "The match has NOT been added into DB\n");
                     addMatchResponse = new ServerResponseDTO<>(-1);
                     responseHttp = HttpStatus.BAD_REQUEST;

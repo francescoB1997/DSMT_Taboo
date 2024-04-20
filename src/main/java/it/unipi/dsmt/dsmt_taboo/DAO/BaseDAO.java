@@ -3,7 +3,11 @@ package it.unipi.dsmt.dsmt_taboo.DAO;
 import java.sql.Connection;
 import java.sql.SQLException;
 import javax.sql.DataSource;
+import javax.xml.crypto.Data;
+
 import com.mysql.cj.jdbc.MysqlDataSource;
+import it.unipi.dsmt.dsmt_taboo.exceptions.DatabaseNotReachableException;
+import org.springframework.core.io.buffer.DataBufferLimitException;
 
 
 public class BaseDAO
@@ -34,13 +38,16 @@ public class BaseDAO
         return dataSource;
     }
 
-    public Connection getConnection() {
+    public Connection getConnection() throws DatabaseNotReachableException
+    {
         try {
             return dataSource.getConnection();
         }
         catch (SQLException e)
         {
-            System.out.println("BaseFunctionalitiesDB: Can't get connection --> " + e.getErrorCode());
+            System.out.println("BaseFunctionalitiesDB: Can't get connection");
+            if(e.getSQLState().equals("08S01"))
+                throw new DatabaseNotReachableException();
             //e.printStackTrace();
             return null;
         }

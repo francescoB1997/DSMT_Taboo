@@ -78,23 +78,28 @@ public class AdminControllerImpl implements AdminControllerInterface
             UserDAO userDAO = new UserDAO();
             List<UserDTO> userList = userDAO.globalSearchUser(getUserRequest.getParameter());
 
-            if(userList.isEmpty())
+            if(userList != null)
             {
-                if(!getUserRequest.getParameter().equals("")) {
-                    System.out.println("\nAdminController: - NOT FOUND - Database NOT contains the user: "
-                                       + getUserRequest.getParameter() + "\n");
+                if(userList.isEmpty())
+                {
+                    if(!getUserRequest.getParameter().equals("")) {
+                        System.out.println("\nAdminController: - NOT FOUND - Database NOT contains the user: "
+                                + getUserRequest.getParameter() + "\n");
+                    }
+                    getUserResponse = new ServerResponseDTO<>(null);
                 }
-                getUserResponse = new ServerResponseDTO<>(null);
-            }
-            else
-            {
-                if(!getUserRequest.getParameter().equals("")) {
-                    System.out.println("\nAdminController: - OK - Database contains the user: "
-                                       + getUserRequest.getParameter() + "\n");
+                else
+                {
+                    if(!getUserRequest.getParameter().equals("")) {
+                        System.out.println("\nAdminController: - OK - Database contains the user: "
+                                + getUserRequest.getParameter() + "\n");
+                    }
+                    getUserResponse = new ServerResponseDTO<>(userList);
                 }
-                getUserResponse = new ServerResponseDTO<>(userList);
+                responseHttp = HttpStatus.OK;
             }
-            responseHttp = HttpStatus.OK;
+            else // if the returned list is null, then there was an error with db connection.
+                responseHttp = HttpStatus.BAD_REQUEST;
             return new ResponseEntity<>(getUserResponse, responseHttp);
         }
         else

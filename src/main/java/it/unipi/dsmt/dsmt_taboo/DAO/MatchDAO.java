@@ -50,7 +50,6 @@ public class MatchDAO extends BaseDAO
         }
         catch (Exception ex)
         {
-            //if(ex.getClass() == DatabaseNotReachableException.class)
             if(ex instanceof DatabaseNotReachableException)
                 System.out.println("addNewMatch: DatabaseNotReachableException");
             else if(ex instanceof SQLException)
@@ -107,7 +106,7 @@ public class MatchDAO extends BaseDAO
             }
         catch (Exception ex)
         {
-            if(ex.getClass() == DatabaseNotReachableException.class)
+            if(ex instanceof DatabaseNotReachableException)
                 System.out.println("getMatches: DatabaseNotReachableException ");
             else
                 System.out.println("getMatches: Query Ex: " + ex.getMessage());
@@ -168,7 +167,7 @@ public class MatchDAO extends BaseDAO
         }
         catch (Exception ex)
         {
-            if(ex.getClass() == DatabaseNotReachableException.class)
+            if(ex instanceof DatabaseNotReachableException)
                 System.out.println("getMatchResult: DatabaseNotReachableException");
             else
                 System.out.println("getMatchResult: Query Ex: " + ex.getMessage());

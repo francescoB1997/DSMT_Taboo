@@ -50,6 +50,8 @@ function onClickListenerBtnSignup()
         error: function (xhr)
         {
             if(xhr.status === 400)
+                alert("The username is already used.")
+            else if(xhr.status === 502)
                 alert("Service temporary unavailable");
             else
             {

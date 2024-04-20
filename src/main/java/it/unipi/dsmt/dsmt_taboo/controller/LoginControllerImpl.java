@@ -102,7 +102,7 @@ public class LoginControllerImpl implements LoginControllerInterface
         // This function is responsible for the signup action
     {
         UserDAO user = new UserDAO();
-        System.out.println("LoginController: signup request from [" + userToSignup.getUsername() + "]");
+        System.out.println("signup: request from [" + userToSignup.getUsername() + "]");
         int control;
 
         if(userToSignup.getUsername().contains(Constant.usernameAdmin)
@@ -115,21 +115,21 @@ public class LoginControllerImpl implements LoginControllerInterface
         HttpStatus responseHttp;
         if (control == 1)
         {
-            System.out.println("Username: [" + userToSignup.getUsername() + "] completely registered");
+            System.out.println("signup: [" + userToSignup.getUsername() + "] completely registered");
             signupResponse = new ServerResponseDTO<>("Signup Success");
             responseHttp = HttpStatus.OK;
         }
         else if(control == 0)
         {
+            System.out.println("signup: username [" + userToSignup.getUsername() + "] already exists");
             signupResponse = new ServerResponseDTO<>("Username alredy used");
             responseHttp = HttpStatus.BAD_REQUEST;
         }
         else
         {
             signupResponse = new ServerResponseDTO<>("User not inserted");
-            responseHttp = HttpStatus.BAD_REQUEST;
+            responseHttp = HttpStatus.BAD_GATEWAY;
         }
-
         return new ResponseEntity<>(signupResponse, responseHttp);
     }
 }

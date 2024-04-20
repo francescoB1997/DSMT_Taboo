@@ -28,7 +28,8 @@ public class UserDAO extends BaseDAO
             try (PreparedStatement checkStatement = connection.prepareStatement(checkIfUserExistsQuery)) {
                 checkStatement.setString(1, user.getUsername());
                 try (ResultSet resultSet = checkStatement.executeQuery()) {
-                    if (resultSet.next()) {
+                    if (resultSet.next())
+                    {
                         int userExists = resultSet.getInt("AccountExists");
                         if (userExists == 1)    // Username already used
                             return 0;

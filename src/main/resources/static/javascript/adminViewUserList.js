@@ -18,17 +18,15 @@ $(document).ready(function ()
 function checkLogin()
 {
     if(!username || (username !== "admin"))
-    {
-        //alert("You're not logged as ADMIN");
         return false;
-    }
     return true;
 }
 
 function handlerEnterKeyPress(event)
 {
-    if (event.key === "Enter") {
-        event.preventDefault(); // Per evitare l'invio del modulo (se presente)
+    if (event.key === "Enter")
+    {
+        event.preventDefault();
         onClickBtnSearchUser(event);
     }
 }
@@ -162,8 +160,8 @@ function emptyTable(table)
 function onClickListenerBtnDeleteUser(button)
 {
     const usernameToRemove = button.id.toString().split('&')[1];
-    if (confirm("Sicuro di voler rimuovere " + usernameToRemove + " dalla lista utenti?")) {
-
+    if (confirm("Are you sure you want to remove " + usernameToRemove + " from your friend list?"))
+    {
         let removeUserRequest = {
             username: username,
             password : "admin",

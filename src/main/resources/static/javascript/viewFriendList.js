@@ -4,14 +4,12 @@ let showFriendList = true;
 
 $(document).ready(function ()
 {
-    /*
+
     if(!checkLogin())
     {
         location.href = "./";
         return;
     }
-
-     */
     ajaxGetFriendList();
     document.getElementById("btnShowSearchUser").onclick = function (e) { onClickListenerBtnShowSearchFunctions(); };
     document.getElementById("btnSearchUser").onclick = function (e) { onClickBtnSearchUser(e); };

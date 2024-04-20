@@ -13,10 +13,7 @@ $(document).ready(function ()
 function checkAdminLogin()
 {
     if(!username || (username !== "admin"))
-    {
-        //alert("You're not logged");
         return false;
-    }
     return true;
 }
 

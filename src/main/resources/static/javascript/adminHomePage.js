@@ -16,10 +16,7 @@ $(document).ready(function ()
 function checkLogin()
 {
     if(!username || (username !== "admin"))
-    {
-        //alert("You're not logged as ADMIN");
         return false;
-    }
     return true;
 }
 

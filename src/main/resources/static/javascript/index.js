@@ -7,9 +7,11 @@ $(document).ready(function ()
     document.getElementById("txtboxPassword").addEventListener("keypress", handlerEnterKeyPress);
 });
 
-function handlerEnterKeyPress(event) {
-    if (event.key === "Enter") {
-        event.preventDefault(); // Per evitare l'invio del modulo (se presente)
+function handlerEnterKeyPress(event)
+{
+    if (event.key === "Enter")
+    {
+        event.preventDefault();
         onClickListenerBtnLogin();
     }
 }

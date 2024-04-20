@@ -14,7 +14,7 @@ $(document).ready(function ()
 
     if(!sessionStorage.getItem("invite"))
     {
-        alert("You must first be invited to access here");
+        alert("You must first be invited to access this page");
         location.href = "./loggedPlayerPage.html";
         return;
     }
@@ -51,7 +51,7 @@ function onClickListenerBtnInvite()
         alert("You must choose a friend");
         return;
     }
-    //invite.rivals.push(username); // Push my username first
+
     for (let i = 0 ; i < checkboxes.length; i++)
         invite.rivals.push(checkboxes[i].id.toString().split('&')[1]);
 
@@ -68,22 +68,15 @@ function onClickListenerBtnInvite()
     sessionStorage.setItem("myRole", myRole);
     invite.rivalsRoles.push(myRole); // Push my role first
     for(let checkbox of checkboxes) // foreach checked friend, fill the roles array
-    {
         invite.rivalsRoles.push("Guesser");
-    }
 
-    if(myRole !== "Prompter")// if me is not the Prompter, then it have to be randomly chosen from my friends
+    if(myRole !== "Prompter")// if me is not the Prompter, then it has to be randomly chosen from my friends
     {
         let maxIndex = checkboxes.length;
         let randomPositionPrompter = getRandomInt(0, maxIndex);
         invite.rivalsRoles[randomPositionPrompter] = "Prompter";
     }
-    //alert("invite: " + JSON.stringify(invite));
 
-    //alert("Array: " + inviteFriendRequest.roles);
-    //sessionStorage.setItem("inviteFriendRequest", JSON.stringify(invite));
-
-    //alert("Rivals: " + invite.rivals);
     $.ajax({
         url: "./inviteFriends",
         type: "POST",
@@ -91,7 +84,6 @@ function onClickListenerBtnInvite()
         contentType: 'application/json',
         success: function (serverResponse)
         {
-            //alert("OK -> Rivali ricevuti -> Rendirizzamento a Game-Attesa");
             storeInvitation(true, invite.gameId, false);
         },
         error: function ()
@@ -104,6 +96,8 @@ function onClickListenerBtnInvite()
 }
 
 function storeInvitation(accepted, inviteId, invitedAsFriend)
+// This function store the info about the accepted invite, for the next page, because is that page that sent this
+// accept or refuse to the server, in order to implement the waiting
 {
     let inviteReply =
         {

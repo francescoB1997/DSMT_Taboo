@@ -1,7 +1,5 @@
 const username = sessionStorage.getItem("userLog");
 
-let checkedCheckbox = [];
-
 $(document).ready(function ()
 {
     if(!checkLogin())
@@ -150,9 +148,7 @@ function onClickListenerBtnInvite()
     }
     inviteFriendRequest.roles.push(myRole); // Push my role first
     for(let checkbox of checkboxes) // foreach checked friend, fill the roles array
-    {
         inviteFriendRequest.roles.push("Guesser");
-    }
 
     if(myRole !== "Prompter")// if me is not the Prompter, then it have to be randomly chosen from my friends
     {
@@ -161,10 +157,8 @@ function onClickListenerBtnInvite()
         inviteFriendRequest.roles[randomPositionPrompter] = "Prompter";
     }
 
-    //alert("Array: " + inviteFriendRequest.roles);
     sessionStorage.setItem("inviteFriendRequest", JSON.stringify(inviteFriendRequest));
     location.href = "./selectRivalPage.html";
-
 }
 
 function getRandomInt(min , max)

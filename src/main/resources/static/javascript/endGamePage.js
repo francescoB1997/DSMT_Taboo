@@ -77,7 +77,6 @@ function ajaxGetMatchResult()
             else
             {
                 displayMatchResult(-2, null, null); // <-- Warning message
-                alert("strano valore myTeam: " + myTeam);
             }
         },
         error: function (xhr)

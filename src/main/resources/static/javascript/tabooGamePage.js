@@ -18,7 +18,7 @@ let socket;
 $(document).ready(function ()
 {
 
-    if (false && !checkLogin()) // Da togliere il false dalla condizione
+    if (!checkLogin())
     {
         location.href = "./";
         return;
@@ -125,7 +125,7 @@ function timerHandler()
 
         stopCondition++;
         const match = JSON.parse(sessionStorage.getItem("match"));
-        console.log("StopCond: " + stopCondition + " | rolesInviterTeamLenght : " + match.rivalTeam.length);
+        //console.log("StopCond: " + stopCondition + " | rolesInviterTeamLenght : " + match.rivalTeam.length);
         if (stopCondition === match.rivalTeam.length)
         {
             //Stop The Game and insert match into MySQL DB

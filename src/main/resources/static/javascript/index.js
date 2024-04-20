@@ -2,7 +2,6 @@
 $(document).ready(function ()
 {
     document.getElementById("loginBtn").onclick = function (e) { onClickListenerBtnLogin(); };
-
     document.getElementById("txtboxUsername").addEventListener("keypress", handlerEnterKeyPress);
     document.getElementById("txtboxPassword").addEventListener("keypress", handlerEnterKeyPress);
 });
@@ -41,21 +40,25 @@ function onClickListenerBtnLogin()
         success: function (serverResponse)
         {
             let responseMsg = serverResponse.responseMessage;
-            if(responseMsg === "LoginAdminOK"){
+            if(responseMsg === "LoginAdminOK")
+            {
                 sessionStorage.setItem("userLog", username);
                 //sessionStorage.setItem("gameId","");
                 location.href = "./adminHomePage.html"; // Il Path corretto è questo perchè sei sempre nel ContextPath -> /DSMT-Taboo
                 return;
-            } else {
+            }
+            else
+            {
                 sessionStorage.setItem("userLog", username);
-                //sessionStorage.setItem("gameId","");
                 location.href = "./loggedPlayerPage.html";
                 return;
             }
         },
         error: function (xhr)
         {
-            if(xhr.status === 400)
+            if(xhr.status === 400) // BAD REQUEST
+                alert("Login Error. Please, check the Username or Password");
+            else if(xhr.status === 502) // BAD GATEWAY
                 alert("Service temporary unavailable");
             else
             {
@@ -64,5 +67,4 @@ function onClickListenerBtnLogin()
             }
         }
     })
-
 }

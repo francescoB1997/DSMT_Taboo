@@ -44,20 +44,26 @@ public class LoginControllerImpl implements LoginControllerInterface
                 loginResponse = new ServerResponseDTO<>("LoginOK");
             responseHttp = HttpStatus.OK;
             session.setLogUser(usernameRequester);
-
             System.out.println("login: the user [" + usernameRequester + "] logged successfully");
-
         }
         catch (Exception e)
         {
             if(e instanceof UserNotExistsException)
+            {
                 System.out.println("login UserNotExistsException: " + e.getMessage());
+                responseHttp = HttpStatus.BAD_REQUEST;
+            }
             else if (e instanceof DatabaseNotReachableException)
+            {
                 System.out.println("login DatabaseNotReachableException: " + e.getMessage());
+                responseHttp = HttpStatus.BAD_GATEWAY;
+            }
             else
+            {
                 System.out.println("login Ex: " + e.getMessage());
+                responseHttp = HttpStatus.BAD_REQUEST;
+            }
             loginResponse = new ServerResponseDTO<>(e.getMessage());
-            responseHttp = HttpStatus.BAD_REQUEST;
         }
         return new ResponseEntity<>(loginResponse, responseHttp);
     }

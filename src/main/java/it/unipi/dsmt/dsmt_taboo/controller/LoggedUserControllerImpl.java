@@ -205,7 +205,7 @@ public class LoggedUserControllerImpl implements LoggedUserControllerInterface
             }
             responseHttp = HttpStatus.OK;
         } else {
-            System.out.println("\nLoggedUserController: addFriend request from a NonLogged user\n");
+            System.out.println("\ninviteFriends: request from a NonLogged user\n");
             responseHttp = HttpStatus.UNAUTHORIZED;
         }
         return new ResponseEntity<>(responseMessage, responseHttp);

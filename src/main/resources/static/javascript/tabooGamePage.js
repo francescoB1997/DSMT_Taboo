@@ -276,8 +276,8 @@ function onClickListenerBtnSendMsg()
         //alert("WARNING\nThe text-box is empty");
         return;
     }
+    document.getElementById("textChat").innerText += "\n" + genericMsg;
     const genericMsgLowerCase = genericMsg.toLowerCase();
-    document.getElementById("textChat").innerText += "\n" + genericMsgLowerCase;
 
     // Splittare genericMsg per spazio
     const genericMsgAsArray = genericMsgLowerCase.split(' ');

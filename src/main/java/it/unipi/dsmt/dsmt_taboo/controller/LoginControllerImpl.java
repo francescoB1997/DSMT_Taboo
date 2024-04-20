@@ -76,7 +76,7 @@ public class LoginControllerImpl implements LoginControllerInterface
         if(!session.isUserLogged(username))
         {
             logoutResponse = new ServerResponseDTO<>("Logout Failed");
-            responseHttp = HttpStatus.FORBIDDEN;
+            responseHttp = HttpStatus.UNAUTHORIZED;
         }
         else
         {

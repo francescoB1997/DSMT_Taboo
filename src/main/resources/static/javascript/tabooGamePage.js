@@ -203,10 +203,6 @@ function msgOnSocketRecevedListener (event)
                     timerInterval = setInterval(timerHandler, 1000);
                 },1000);
             }
-            else
-            {
-                alert("Non ha senso che tu sia qui");
-            }
             break;
         case "wakeUpGuesser":
             if(myRole === "Guesser")
@@ -219,8 +215,8 @@ function msgOnSocketRecevedListener (event)
         case "tabooCard":
             prompterData.tabooCard = objectFromErlang.msg;
             updateViewTabooCard();
-            if(myRole === "Prompter")
-                console.log("Ricevuta TabooCard: " + prompterData.tabooCard);
+            //if(myRole === "Prompter")
+            //    console.log("Ricevuta TabooCard: " + prompterData.tabooCard);
             break;
         case "checkWordResult":
             if (objectFromErlang.msg === true)
@@ -228,7 +224,7 @@ function msgOnSocketRecevedListener (event)
                 decScoreCounter();
                 updateViewScoreCounter();
                 prompterData.tabooCard = objectFromErlang.newTabooCard;
-                console.log("Ho fatto un errore. NUOVA CARTA: " + prompterData.tabooCard);
+                //console.log("Ho fatto un errore. NUOVA CARTA: " + prompterData.tabooCard);
                 updateViewTabooCard();
             }
             break;
@@ -236,8 +232,8 @@ function msgOnSocketRecevedListener (event)
             let divAreaGioco = document.getElementById("textChat");
             if(objectFromErlang.msg === "errorFromPrompter")
             {
-                divAreaGioco.innerText = "";
-                console.log("Il prompter ha sbagliato. Decremento ");
+                //divAreaGioco.innerText = "";
+                //console.log("Il prompter ha sbagliato. Decremento ");
                 decScoreCounter();
                 updateViewScoreCounter();
             }
@@ -268,7 +264,6 @@ function msgOnSocketRecevedListener (event)
                 }
             }
             break;
-
         default:
             break;
     }
@@ -276,13 +271,16 @@ function msgOnSocketRecevedListener (event)
 
 function onClickListenerBtnSendMsg()
 {
-    let genericMsg = document.getElementById("txtboxGenericMsg").value.toLowerCase();
+    let genericMsg = document.getElementById("txtboxGenericMsg").value;
     if(genericMsg === ""){
-        alert("WARNING\nThe text-box is empty");
+        //alert("WARNING\nThe text-box is empty");
         return;
     }
+    const genericMsgLowerCase = genericMsg.toLowerCase();
+    document.getElementById("textChat").innerText += "\n" + genericMsgLowerCase;
+
     // Splittare genericMsg per spazio
-    const genericMsgAsArray = genericMsg.split(' ');
+    const genericMsgAsArray = genericMsgLowerCase.split(' ');
     let actionGenericMsg =
         {
             action : "send_msg_to_friends",
@@ -382,6 +380,8 @@ function changeRoles()
     updateViewRole();
 
     document.getElementById("txtboxGenericMsg").value = "";
+    document.getElementById("textChat").innerText = "";
+
 }
 
 function addNewMatch()

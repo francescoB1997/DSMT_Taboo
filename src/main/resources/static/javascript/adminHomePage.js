@@ -45,9 +45,13 @@ function onClickListenerBtnLogout()
         },
         error: function (xhr)
         {
-            let serverResponse = JSON.parse(xhr.responseText);
-            alert(serverResponse.responseMessage);
-            location.href = "./";
+            if(xhr.status === 400)
+                alert("Service temporary unavailable");
+            else
+            {
+                alert("Unauthorized Request!");
+                location.href = "./";
+            }
         }
     });
 }

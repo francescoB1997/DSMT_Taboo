@@ -39,10 +39,15 @@ function ajaxGetMatchesList()
             else
                 alert("No matches in the List");
         },
-        error: function ()
+        error: function (xhr)
         {
-            alert("Unauthorized Request!");
-            location.href = "./"; // --> Percorso base del ContextPath, ossia la home -> index.html
+            if(xhr.status === 400)
+                alert("Service temporary unavailable");
+            else
+            {
+                alert("Unauthorized Request!");
+                location.href = "./";// --> Percorso base del ContextPath, ossia la home -> index.html
+            }
         }
     });
 }

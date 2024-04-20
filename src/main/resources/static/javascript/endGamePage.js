@@ -82,12 +82,15 @@ function ajaxGetMatchResult()
         },
         error: function (xhr)
         {
-            displayMatchResult(-2, null, null); // <-- Warning message
+            if(xhr.status === 400)
+                displayMatchResult(-2, null, null); // <-- Warning message
+            else
+            {
+                displayMatchResult(-3, null, null); // <-- Warning message
+                location.href = "./";
+            }
         }
     });
-
-
-
     sessionStorage.removeItem("matchResult");
 }
 
@@ -104,6 +107,9 @@ function displayMatchResult(resultMatch, scoreInviterTeam, scoreRivalTeam)
             break;
         case 0:
             divResult.innerText = "The Game Ended in a *** TIE ***";
+            break;
+        case -2:
+            divResult.innerText = "Error: Service temporary unavailable";
             break;
         default:
             divResult.innerText = "Are you sure you've played a Game?";

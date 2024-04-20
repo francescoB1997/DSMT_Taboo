@@ -47,10 +47,15 @@ function onClickListenerBtnSignup()
             alert("You're been successfully registered");
             location.href = "./";
         },
-        error: function(xhr)
+        error: function (xhr)
         {
-            let serverResponse = JSON.parse(xhr.responseText);
-            alert(serverResponse.responseMessage);
+            if(xhr.status === 400)
+                alert("Service temporary unavailable");
+            else
+            {
+                alert("Unauthorized Request!");
+                location.href = "./";
+            }
         }
     });
 }

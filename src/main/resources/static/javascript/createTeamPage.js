@@ -102,11 +102,16 @@ function ajaxGetFriendList()
             if(friendDTOList)
                 loadFriendsInTable(friendDTOList);
         },
-        error: function ()
+        error: function (xhr)
         {
-            alert("Unauthorized Request!");
-            sessionStorage.removeItem("userLog");
-            location.href = "./";
+            if(xhr.status === 400)
+                alert("Service temporary unavailable");
+            else
+            {
+                sessionStorage.removeItem("userLog");
+                alert("Unauthorized Request!");
+                location.href = "./";
+            }
         }
     });
 }

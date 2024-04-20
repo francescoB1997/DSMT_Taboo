@@ -96,7 +96,7 @@ function onClickListenerBtnInvite()
         },
         error: function ()
         {
-            alert("HTTP error");
+            alert("Unauthorized Request!");
             location.href = "./";
         }
     });
@@ -129,10 +129,16 @@ function ajaxGetFriendList()
             if(friendDTOList)
                 loadRivalFriendsInTable(friendDTOList);
         },
-        error: function ()
+        error: function (xhr)
         {
-            alert("Unauthorized Request!");
-            location.href = "./";
+            if(xhr.status === 400)
+                alert("Service temporary unavailable");
+            else
+            {
+                sessionStorage.removeItem("userLog");
+                alert("Unauthorized Request!");
+                location.href = "./";
+            }
         }
     });
 }

@@ -133,10 +133,15 @@ function ajaxGetFriendList()
             if(friendDTOList)
                 loadFriendsInTable(friendDTOList);
         },
-        error: function ()
+        error: function (xhr)
         {
-            alert("Unauthorized Request!");
-            location.href = "./";
+            if(xhr.status === 400)
+                alert("Service temporary unavailable");
+            else
+            {
+                alert("Unauthorized Request!");
+                location.href = "./";
+            }
         }
     });
 }
@@ -164,8 +169,8 @@ function onClickListenerBtnInvite()
             storeInvitation(true, gameId, true);
         },
         error: function () {
-            alert("HTTP error");
-            //location.href = "./";
+            alert("Unauthorized Request!");
+            location.href = "./";
         }
     });
     sessionStorage.removeItem("inviteFriendRequest");

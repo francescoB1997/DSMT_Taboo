@@ -425,8 +425,13 @@ function addNewMatch()
         },
         error: function (xhr)
         {
-            let responseMessage = xhr.responseText;
-            alert("Error: " + responseMessage);
+            if(xhr.status === 400)
+                alert("Service temporary unavailable");
+            else
+            {
+                alert("Unauthorized Request!");
+                location.href = "./";
+            }
         }
     });
 

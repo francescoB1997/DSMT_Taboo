@@ -94,8 +94,13 @@ function ajaxGetUserList()
         },
         error: function (xhr)
         {
-            alert("Service temporarily not available");
-            //location.href = "./";
+            if(xhr.status === 400)
+                alert("Service temporary unavailable");
+            else
+            {
+                alert("Unauthorized Request!");
+                location.href = "./";
+            }
         }
     });
 }
@@ -190,8 +195,13 @@ function onClickListenerBtnDeleteUser(button)
             },
             error: function (xhr)
             {
-                let responseMessage = xhr.responseText;
-                alert("Error: " + responseMessage);
+                if(xhr.status === 400)
+                    alert("Service temporary unavailable");
+                else
+                {
+                    alert("Unauthorized Request!");
+                    location.href = "./";
+                }
             }
         });
     }
@@ -230,10 +240,15 @@ function onClickBtnSearchUser(event)
                 alert("- NOT FOUND - : The user [" + usernameToSearch + "] was not found into db");
             }
         },
-        error: function (serverResponse)
+        error: function (xhr)
         {
-            alert("Unauthorized Request! You must be logged to navigate this page");
-            location.href = "./";
+            if(xhr.status === 400)
+                alert("Service temporary unavailable");
+            else
+            {
+                alert("Unauthorized Request!");
+                location.href = "./";
+            }
         }
     });
 }

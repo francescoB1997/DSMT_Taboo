@@ -39,7 +39,6 @@ public class MatchDAO extends BaseDAO
             preparedStatement.setString(5, match.getMatchId());
 
             int rowsAffected = preparedStatement.executeUpdate();
-
             if (rowsAffected > 0) {
                 System.out.println("***************************************** Tupla realmente inserita");
                 return true;
@@ -52,7 +51,7 @@ public class MatchDAO extends BaseDAO
         {
             if(ex.getClass() == DatabaseNotReachableException.class)
                 System.out.println("addNewMatch: DatabaseNotReachableException");
-            else if(ex.getClass() == SQLException.class)
+            else if(ex instanceof SQLException)
             {
                 SQLException e = (SQLException)ex;
 

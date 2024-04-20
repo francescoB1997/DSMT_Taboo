@@ -32,6 +32,7 @@ function checkLogin()
 }
 
 function ajaxGetMatchResult()
+// This function asks to the server the result of the just finished match (if the server yet know them!!!)
 {
     const match = JSON.parse(sessionStorage.getItem("match"));
     const myTeam = sessionStorage.getItem("myTeam");
@@ -39,7 +40,7 @@ function ajaxGetMatchResult()
     if(myTeam == null || match == null)
         return;
 
-    let matchResultRequest = {
+    let matchResultRequest = { // We exploited the already ResultMatchDTO to ask the server the match result
         matchId : match.matchId,
         usernameRequester: username,
         scoreInviterTeam : null,
@@ -54,8 +55,6 @@ function ajaxGetMatchResult()
         success: function (serverResponse)
         {
             const receivedMatchResult = serverResponse.responseMessage;
-            //alert("io sono di " + myTeam +  ": ScoreInv=" + receivedMatchResult.scoreInviterTeam + " | ScorRiv=" + receivedMatchResult.scoreRivalTeam);
-
             if(myTeam === "inviterTeam")
             {
                 if(receivedMatchResult.scoreInviterTeam > receivedMatchResult.scoreRivalTeam)
@@ -114,6 +113,5 @@ function displayMatchResult(resultMatch, scoreInviterTeam, scoreRivalTeam)
             divResult.innerText = "Are you sure you've played a Game?";
             return;
     };
-    //Inviter 0 - 0 Rival
     divResult.innerText += "\n\n Match Result:\n Team RED " + scoreInviterTeam + " - " + scoreRivalTeam + " Team BLUE\n";
 }

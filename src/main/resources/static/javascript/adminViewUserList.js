@@ -153,7 +153,7 @@ function createUserListInHtml(userDTOList)
 
 function emptyTable(table)
 {
-    while(table.childElementCount > 0)   // Delete all the old elemnt (if there are)
+    while(table.childElementCount > 0)   // Delete all the old element (if there are)
         table.removeChild(table.firstChild);
 }
 
@@ -252,6 +252,7 @@ function onClickBtnSearchUser(event)
 }
 
 function createTableSearchedUserInHtml(searchedUserList)
+// This function load inside the html, the result users from the search
 {
     let searchedUserTable = document.getElementById("searchedUserListTable");
     emptyTable(searchedUserTable);

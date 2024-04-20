@@ -43,13 +43,14 @@ function ajaxGetMatchesList()
             else
             {
                 alert("Unauthorized Request!");
-                location.href = "./";// --> Percorso base del ContextPath, ossia la home -> index.html
+                location.href = "./"; // This redirect must be to ./, because we're always in the Context Path
             }
         }
     });
 }
 
 function createMatchesListInHtml(matchesList)
+// This function load the match list in the table inside the html page
 {
     let matchesListTableBody = document.getElementById("matchesListTable");
     emptyTable(matchesListTableBody);

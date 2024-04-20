@@ -43,8 +43,7 @@ function onClickListenerBtnLogin()
             if(responseMsg === "LoginAdminOK")
             {
                 sessionStorage.setItem("userLog", username);
-                //sessionStorage.setItem("gameId","");
-                location.href = "./adminHomePage.html"; // Il Path corretto è questo perchè sei sempre nel ContextPath -> /DSMT-Taboo
+                location.href = "./adminHomePage.html"; // Rember that we're always in the Context Path
                 return;
             }
             else

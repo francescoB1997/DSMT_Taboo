@@ -5,7 +5,6 @@ let checkedCheckbox = [];
 
 $(document).ready(function ()
 {
-
     if(!checkLogin())
     {
         location.href = "./";
@@ -19,7 +18,7 @@ $(document).ready(function ()
         return;
     }
 
-    invite = JSON.parse(sessionStorage.getItem("invite"));
+    invite = JSON.parse(sessionStorage.getItem("invite")); // retrieve the invite info
     ajaxGetFriendList();
     loadInviterTeam();
     document.getElementById("btnInvite").onclick = function (e) { onClickListenerBtnInvite(); };
@@ -97,7 +96,7 @@ function onClickListenerBtnInvite()
 
 function storeInvitation(accepted, inviteId, invitedAsFriend)
 // This function store the info about the accepted invite, for the next page, because is that page that sent this
-// accept or refuse to the server, in order to implement the waiting
+// 'accept' or 'refuse' to the server, in order to implement the waiting
 {
     let inviteReply =
         {
@@ -201,6 +200,7 @@ function emptyTable(table)
 }
 
 function userAlreadyInTeam(username)
+// This function hide the Friend username ALREADY selected in the Team friend
 {
     for(const userInTeam of invite.yourTeam)
         if(username === userInTeam)
@@ -248,6 +248,7 @@ function loadInviterTeam()
 }
 
 function getRandomInt(min , max)
+// This function choose at random the Prompter position by your Team. This means that you selected the GUESSER role.
 {
     let randomInt = 0;
     while(randomInt === 0) {

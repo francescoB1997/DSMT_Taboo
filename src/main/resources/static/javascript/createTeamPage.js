@@ -115,6 +115,7 @@ function ajaxGetFriendList()
 }
 
 function onClickListenerBtnInvite()
+// This function read the actual selected friend and store those data to go on with the Rival selection as next phase
 {
     let inviteFriendRequest =
     {

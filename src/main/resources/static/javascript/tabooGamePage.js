@@ -24,11 +24,6 @@ $(document).ready(function ()
         return;
     }
 
-    /*
-    const match = JSON.parse(sessionStorage.getItem("match"));
-    console.log("| InviterTeam: " + match.inviterTeam + " | InviterTeamRole: " + match.rolesInviterTeam);
-    console.log("| RivalTeam: " + match.rivalTeam + " | InviterTeamRole: " + match.rolesRivalTeam);
-    */
     setInterval(keepAlive, 20000);
 
     if(myRole === "Guesser")
@@ -73,14 +68,14 @@ function checkLogin()
 {
     if(!username)
     {
-        alert("You're not logged");
+        alert("You're Not Logged");
         return false;
     }
     if( sessionStorage.getItem("match") === "" ||
         sessionStorage.getItem("match") === undefined ||
         sessionStorage.getItem("match") === null )
     {
-        alert("No match");
+        alert("No Match");
         return false;
     }
     return true;
@@ -89,7 +84,7 @@ function checkLogin()
 function handlerEnterKeyPress(event)
 {
     if (event.key === "Enter") {
-        event.preventDefault(); // Per evitare l'invio del modulo (se presente)
+        event.preventDefault(); //To avoid submission of the form (if any).
         onClickListenerBtnSendMsg();
     }
 }
@@ -128,7 +123,7 @@ function timerHandler()
         //console.log("StopCond: " + stopCondition + " | rolesInviterTeamLenght : " + match.rivalTeam.length);
         if (stopCondition === match.rivalTeam.length)
         {
-            //Stop The Game and insert match into MySQL DB
+            //Stop The Game and insert match into MySQL DB, made only by the prompter
             if(myRole === "Prompter")
                 addNewMatch();
             else
@@ -184,7 +179,7 @@ function sendInitMsg()
 
 function msgOnSocketRecevedListener (event)
 {
-    //alert("Ho ricevuto: " + event.data);
+    //alert("Server Sent me: " + event.data);
     objectFromErlang = JSON.parse(event.data);
     switch(objectFromErlang.action)
     {
@@ -192,11 +187,11 @@ function msgOnSocketRecevedListener (event)
             if(myRole === "Prompter")
             {
                 let assignTabooCardMsg = { action : "assignTabooCard" };
-                //console.log("Inviato taboocard, attendo 2 secondi e invio start...");
+                //console.log("Sent taboocard, wait 2 seconds and send start");
                 socket.send(JSON.stringify(assignTabooCardMsg));
 
                 setTimeout(function() {
-                   // console.log("start inviato");
+                   // console.log("start sent");
                     let startGameMsg = { action : "startGame"};
                     socket.send(JSON.stringify(startGameMsg));
                     clearInterval(timerInterval);
@@ -207,7 +202,7 @@ function msgOnSocketRecevedListener (event)
         case "wakeUpGuesser":
             if(myRole === "Guesser")
             {
-                //console.log("Sono un guesser, ed il gioco può partire");
+                //console.log("I am a Guesser, the game can start");
                 clearInterval(timerInterval);
                 timerInterval = setInterval(timerHandler, 1000);
             }
@@ -216,7 +211,7 @@ function msgOnSocketRecevedListener (event)
             prompterData.tabooCard = objectFromErlang.msg;
             updateViewTabooCard();
             //if(myRole === "Prompter")
-            //    console.log("Ricevuta TabooCard: " + prompterData.tabooCard);
+                //console.log("TabooCard Received: " + prompterData.tabooCard);
             break;
         case "checkWordResult":
             if (objectFromErlang.msg === true)
@@ -224,7 +219,7 @@ function msgOnSocketRecevedListener (event)
                 decScoreCounter();
                 updateViewScoreCounter();
                 prompterData.tabooCard = objectFromErlang.newTabooCard;
-                //console.log("Ho fatto un errore. NUOVA CARTA: " + prompterData.tabooCard);
+                //console.log("(Prompter) I got it Wrong. I'll receive a NEW CARD.: " + prompterData.tabooCard);
                 updateViewTabooCard();
             }
             break;
@@ -238,7 +233,7 @@ function msgOnSocketRecevedListener (event)
                 updateViewScoreCounter();
             }
             else
-            {   // ["mi", "chiamo", "come", "te"] --> dopo la join --> "mi chiamo come te"
+            {
                 divAreaGioco.innerText = divAreaGioco.innerText + '\n' + (objectFromErlang.msg.join(' '));
                 //console.log("Message from friend: " + objectFromErlang.msg);
             }
@@ -249,8 +244,8 @@ function msgOnSocketRecevedListener (event)
                 let divAreaGioco = document.getElementById("textChat");
                 score += (objectFromErlang.msg === true) ? 1 : 0;
                 updateViewScoreCounter();
-                divAreaGioco.innerText = divAreaGioco.innerText + '\n' + ((objectFromErlang.msg === true) ? "Indovinato" : "Sbagliato");
-                console.log("Il Prompter mi ha detto: " + ((objectFromErlang.msg === true) ? "Indovinato" : "Sbagliato"));
+                divAreaGioco.innerText = divAreaGioco.innerText + '\n' + ((objectFromErlang.msg === true) ? "*** Well Done! Guessed it ***" : "*** Wrong! Try to Guess Again ***");
+                //console.log("Prompter told me: " + ((objectFromErlang.msg === true) ? "*** Well Done! Guessed it ***" : "*** Wrong! Try to Guess Again ***"));
             }
             else
             {
@@ -259,11 +254,12 @@ function msgOnSocketRecevedListener (event)
                     score++;
                     updateViewScoreCounter();
                     prompterData.tabooCard = objectFromErlang.newTabooCard;
-                    console.log("Hanno indovinato. Ricevuta nuova Carta: " + prompterData.tabooCard);
+                    //console.log("Have Guessed. New Taboo-Card Received: " + prompterData.tabooCard);
                     updateViewTabooCard();
                 }
             }
             break;
+
         default:
             break;
     }
@@ -279,8 +275,7 @@ function onClickListenerBtnSendMsg()
     document.getElementById("textChat").innerText += "\n" + genericMsg;
     const genericMsgLowerCase = genericMsg.toLowerCase();
 
-    // Splittare genericMsg per spazio
-    const genericMsgAsArray = genericMsgLowerCase.split(' ');
+    const genericMsgAsArray = genericMsgLowerCase.split(' '); //genericMsg Split by space
     let actionGenericMsg =
         {
             action : "send_msg_to_friends",
@@ -295,14 +290,14 @@ function onClickListenerBtnGuess()
     let attemptedWord = document.getElementById("txtboxGenericMsg").value;
     if(attemptedWord === "")
     {
-        alert("WARNING\nThe text-box is empty");
+        alert("WARNING!\nThe text-box is empty");
         return;
     }
 
     if(attemptedWord.includes(" "))
     {
         document.getElementById("txtboxGenericMsg").value = "";
-        alert("WARNING\nYou can only send one word");
+        alert("WARNING\nYou Can Only Send 1 Word to Guess");
         return;
     }
 
@@ -318,7 +313,6 @@ function onClickListenerBtnGuess()
 function onClickListenerBtnPass()
 {
     if(prompterData.passCounter >= 3)
-        // sistemare il funzionamento del bottone
     {
         changeVisibilityBtn("pass-button",false);
         return;

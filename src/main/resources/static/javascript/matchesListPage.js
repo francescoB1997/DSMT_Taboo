@@ -15,7 +15,7 @@ function checkLogin()
 {
     if(!username)
     {
-        alert("You're not logged");
+        alert("You're Not Logged");
         return false;
     }
     return true;
@@ -34,12 +34,12 @@ function ajaxGetMatchesList()
             if(matchesList)
                 createMatchesListInHtml(matchesList);
             else
-                alert("matchesList vuota");
+                alert("Matches-List Empty");
         },
         error: function (xhr)
         {
             if(xhr.status === 400)
-                alert("Service temporary unavailable");
+                alert("Service Temporary Unavailable");
             else
             {
                 alert("Unauthorized Request!");

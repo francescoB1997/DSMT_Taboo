@@ -10,6 +10,7 @@ $(document).ready(function ()
         location.href = "./";
         return;
     }
+
     ajaxGetFriendList();
     document.getElementById("btnShowSearchUser").onclick = function (e) { onClickListenerBtnShowSearchFunctions(); };
     document.getElementById("btnSearchUser").onclick = function (e) { onClickBtnSearchUser(e); };
@@ -20,7 +21,7 @@ function checkLogin()
 {
     if(!username)
     {
-        alert("You're not logged");
+        alert("You're Not Logged");
         return false;
     }
     return true;
@@ -29,7 +30,7 @@ function checkLogin()
 function handlerEnterKeyPress(event)
 {
     if (event.key === "Enter") {
-        event.preventDefault(); // Per evitare l'invio del modulo (se presente)
+        event.preventDefault(); //To avoid submission of the form (if any).
         onClickBtnSearchUser(event);
     }
 }
@@ -75,9 +76,9 @@ function onClickListenerBtnShowSearchFunctions()
 
 function ajaxGetFriendList()
 {
-    //Fare una chiamata asincrona AJAX per ottenere la lista degli amici, ossia un JSON con una lista di nomi
-    // e per ognuno, ci vede essere l'info se è Online o meno.
-    // Per ogni amico, va creato a runTime un elemento HTML per mostrarlo.
+    //An asynchronous AJAX call to get the list of friends, a JSON with a list of names
+    // And for each one, there sees to be info if it is Online or not.
+    // For each friend, an HTML element must be created at runTime to show it.
 
     $.ajax({
         url: "./getFriendList",
@@ -92,12 +93,12 @@ function ajaxGetFriendList()
                 createFriendListInHtml(friendDTOList);
             }
             else
-                alert("friendList vuota");
+                alert("Friend-List Empty");
         },
         error: function (xhr)
         {
             if(xhr.status === 400)
-                alert("Service temporary unavailable");
+                alert("Service Temporary Unavailable");
             else
             {
                 alert("Unauthorized Request!");
@@ -157,14 +158,14 @@ function createFriendListInHtml(friendDTOList)
 
 function emptyTable(table)
 {
-    while(table.childElementCount > 0)   // Delete all the old elemnt (if there are)
+    while(table.childElementCount > 0)  //if present, delete the old elements
         table.removeChild(table.firstChild);
 }
 
 function onClickListenerBtnRemoveFriends(button)
 {
     const usernameToRemove = button.id.toString().split('&')[1];
-    if (confirm("Sicuro di voler rimuovere " + usernameToRemove + " dai tuoi amici?")) {
+    if (confirm("Are you sure you want to Remove " + usernameToRemove + " from your Friends?")) {
 
         let removeFriendRequest = {
             username : username,
@@ -224,7 +225,6 @@ function onClickBtnSearchUser(event)
         usernameToSearch : usernameToSearch
     };
 
-    //alert("userSearchRequestDTO: " + userSearchRequestDTO.requesterUsername + ", " + userSearchRequestDTO.usernameToSearch);
     $.ajax({
         url: "./searchUser",
         type: "POST",
@@ -237,7 +237,7 @@ function onClickBtnSearchUser(event)
             let searchedUserList = serverResponse.responseMessage;
             if (searchedUserList)
             {
-                //alert("- OK - : L'utente ricercato è presente nel Database");
+                //alert("- OK - : The searched user is present in the Database");
                 createTableSearchedUserInHtml(searchedUserList);
             }
             else {
@@ -247,7 +247,7 @@ function onClickBtnSearchUser(event)
         error: function (xhr)
         {
             if(xhr.status === 400)
-                alert("Service temporary unavailable");
+                alert("Service Temporary Unavailable");
             else
             {
                 alert("Unauthorized Request!");
@@ -333,10 +333,10 @@ function onClickListenerBtnAddFriends(button)
             switch (responseMessage)
             {
                 case 0:
-                    alert("Already friends");
+                    alert("You and this User are already Friends");
                     break;
                 case 1:
-                    alert("Friend added successfully");
+                    alert("Friend Successfully Added into your Friend-List ");
                     break;
                 default:
                     alert("Default: " + responseMessage);
@@ -346,7 +346,7 @@ function onClickListenerBtnAddFriends(button)
         error: function (xhr)
         {
             if(xhr.status === 400)
-                alert("Service temporary unavailable");
+                alert("Service Temporary Unavailable");
             else
             {
                 alert("Unauthorized Request!");

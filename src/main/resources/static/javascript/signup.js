@@ -13,21 +13,19 @@ function onClickListenerBtnSignup()
         return;
 
     let password = document.getElementById('txtboxPassword').value;
+
+       let passwordRegex = /^(?=.*\d)(?=.*[a-zA-Z])(?=.*[^a-zA-Z0-9])\S{8,}$/;
+       if (!passwordRegex.test(password)) {
+           alert("Password must be at least 8 characters long and include at least one number, one alphabet, and one symbol.");
+           return;
+       }
+
     let rePassword = document.getElementById('txtboxRePassword').value;
 
     if (password !== rePassword) {
-        alert("Passwords do not match. Please re-enter.");
+        alert("Passwords do not match. Please re-enter it and try again.");
         return;
     }
-
-    /*Commento da togliere solo alla fine
-    let passwordRegex = /^(?=.*\d)(?=.*[a-zA-Z])(?=.*[^a-zA-Z0-9])\S{8,}$/;
-
-    if (!passwordRegex.test(password)) {
-        alert("Password must be at least 8 characters long and include at least one number, one alphabet, and one symbol.");
-        return;
-    }
-    */
 
     let newUser = {
         username : username,
@@ -36,7 +34,6 @@ function onClickListenerBtnSignup()
         password : password
     };
 
-
     $.ajax({
         url : "./signup",
         data : JSON.stringify(newUser),
@@ -44,7 +41,7 @@ function onClickListenerBtnSignup()
         contentType: 'application/json',
         success: function ()
         {
-            alert("You're been successfully registered");
+            alert("You're Been Successfully Registered");
             location.href = "./";
         },
         error: function (xhr)
@@ -52,7 +49,7 @@ function onClickListenerBtnSignup()
             if(xhr.status === 400) // BAD REQUEST
                 alert("The username is already used.")
             else if(xhr.status === 502) // BAD GATEWAY
-                alert("Service temporary unavailable");
+                alert("Service Temporary Unavailable");
             else
             {
                 alert("Unauthorized Request!");

@@ -15,7 +15,7 @@ $(document).ready(function ()
         location.href = "./createTeamPage.html";
         return;
     }
-    //alert("CheckLogin & checkInvite: OK");
+
     ajaxGetFriendList();
     document.getElementById("btnInvite").onclick = function (e) { onClickListenerBtnInvite(); };
     document.getElementById("imgRefresh").onclick = function (e) { onClickImgRefresh(); };
@@ -25,7 +25,7 @@ function checkLogin()
 {
     if(!username)
     {
-        alert("You're not logged");
+        alert("You're Not Logged");
         return false;
     }
     return true;
@@ -35,7 +35,7 @@ function checkInviteInSessionStorage()
 {
     if(!sessionStorage.getItem("inviteFriendRequest"))
     {
-        alert("Create your team first!");
+        alert("Create Your Team First!");
         return false;
     }
     inviteFriendRequest = JSON.parse(sessionStorage.getItem("inviteFriendRequest"));
@@ -116,7 +116,7 @@ function userIsInTeam(username)
 
 function emptyTable(table)
 {
-    while(table.childElementCount > 0)   // Delete all the old elements (if there are)
+    while(table.childElementCount > 0)   //if present, delete the old elements
         table.removeChild(table.firstChild);
 }
 
@@ -136,7 +136,7 @@ function ajaxGetFriendList()
         error: function (xhr)
         {
             if(xhr.status === 400)
-                alert("Service temporary unavailable");
+                alert("Service Temporary Unavailable");
             else
             {
                 alert("Unauthorized Request!");
@@ -151,7 +151,7 @@ function onClickListenerBtnInvite()
     const radioSelected = document.querySelector('input[name="rival"]:checked');
     if(radioSelected === null || radioSelected === undefined)
     {
-        alert("You must choose your Rival");
+        alert("You Must Choose Your RIVAL");
         return;
     }
     const usernameRival = radioSelected.id.toString().split('&')[1];

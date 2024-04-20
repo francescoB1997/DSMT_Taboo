@@ -16,7 +16,7 @@ function checkLogin()
 {
     if(!username)
     {
-        alert("You're not logged");
+        alert("You're Not Logged");
         return false;
     }
     return true;
@@ -27,7 +27,7 @@ function ajaxSendReplyInvitation()
     const inviteReplyJSON = sessionStorage.getItem("inviteReply");
     if(!inviteReplyJSON)
     {
-        alert("No invite to wait");
+        alert("No Invitation To Wait");
         location.href = "./createTeamPage.html";
         return;
     }
@@ -40,16 +40,15 @@ function ajaxSendReplyInvitation()
         success: function (serverResponse)
         {
             if(serverResponse.responseMessage != undefined) // If NOT_Undefined ==> All the users have accepted the invite
-            {                                               // and the serverResponse cointaind all MATCH_INFO
-                //alert("Tutti hanno accettato");
+            {                                               // and the serverResponse contained all MATCH_INFO
+                //All players have accepted the invitation
                 sessionStorage.setItem("match", JSON.stringify(serverResponse.responseMessage));
                 sessionStorage.removeItem("invite");
-                location.href = "./tabooGamePage.html";
-                // redirect alla pagina di gioco
+                location.href = "./tabooGamePage.html"; //redirect to the game page
             }
             else
             {
-                alert("Someone has rejected the invite");
+                alert("Someone Has Rejected The Invitation");
                 sessionStorage.removeItem("myRole");
                 sessionStorage.removeItem("inviteReply");
                 sessionStorage.removeItem("invite");

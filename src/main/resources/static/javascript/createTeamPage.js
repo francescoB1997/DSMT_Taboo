@@ -129,11 +129,11 @@ function onClickListenerBtnInvite()
     };
 
     let checkboxes = document.querySelectorAll("input[type='checkbox']:checked");
-    //if(checkboxes.length !== 2)
-    //{
-    //alert("You must choose 2 friends");
-    //return;
-    // }
+    if(checkboxes.length !== 1)
+    {
+        alert("You must choose a friend");
+        return;
+    }
     inviteFriendRequest.yourTeam.push(username); // Push my username first
     for (let i = 0 ; i < checkboxes.length; i++)
         inviteFriendRequest.yourTeam.push(checkboxes[i].id.toString().split('&')[1]);

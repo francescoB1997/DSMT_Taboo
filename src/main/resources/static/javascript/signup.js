@@ -49,9 +49,9 @@ function onClickListenerBtnSignup()
         },
         error: function (xhr)
         {
-            if(xhr.status === 400)
+            if(xhr.status === 400) // BAD REQUEST
                 alert("The username is already used.")
-            else if(xhr.status === 502)
+            else if(xhr.status === 502) // BAD GATEWAY
                 alert("Service temporary unavailable");
             else
             {

@@ -14,8 +14,8 @@ $(document).ready(function ()
 
     if(!sessionStorage.getItem("invite"))
     {
-        alert("invite object non è in SessionStorage -> Non sei stato invitato ma vuoi fare il furbo!");
-        location.href = "./";
+        alert("You must first be invited to access here");
+        location.href = "./loggedPlayerPage.html";
         return;
     }
 

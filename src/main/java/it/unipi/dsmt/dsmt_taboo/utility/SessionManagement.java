@@ -5,10 +5,19 @@ import java.util.ArrayList;
 
 @Component
 public class SessionManagement
-    // This represents the Singleton Object to handle the logged users
 {
-    private static SessionManagement session = null;
+    /**
+     * This class represents a session management utility for tracking logged-in users.
+     * It is annotated with @Component to indicate that it is a Spring component.
+     * It includes a static method getInstance() to retrieve the singleton instance of the SessionManagement class.
+     * The class maintains an ArrayList of usernames representing users currently logged in.
+     * Methods are provided to set a user as logged in, check if a user is logged in, and log out a user.
+     * The setLogUser method adds a username to the list of logged-in users.
+     * The isUserLogged method checks if a given username is present in the list of logged-in users.
+     * The logoutUser method removes a user from the list of logged-in users upon logout.
+     */
 
+    private static SessionManagement session = null;
     private ArrayList<String> userLogged = new ArrayList<>();
 
     private SessionManagement() {}

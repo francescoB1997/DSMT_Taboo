@@ -3,6 +3,7 @@
 
 
 login (DecodedJson, State = {EmptyUser, EmptyRole, EmptyPrompterName, EmptyFriends, GenericMessage, EmptyTabooCard}) ->
+% This function creates an ErlangProcess for the relative Taboo-Player
     Username = maps:get(<<"username">>, DecodedJson),
     PidPlayer = global:whereis_name(Username),
     case PidPlayer of
@@ -30,13 +31,13 @@ login (DecodedJson, State = {EmptyUser, EmptyRole, EmptyPrompterName, EmptyFrien
     { {text, JsonResponse} , {Username, Role, PrompterName, FriendList, GenericMessage , EmptyTabooCard} }.
 
 
-%% when you are PROMPTER
 send_msg_to_friends( DecodedJson, State = {Username, Role, PrompterName, FriendList, GenericMessage, TabooCard} ) when Role == <<"Prompter">> ->
+% This function it's used only by the Prompter to send a message. So it must be checked if the Prompter breaks the Taboo-Rules
     MessageToFriend = maps:get(<<"msg">>, DecodedJson),
     %io:format("The "send" sent da ~p, genericMess =~p~n", [Username, MessageToFriend]),
     Result = checkTabooWords(MessageToFriend, TabooCard),
     if
-        Result == [[],[],[],[],[],[]] ->
+        Result == [[],[],[],[],[],[]] -> % If there are no error...
             [ send_msg(msgFromFriend, MessageToFriend, Friend) || Friend <- FriendList ], % Foreach equivalent
             io:format("Check Work: | OK |~n"),
             Error = false,
@@ -52,16 +53,16 @@ send_msg_to_friends( DecodedJson, State = {Username, Role, PrompterName, FriendL
     { {text, JsonResponse} , UpdateState};
 
 
-%% when you are GUESSER
 send_msg_to_friends( DecodedJson, State = {Username, Role, PrompterName, FriendList, GenericMessage, TabooCard} ) when Role == <<"Guesser">> ->
+% This function broadcast the message to all Friend in the FriendList
     MessageToFriend = maps:get(<<"msg">>, DecodedJson),
     [ send_msg(msgFromFriend, MessageToFriend, Friend) || Friend <- FriendList ], % Foreach equivalent
     JsonResponse = jsx:encode([{<<"action">>, ignore}]),
     { {text, JsonResponse} , State}.
 
 
-% Only when you are GUESSER
 attemptGuessWord(DecodedJson, State = {Username, Role, PrompterName, FriendList, GenericMessage, TabooCard}) when Role == <<"Guesser">> ->
+% This function checks if the Guesser guesses the Word
     AttemptedWord = maps:get(<<"word">>, DecodedJson),
     io:format("ATTEMPT GUESS: sender=| ~p |, word=| ~p | , myPrompter=| ~p |~n", [Username, AttemptedWord, PrompterName]),
     MyPrompterPID = global:whereis_name(PrompterName),
@@ -71,28 +72,30 @@ attemptGuessWord(DecodedJson, State = {Username, Role, PrompterName, FriendList,
                 ResultAttempt = waitResult(MyPrompterPID, AttemptedWord);
             false ->
                 ResultAttempt = false,
-                io:format("ATTEMPT GUESS: unknown PID Promter from | ~p |~n", [Username])
+                io:format("ATTEMPT GUESS: unknown PID Prompter from | ~p |~n", [Username])
     end,
     %io:format("ATTEMPT_GUESS: Sending JSON with ~p~n", [ResultAttempt]),
     JsonResponse = jsx:encode([{<<"action">>, attemptGuessWord}, {<<"msg">>, ResultAttempt}]),
     { {text, JsonResponse} , {Username, Role, PrompterName, FriendList, GenericMessage, TabooCard}}.
 
 
-% Only when you are PROMPTER
+
 assignTabooCard(State = {Username, Role, PrompterName, FriendList, GenericMessage, OldTabooCard} ) when Role == <<"Prompter">> ->
+% This function can be used ONLY by the prompter to ASK a Taboo-Card
     TabooCard = getRandomTabooCard(),
     %io:format("I am ~p, assignTabooCard: Role=~p , NewTaboo = ~p~n", [Username, Role, TabooCard]),
     JsonResponse = jsx:encode([{<<"action">>, tabooCard}, {<<"msg">>, TabooCard}]),
     { { text, JsonResponse } , {Username, Role, PrompterName, FriendList, GenericMessage, TabooCard} }.
 
 
-% Only when you are PROMPTER
 wakeUpAllGuessers( State = {Username, Role, PrompterName, FriendList, GenericMessage, OldTabooCard} ) when Role == <<"Prompter">> ->
+% This function is used ONLY by the prompter to advice all the waiting guessers that the match can start
     [ send_start_msg( Friend ) || Friend <- FriendList ],
     State.
 
 
 send_start_msg(FriendName) ->
+% Utility Function
     PidFriend = global:whereis_name(FriendName),
     case(is_pid(PidFriend)) of
         true ->
@@ -106,6 +109,7 @@ send_start_msg(FriendName) ->
 
 
 send_msg(Atom, Msg, Friend) ->
+% Utility Function
     %io:format("send_msg(~p, ~p) --> ", [Msg, Friend]),
     PidFriend = global:whereis_name(Friend),
     case(is_pid(PidFriend)) of
@@ -126,6 +130,8 @@ send_result_checkWord([Friend | OtherFriends], Result) ->
 
 
 checkTabooWords(WordList , TabooCard) ->
+% This function is responsible to verify if the attemptGuessWord is the right one.
+% We exploited the List Comprehension to create a forEach loop. See below
     %io:format("      checkTabooWords of ~p, ~p~n", [WordList, TabooCard]),
     Result = [ [ Word || Word <- WordList , Word == TabooCardWord] || TabooCardWord <- TabooCard],
     Result.
@@ -138,11 +144,11 @@ waitResult(MyPrompterPID, AttemptedWord) ->
             io:format("ATTEMPT GUESS: received result | ~p |~n", [Result]),
             Result;
         _ ->
-            io:format("****************************** UNKNOWN CHECKWORD MESSAGE RECEIVED~n"),
+            io:format("ALERT: UNKNOWN CHECKWORD MESSAGE RECEIVED~n"),
             no
     after
         5000 ->
-            io:format("****************************** TIMEOUT RECEIVE RESULT CHECKWORD for | ~p |~n", [AttemptedWord]),
+            io:format("ALERT: TIMEOUT RECEIVE RESULT CHECKWORD for | ~p |~n", [AttemptedWord]),
             false
     end.
 

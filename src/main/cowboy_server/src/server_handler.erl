@@ -34,7 +34,7 @@ websocket_handle(Frame = {text, JsonMsg}, State = {Username, Role, PrompterName,
 	{reply, [Response], UpdatedState}.
 
     websocket_info( { start }, State = {Username, Role, PrompterName, FriendList, GenericMessage, TabooCard}) ->
-        %io:format("Eebsocket_info invoked by ~p~n", [Username]),
+        %io:format("socket_info invoked by ~p~n", [Username]),
         JsonMessage = jsx:encode([{<<"action">>, wakeUpGuesser}]),
         {[{text, JsonMessage}], State};
 
@@ -43,6 +43,7 @@ websocket_handle(Frame = {text, JsonMsg}, State = {Username, Role, PrompterName,
     	{[{text, JsonMessage}], State};
 
     %% To figure out whether the word used for the "attempt" guess is correct, we took advantage of Pattern Matching in the function signature
+    %% NOTE THAT 'AttemptedWord' is both in the received message and as first word in the tabooCard array
     websocket_info( {attemptGuessWord, AttemptedWord},
                     State = {Username, Role, PrompterName, FriendList, GenericMessage, [AttemptedWord, TabooWord1, TabooWord2, TabooWord3, TabooWord4, TabooWord5]} ) ->
         Result = true,

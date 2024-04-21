@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 public interface LoginControllerInterface
 {
     public ResponseEntity<ServerResponseDTO<String>> loginRequest(LoginRequestDTO loginRequest);
-
     public ResponseEntity<ServerResponseDTO<String>> logoutRequest(String logoutRequest);
     public ResponseEntity<ServerResponseDTO<String>> signUp(@RequestBody UserDTO UserSignUp);
 }

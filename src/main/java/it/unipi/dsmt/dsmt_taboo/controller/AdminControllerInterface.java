@@ -9,13 +9,8 @@ import java.util.Map;
 
 public interface AdminControllerInterface
 {
-    // delete user
     public ResponseEntity<ServerResponseDTO<Integer>> deleteUser(@RequestBody AdminRequestDTO userToDeleteRequest);
-
-    // get all signed user
     public ResponseEntity<ServerResponseDTO<List<UserDTO>>> getAllSignedUsers(@RequestBody AdminRequestDTO getAllUserRequest);
-
-    // search all matches
     public ResponseEntity<ServerResponseDTO<List<MatchDTO>>> getAllMatches(@RequestBody AdminRequestDTO getAllMatchesRequest);
 
 }

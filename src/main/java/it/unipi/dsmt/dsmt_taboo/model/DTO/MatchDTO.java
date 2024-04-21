@@ -6,8 +6,17 @@ import java.util.ArrayList;
 
 public class MatchDTO
 {
+    /**
+     * This class represents a Data Transfer Object (DTO) used for encapsulating match information in the system.
+     * It includes fields to store the match ID, the teams involved in the match (inviter and rival), their
+     * corresponding roles, and the match result. The class provides constructors to initialize the match with
+     * or without role information and methods to retrieve and set the match ID, teams, roles, and match scores.
+     * Additionally, it provides a method to check if the match information is complete, i.e., if both inviter
+     * and rival team scores are available.
+     */
+
     private String matchId;
-    private ArrayList<String> inviterTeam; // THis is the initiator of the creation team
+    private ArrayList<String> inviterTeam; // The initiator of the creation team
     private ArrayList<String> rolesInviterTeam;
     private ArrayList<String> rivalTeam;
     private ArrayList<String> rolesRivalTeam;
@@ -34,8 +43,6 @@ public class MatchDTO
         this.rivalTeam = rivalTeam;
         this.rolesRivalTeam = rolesRivalTeam;
         this.pendingMatchResult = new PendingMatchResult();
-        //this.scoreInviterTeam = null; // ELIMINARE ?
-        //this.scoreRivalTeam = null; // ELIMINARE ?
     }
 
     public String getMatchId() { return this.matchId; }
@@ -50,16 +57,16 @@ public class MatchDTO
 
     public void setRivalTeam(ArrayList<String> rivalTeam) { this.rivalTeam = rivalTeam; }
 
-    public Integer getScoreInviterTeam() { return this.pendingMatchResult.getScoreInviterTeam(); } // Vediamo se posso realizzare un semaforo per la lettura del punteggio. Se null => ASPETTA
+    public Integer getScoreInviterTeam() { return this.pendingMatchResult.getScoreInviterTeam(); }
 
-    public Integer getScoreRivalTeam() { return this.pendingMatchResult.getScoreRivalTeam(); } // Vediamo se posso realizzare un semaforo per la lettura del punteggio. Se null => ASPETTA
+    public Integer getScoreRivalTeam() { return this.pendingMatchResult.getScoreRivalTeam(); }
 
 
-    public void setScoreInviterTeam(Integer scoreInviterTeam) // ATTENZIONE: la funzione del PendingMatch può bloccarti
+    public void setScoreInviterTeam(Integer scoreInviterTeam) //Pay attention: the PendingMatch function can block you
     {
         this.pendingMatchResult.setScoreInviterTeam(scoreInviterTeam);
     }
-    public void setScoreRivalTeam(Integer scoreRivalTeam)// ATTENZIONE: la funzione del PendingMatch può bloccarti
+    public void setScoreRivalTeam(Integer scoreRivalTeam) //Pay attention: the PendingMatch function can block you
     {
         this.pendingMatchResult.setScoreRivalTeam( scoreRivalTeam);
     }

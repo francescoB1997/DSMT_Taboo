@@ -1,7 +1,7 @@
 -module(server_handler).
 -export([init/2, websocket_handle/2, websocket_info/2]).
 
-    %% Formato dello Stato del Server:  {User, Role, PrompterName, FriendList, GenericMessage, TabooCard}
+    %% Server Status Format:  {User, Role, PrompterName, FriendList, GenericMessage, TabooCard}
 init (Req, State) -> { cowboy_websocket, Req, { "", "", "", [], [] , [] } }.
 
 websocket_handle(Frame = {text, JsonMsg}, State = {Username, Role, PrompterName, FriendList, GenericMessage, TabooCard}) ->
@@ -34,7 +34,7 @@ websocket_handle(Frame = {text, JsonMsg}, State = {Username, Role, PrompterName,
 	{reply, [Response], UpdatedState}.
 
     websocket_info( { start }, State = {Username, Role, PrompterName, FriendList, GenericMessage, TabooCard}) ->
-        %io:format("Invocata websocket_info da parte di ~p~n", [Username]),
+        %io:format("Eebsocket_info invoked by ~p~n", [Username]),
         JsonMessage = jsx:encode([{<<"action">>, wakeUpGuesser}]),
         {[{text, JsonMessage}], State};
 
@@ -42,7 +42,7 @@ websocket_handle(Frame = {text, JsonMsg}, State = {Username, Role, PrompterName,
     	JsonMessage = jsx:encode([{<<"action">>, msgFromFriend}, {<<"msg">>, MsgFromFriend}]),
     	{[{text, JsonMessage}], State};
 
-    %% ATTENZIONE: per capire se la parola "tentata" è esatta, abbiamo sfruttato il patterMatching nella firma della funzione
+    %% To figure out whether the word used for the "attempt" guess is correct, we took advantage of Pattern Matching in the function signature
     websocket_info( {attemptGuessWord, AttemptedWord},
                     State = {Username, Role, PrompterName, FriendList, GenericMessage, [AttemptedWord, TabooWord1, TabooWord2, TabooWord3, TabooWord4, TabooWord5]} ) ->
         Result = true,

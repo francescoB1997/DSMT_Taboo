@@ -18,10 +18,10 @@ login (DecodedJson, State = {EmptyUser, EmptyRole, EmptyPrompterName, EmptyFrien
     io:format("LOGIN INFO: MyPID=~p i'm=~p Promptername=~p Role=~p FriendList=~p EmptyTabooCard=~p~n", [self(), Username, PrompterName, Role, FriendList, EmptyTabooCard]),
     if
         Role == <<"Guesser">> ->
-            %io:format("Sono ~p, mi addormento ~n", [Username]),
+            %io:format("I am ~p, and I'm going to sleep ~n", [Username]),
             receive
                 { start } ->
-                    %io:format("Sono ~p, SVEGLIATO -> ricevuto start ~n", [Username]),
+                    %io:format("I am ~p, WOKE UP -> received start ~n", [Username]),
                     JsonResponse = jsx:encode([{<<"action">>, wakeUpGuesser}])
             end;
         true ->
@@ -33,7 +33,7 @@ login (DecodedJson, State = {EmptyUser, EmptyRole, EmptyPrompterName, EmptyFrien
 %% when you are PROMPTER
 send_msg_to_friends( DecodedJson, State = {Username, Role, PrompterName, FriendList, GenericMessage, TabooCard} ) when Role == <<"Prompter">> ->
     MessageToFriend = maps:get(<<"msg">>, DecodedJson),
-    %io:format("send inviata da ~p, genericMess =~p~n", [Username, MessageToFriend]),
+    %io:format("The "send" sent da ~p, genericMess =~p~n", [Username, MessageToFriend]),
     Result = checkTabooWords(MessageToFriend, TabooCard),
     if
         Result == [[],[],[],[],[],[]] ->
@@ -73,7 +73,7 @@ attemptGuessWord(DecodedJson, State = {Username, Role, PrompterName, FriendList,
                 ResultAttempt = false,
                 io:format("ATTEMPT GUESS: unknown PID Promter from | ~p |~n", [Username])
     end,
-    %io:format("ATTEMPT_GUESS: invio JSON con ~p~n", [ResultAttempt]),
+    %io:format("ATTEMPT_GUESS: Sending JSON with ~p~n", [ResultAttempt]),
     JsonResponse = jsx:encode([{<<"action">>, attemptGuessWord}, {<<"msg">>, ResultAttempt}]),
     { {text, JsonResponse} , {Username, Role, PrompterName, FriendList, GenericMessage, TabooCard}}.
 
@@ -81,7 +81,7 @@ attemptGuessWord(DecodedJson, State = {Username, Role, PrompterName, FriendList,
 % Only when you are PROMPTER
 assignTabooCard(State = {Username, Role, PrompterName, FriendList, GenericMessage, OldTabooCard} ) when Role == <<"Prompter">> ->
     TabooCard = getRandomTabooCard(),
-    %io:format("Sono ~p, assignTabooCard: Role=~p , NewTaboo = ~p~n", [Username, Role, TabooCard]),
+    %io:format("I am ~p, assignTabooCard: Role=~p , NewTaboo = ~p~n", [Username, Role, TabooCard]),
     JsonResponse = jsx:encode([{<<"action">>, tabooCard}, {<<"msg">>, TabooCard}]),
     { { text, JsonResponse } , {Username, Role, PrompterName, FriendList, GenericMessage, TabooCard} }.
 
@@ -111,10 +111,10 @@ send_msg(Atom, Msg, Friend) ->
     case(is_pid(PidFriend)) of
         true ->
             PidFriend ! {Atom, Msg},
-            %io:format("Invio send_msg ok a ~p, il suo PID e' ~p~n", [Friend, PidFriend]),
+            %io:format("The sending of "send_msg" ok to ~p, its PID is ~p~n", [Friend, PidFriend]),
             send_ok;
         false ->
-            %io:format("Invio send_msg FALLITO per ~p~n", [Friend]),
+            %io:format("The sending of "send_msg" FAILED for ~p~n", [Friend]),
             send_no
     end.
 
@@ -125,9 +125,8 @@ send_result_checkWord([Friend | OtherFriends], Result) ->
     send_result_checkWord(OtherFriends, Result).
 
 
-% [si, usa, per, bere] , [bicchiere, bibita, bere, mano, sete, acqua] -----------------------> [[],[],[],[bere],[],[]]
 checkTabooWords(WordList , TabooCard) ->
-    %io:format("      checkTabooWords di ~p, ~p~n", [WordList, TabooCard]),
+    %io:format("      checkTabooWords of ~p, ~p~n", [WordList, TabooCard]),
     Result = [ [ Word || Word <- WordList , Word == TabooCardWord] || TabooCardWord <- TabooCard],
     Result.
 

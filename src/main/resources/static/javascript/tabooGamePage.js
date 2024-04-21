@@ -196,7 +196,7 @@ function msgOnSocketRecevedListener (event)
                     socket.send(JSON.stringify(startGameMsg));
                     clearInterval(timerInterval);
                     timerInterval = setInterval(timerHandler, 1000);
-                },1000);
+                },2000);
             }
             break;
         case "wakeUpGuesser":

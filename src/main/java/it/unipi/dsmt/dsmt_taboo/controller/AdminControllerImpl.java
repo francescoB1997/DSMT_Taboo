@@ -17,8 +17,13 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.ArrayList;
 import java.util.List;
 
+    // +--------------------------------------------------------------------------------------------+
+    // |       The endpoints defined in this class can be used ONLY by System Administrator         |
+    // +--------------------------------------------------------------------------------------------+
+
 @RestController
 public class AdminControllerImpl implements AdminControllerInterface
+// This endpoint it's used to delete(ban) users.
 {
     @PostMapping("/deleteUser")
     @Override
@@ -60,20 +65,19 @@ public class AdminControllerImpl implements AdminControllerInterface
             userToDeleteResponse = new ServerResponseDTO<>(null);
             responseHttp = HttpStatus.UNAUTHORIZED;
         }
-
         return new ResponseEntity<>(userToDeleteResponse, responseHttp);
     }
 
     @PostMapping("/getUsers")
     @Override
     public ResponseEntity<ServerResponseDTO<List<UserDTO>>>
-    getAllSignedUsers(@RequestBody AdminRequestDTO getUserRequest)
+        getAllSignedUsers(@RequestBody AdminRequestDTO getUserRequest)
+    // This endpoint it's used to get the user list that matches with the pattern specified by the administrator
     {
         System.out.println("getUsers: request from [" + getUserRequest.getUsername() + "]");
         HttpStatus responseHttp;
         ServerResponseDTO<List<UserDTO>> getUserResponse = null;
         boolean checkAdminLogin = SessionManagement.getInstance().isUserLogged(Constant.usernameAdmin);
-
         if(checkAdminLogin)
         {
             UserDAO userDAO = new UserDAO();
@@ -114,8 +118,10 @@ public class AdminControllerImpl implements AdminControllerInterface
 
     @PostMapping("/getAllMatches")
     @Override
-    public ResponseEntity<ServerResponseDTO<List<MatchDTO>>> getAllMatches(@RequestBody AdminRequestDTO getAllMatchesRequest) {
-
+    public ResponseEntity<ServerResponseDTO<List<MatchDTO>>>
+        getAllMatches(@RequestBody AdminRequestDTO getAllMatchesRequest)
+    // This endpoint returns the list of all played matches
+    {
         System.out.println("getAllMatches: request from [" + getAllMatchesRequest.getUsername() + "]");
         HttpStatus responseHttp;
         ServerResponseDTO<List<MatchDTO>> getAllMatchesResponse = null;
@@ -138,7 +144,6 @@ public class AdminControllerImpl implements AdminControllerInterface
             responseHttp = HttpStatus.UNAUTHORIZED;
             System.out.println("AdminController: getAllMatches UNAUTHORIZED");
         }
-
         return new ResponseEntity<>(getAllMatchesResponse, responseHttp);
     }
 }

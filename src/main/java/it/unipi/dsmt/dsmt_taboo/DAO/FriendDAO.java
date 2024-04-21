@@ -106,7 +106,7 @@ public class FriendDAO extends BaseDAO
     {
         String addFriendQuery = "INSERT INTO " + DB_NAME + ".friendship (Username1, Username2) VALUES (?, ?)";
 
-        if(!checkIfUserExists(usernameToAdd))
+        if(! checkIfUserExists(usernameToAdd))
             return -1;
 
         if(isAlreadyFriend(usernameToAdd))

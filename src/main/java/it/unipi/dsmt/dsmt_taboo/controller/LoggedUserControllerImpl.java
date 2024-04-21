@@ -15,14 +15,19 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
+// +--------------------------------------------------------------------------------------------+
+// |                The endpoints defined in this class handle all the action                   |
+// |                performed by a Logged User.                                                 |
+// +--------------------------------------------------------------------------------------------+
+
 @RestController
 public class LoggedUserControllerImpl implements LoggedUserControllerInterface
-    // This class handle all the action performed by a Logged User
 {
     @PostMapping("/getFriendList")
     @Override
     public ResponseEntity<ServerResponseDTO<List<FriendDTO>>> viewFriendList(@RequestBody String username)
-    // The server response is a JSON message that contains a list of FriendDTO
+    // This endpoint is used to retrieve the friend list (online and offline).
+    // The server response will be a JSON message that contains a list of FriendDTO
     {
         System.out.println("getFriendList: request from [" + username + "]");
         ServerResponseDTO<List<FriendDTO>> getFriendListResponse;
@@ -45,8 +50,9 @@ public class LoggedUserControllerImpl implements LoggedUserControllerInterface
     @PostMapping("/searchUser")
     @Override
     public ResponseEntity<ServerResponseDTO<List<UserDTO>>>
-    searchUser(@RequestBody UserSearchRequestDTO userSearchRequestDTO)
-    // The server response is a JSON message that contains the list of user, checking before that the requesterUser is 'OK'.
+        searchUser(@RequestBody UserSearchRequestDTO userSearchRequestDTO)
+    // This endpoint permits to search all the users (not only friends) that matches the username inside the request.
+    // The server response will be a JSON message that contains the list of user.
     {
         System.out.println("\nsearchUser: request from " +
                 "[" + userSearchRequestDTO.getRequesterUsername() + "] -> " +
@@ -82,18 +88,19 @@ public class LoggedUserControllerImpl implements LoggedUserControllerInterface
         }
         else
         {
-            System.out.println("\nsearchUser: SearchUser request from a NonLogged user\n");
+            System.out.println("\nsearchUser: request from a NonLogged user\n");
             userListResponse = new ServerResponseDTO<>(null);
             responseHttp = HttpStatus.UNAUTHORIZED;
         }
-
         return new ResponseEntity<>(userListResponse, responseHttp);
     }
 
     @PostMapping("/removeFriend")
     @Override
     public ResponseEntity<ServerResponseDTO<Integer>>
-    removeFriend(@RequestBody FriendshipRequestDTO requesterUsername) {
+        removeFriend(@RequestBody FriendshipRequestDTO requesterUsername)
+    // This endpoint allows to remove a friend by its friend list.
+    {
         System.out.println("\nremoveFriend: Request from " +
                 "[" + requesterUsername.getUsername() + "] -> " +
                 "Removing [" + requesterUsername.getUsernameFriend() + "]" + "\n");
@@ -111,17 +118,17 @@ public class LoggedUserControllerImpl implements LoggedUserControllerInterface
                     getUsernameFriend());
             if (removeOpStatus)
             {
-                /*System.out.println("\nremoveFriend: The user "
+                /* System.out.println("\nremoveFriend: The user "
                         + requesterUsername.getUsernameFriend() +
-                        " has been successfully removed\n");*/
+                        " has been successfully removed\n"); */
                 removeFriendResponse = new ServerResponseDTO<>(requestStatus);
                 responseHttp = HttpStatus.OK;
 
             }
             else
-            {/*
-                System.out.println("\nremoveFriend: Error occurred during remove operation." +
-                        requesterUsername.getUsernameFriend());*/
+            {
+                /* System.out.println("\nremoveFriend: Error occurred during remove operation." +
+                        requesterUsername.getUsernameFriend()); */
                 requestStatus++;
                 removeFriendResponse = new ServerResponseDTO<>(requestStatus);
                 responseHttp = HttpStatus.BAD_REQUEST;
@@ -140,6 +147,7 @@ public class LoggedUserControllerImpl implements LoggedUserControllerInterface
     @PostMapping("/addFriend")
     @Override
     public ResponseEntity<ServerResponseDTO<Integer>> addFriend(@RequestBody FriendshipRequestDTO addFriendRequest)
+    // This endpoint it's used to add a user as new friend.
     {
         ServerResponseDTO<Integer> addFriendResponse = null;
         HttpStatus responseHttp;
@@ -164,21 +172,32 @@ public class LoggedUserControllerImpl implements LoggedUserControllerInterface
         return new ResponseEntity<>(addFriendResponse, responseHttp);
     }
 
+    // The structure 'invites' stores the invitation requests
     Vector<InviteFriends> invites = new Vector<>();
+
+    // This pendingMatchMap it's used to create a waitingRoom for the users that accepted the invitation, and they
+    // are waiting the acceptation of the other participants.
+    // BE ATTENTION, when all the invited users accepted the invitation, then the pendingMatch is "elevated" to runningMatch...
     final ConcurrentHashMap<String, PendingMatch> pendingMatchMap = new ConcurrentHashMap<>();
+
+    // This runningMatch structure contains all the actual running matches. But the scores? See later...
     final ConcurrentHashMap<String, MatchDTO> runningMatch = new ConcurrentHashMap<>();
 
     @Async
     @PostMapping("/inviteFriends")
     @Override
     public ResponseEntity<ServerResponseDTO<String>> inviteFriends(@RequestBody InviteFriendRequestDTO request)
+    // This endpoint it's used to store the invitation made by a user for its friend.
+    // BE ATTENTION: this endpoint it's used by the user that want to start a match, BUT also by the Invited-Rival-User
+    // that has accepted the invitation, and now informs the server about its team in order to complete all the
+    // invited-user-information into server-side -> Remember also the Roles!
     {
         ServerResponseDTO<String> responseMessage = null;
         HttpStatus responseHttp;
         boolean checkLogin = SessionManagement.getInstance().isUserLogged(request.getUserInviter());
         if (checkLogin)
         {
-            if (request.getGameId().isEmpty()) // If it is first time that i receive that invite...
+            if (request.getGameId().isEmpty()) // If the gameId is empty, then this invite came from InviterUser.
             {
                 request.setAutoGameId();
                 invites.add(new InviteFriends(request));
@@ -194,10 +213,10 @@ public class LoggedUserControllerImpl implements LoggedUserControllerInterface
                 responseMessage = new ServerResponseDTO<>(request.getGameId());
                 invites.removeIf((invite -> invite.getGameId().equals(request.getGameId()))); // remove the incomplete invite
                 System.out.print("inviteFriends: Received invite from Rival " + request.getUserInviter());
-                /* SOLO PER DEBUG
+                /* ONLY FOR DEBUG
                 invites.forEach(invite ->
                 {
-                    assert (!invite.getGameId().equals(request.getGameId())); // DBG. Se va storto, la remove ha funzionato!
+                    assert (!invite.getGameId().equals(request.getGameId())); // DBG. Control that the old invite is truly removed.
                 });
                  */
 
@@ -215,6 +234,7 @@ public class LoggedUserControllerImpl implements LoggedUserControllerInterface
     @PostMapping("/checkInvite")
     @Override
     public ResponseEntity<ServerResponseDTO<InviteFriends>> checkInvite(@RequestBody String usernameRequester)
+    // This endpoint checks if this requesterUser was invited to play
     {
         ServerResponseDTO<InviteFriends> receivedInvite = null;
         HttpStatus httpStatus = HttpStatus.OK;
@@ -228,13 +248,14 @@ public class LoggedUserControllerImpl implements LoggedUserControllerInterface
                     if (usernameRequester.equals(usernameRival))
                     {
                         receivedInvite = new ServerResponseDTO<>(invite);
-                        //System.out.println("True in if RIVAL");
                         break;
                     }
                 }
 
-                for (String usernameInTeam : invite.getYourTeam()) {
-                    if (usernameInTeam.equals(usernameRequester)) {
+                for (String usernameInTeam : invite.getYourTeam())
+                {
+                    if (usernameInTeam.equals(usernameRequester))
+                    {
                         receivedInvite = new ServerResponseDTO<>(invite);
                         break;
                     }
@@ -243,7 +264,7 @@ public class LoggedUserControllerImpl implements LoggedUserControllerInterface
         } else
             httpStatus = HttpStatus.UNAUTHORIZED;
 
-        // -------------------- ONLY FOR DEBUG --------------------
+        // -------------------- ONLY FOR PRINT MESSAGES --------------------
         if ((receivedInvite != null) && (httpStatus == HttpStatus.OK)) {
             System.out.println("checkInvite: Invite found for [" + usernameRequester + "] received by [" +
                     receivedInvite.getResponseMessage().getUserInviter() + "]");
@@ -252,7 +273,7 @@ public class LoggedUserControllerImpl implements LoggedUserControllerInterface
             System.out.println("checkInvite: No logged user");
         else
             System.out.println("checkInvite: No invite found for [" + usernameRequester + "]");
-        // ----------------------------------------------------------
+        // ------------------------------------------------------------------
         return new ResponseEntity<>(receivedInvite, httpStatus);
     }
 
@@ -260,89 +281,76 @@ public class LoggedUserControllerImpl implements LoggedUserControllerInterface
     @PostMapping("/replyInvite")
     @Override
     public ResponseEntity<ServerResponseDTO<MatchDTO>> replyInvite(@RequestBody InviteReplyDTO replyInvite)
-    // This function handle the replyInvite. It necessary to know which is the Invite and who is the refuser
+    // This endpoint handle the reply for an invitation (ACCEPT or REJECT).
     {
         ServerResponseDTO<MatchDTO> response = null;
         HttpStatus httpStatus = HttpStatus.OK;
-        InviteFriends r = invites.stream().filter(invite -> invite.getGameId().equals(replyInvite.getGameId())).collect(Collectors.toList()).get(0);
 
-        if (!replyInvite.getInviteState()) // If the invite has been refused...
+        List<InviteFriends> tempList = invites.stream().filter(invite -> invite.getGameId().equals(replyInvite.getGameId())).collect(Collectors.toList());
+        if(tempList != null) // If the server found the invite specified in the InviteReplyDTO...
         {
-            System.out.println("replyInvite: " + replyInvite.getSenderUsername() + " refused the invite made by " + r.getUserInviter() );
-            //invites.removeIf(invite -> invite.getGameId().equals(replyInvite.getGameId()));
-            invites.remove(r);
-            // -------------------- ONLY FOR DEBUG --------------------
-            invites.forEach(invite ->
+            InviteFriends r = tempList.get(0);
+            if (!replyInvite.getInviteState()) // If the invite has been refused...
             {
-                assert (!invite.getGameId().equals(replyInvite.getGameId())); // DBG. Se va storto, la remove non funziona!
-            });
-            // ----------------------------------------------------------
-            pendingMatchMap.get(replyInvite.getGameId()).wakeUpAllThreads();
-            pendingMatchMap.remove(replyInvite.getGameId()); // Free the memory for the old pendingMatch
-            //response = new ServerResponseDTO<>(0); // The 0, means that someone have refused the invite
+                System.out.println("replyInvite: " + replyInvite.getSenderUsername() + " refused the invite made by " + r.getUserInviter() );
+                invites.remove(r);
+                pendingMatchMap.get(replyInvite.getGameId()).wakeUpAllThreads(); // wakeUp all the threads in waitingRoom
+                pendingMatchMap.remove(replyInvite.getGameId()); // Free the memory for the old pendingMatch
+            }
+            else
+            {
+                System.out.println("replyInvite: " + replyInvite.getSenderUsername() + "accepted the invite made by " + r.getUserInviter());
+                // WARNING: Those two 'addWaiting...' are BLOCKING-FUNCTION. Beacuse here is simulated the waitingRoom.
+                if (replyInvite.getInvitedAsFriend())
+                    pendingMatchMap.get(replyInvite.getGameId()).addWaitingFriend(replyInvite.getSenderUsername());
+                else
+                    pendingMatchMap.get(replyInvite.getGameId()).addWaitingRival(replyInvite.getSenderUsername());
+
+                // When a thread awakes, it must understand if all the other player has accepted or not.
+                PendingMatch pendingMatch = pendingMatchMap.get(replyInvite.getGameId()); // retrieve the PendingMatch
+                if (pendingMatch != null)
+                {
+                    // BE ATTENTION: the 'tempList' update is NEEDED:
+                    // -] In case of Rejection -> beacyse the pendingMatch will be removed from the refuser.
+                    // -] In case all players have accepted the invite -> because there are thread that has the referece
+                    //    to the incomplete pendingMatch.
+
+                    tempList = invites.stream().filter(invite -> invite.getGameId().equals(replyInvite.getGameId())).collect(Collectors.toList());
+
+                    MatchDTO matchDTO;
+                    if(tempList != null && !tempList.isEmpty())
+                    {
+                        r = tempList.get(0);
+                        matchDTO = new MatchDTO(replyInvite.getGameId(),
+                                pendingMatch.getInviterTeamMember(), r.getRoles(),
+                                pendingMatch.getRivalsTeamMember(), r.getRivalsRoles());
+
+                        runningMatch.putIfAbsent(replyInvite.getGameId(), matchDTO); // The pendingMatch is elevated to RunningMatch
+                    }
+                    else
+                    {
+                        System.out.println("replyInvite: sending Refused Invitation MSG to " + replyInvite.getSenderUsername());
+                        matchDTO = null;
+                    }
+                    response = new ServerResponseDTO<>(matchDTO);
+                }
+                else // The else means that, someone of the invited user has refused the invite
+                {    // So each thread that was waiting in the latch, now awoken BUT because someone has rejected the invite
+                    if (pendingMatch == null)
+                        System.out.println("replyInvite: sending Refused Invitation MSG to " + replyInvite.getSenderUsername());
+                }
+            }
         }
         else
-        {
-            System.out.println("replyInvite: " + replyInvite.getSenderUsername() + "accepted the invite made by " + r.getUserInviter());
-            // Metto in attesa il replySender
-            if (replyInvite.getInvitedAsFriend())
-                pendingMatchMap.get(replyInvite.getGameId()).addWaitingFriend(replyInvite.getSenderUsername());
-            else
-                pendingMatchMap.get(replyInvite.getGameId()).addWaitingRival(replyInvite.getSenderUsername());
-
-            PendingMatch pendingMatch = pendingMatchMap.get(replyInvite.getGameId()); // retrieve the PendingMatch related to this reply
-            if (pendingMatch != null && r != null)
-            {
-                // l'aggiornamento di r è NECESSARIO, perchè altrimenti gli users che erano entrati in attesa prima che
-                // il rivale costruisse la sua squadra, manterrebero il riferimento all'invito INCOMPLETO.
-
-                List<InviteFriends> tempList = invites.stream().filter(invite -> invite.getGameId().equals(replyInvite.getGameId())).collect(Collectors.toList());
-
-                MatchDTO matchDTO;
-                if(tempList != null && !tempList.isEmpty())
-                {
-                    r = tempList.get(0);
-                    matchDTO = new MatchDTO(replyInvite.getGameId(),
-                            pendingMatch.getInviterTeamMember(), r.getRoles(),
-                            pendingMatch.getRivalsTeamMember(), r.getRivalsRoles());
-
-                    runningMatch.putIfAbsent(replyInvite.getGameId(), matchDTO);
-                }
-                else // I go in to this else, because there is one user that refused the invite and due to race condition and
-                     // i(this thread) waked up with the pendingMatch still in memory.
-                {
-                    System.out.println("replyInvite: sending Refused Invitation MSG to " + replyInvite.getSenderUsername());
-                    matchDTO = null;
-                }
-                /*
-                // -------------------- ONLY FOR DEBUG --------------------
-                System.out.println("matchDTO = { InviterTeam = [ " + matchDTO.getInviterTeam() + " ]\n" +
-                        "InviterTeamRoles=" + matchDTO.getRolesInviterTeam() + "]\n" +
-                        "RivalTeam = [ " + matchDTO.getRivalTeam() + " ]\n" +
-                        "RivalTeamRoles= [ " + matchDTO.getRolesRivalTeam() + " ]}");
-                if(returned != null)
-                    System.out.println("Thread: esisteva già il MatchDTO nei runningMatch");
-                else
-                    System.out.println("THread: *** questo messaggio dovrei vederla una volta ***");
-                // ----------------------------------------------------------
-
-                 */
-                response = new ServerResponseDTO<>(matchDTO); // The 1, means that all of users have accepted the invite
-            }
-            else // The else means that, someone of the invited user has refused the invite"
-            {    // So each thread that was waiting in the latch, now has been wakedUp BUT beacuse someone has rejected the invite
-                if (pendingMatch == null)
-                    System.out.println("replyInvite: sending Refused Invitation MSG to " + replyInvite.getSenderUsername());
-            }
-        }
+            httpStatus = HttpStatus.BAD_REQUEST;
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @PostMapping("/getMyMatches")
     @Override
     public ResponseEntity<ServerResponseDTO<List<MatchDTO>>> getMyMatches(@RequestBody String usernameRequester)
+    // This endpoint it's used to retrieve all played matches
     {
-
         System.out.println("getMyMatches: request from [" + usernameRequester + "]");
         HttpStatus responseHttp;
         ServerResponseDTO<List<MatchDTO>> getAllMatchesResponse = null;
@@ -365,6 +373,7 @@ public class LoggedUserControllerImpl implements LoggedUserControllerInterface
     @PostMapping("/addNewMatch")
     @Override
     public ResponseEntity<ServerResponseDTO<Integer>> addNewMatch(@RequestBody MatchResultRequestDTO userMatchResult)
+    // This endpoint it's used by the two Prompter to inform the server only by its score.
     {
         System.out.println("addNewMatch: " + userMatchResult.getMatchId() + " ScoreInv" + userMatchResult.getScoreInviterTeam() + " | ScoreRiv"
                 + userMatchResult.getScoreRivalTeam() + " | Requester: " + userMatchResult.getUsernameRequester());
@@ -373,7 +382,8 @@ public class LoggedUserControllerImpl implements LoggedUserControllerInterface
         ServerResponseDTO<Integer> addMatchResponse = new ServerResponseDTO<>(1);
 
         List<InviteFriends> r = invites.stream().filter(invite -> invite.getGameId().equals(userMatchResult.getMatchId())).collect(Collectors.toList());
-        if (r != null && !r.isEmpty()) {
+        if (r != null && !r.isEmpty())
+        {
             InviteFriends inviteToRemove = r.get(0);
             invites.remove(inviteToRemove);
         }
@@ -381,19 +391,24 @@ public class LoggedUserControllerImpl implements LoggedUserControllerInterface
         MatchDTO matchInfo = runningMatch.get(userMatchResult.getMatchId());
         if (matchInfo != null)
         {
-            if (userMatchResult.getScoreInviterTeam() != null) {
+            if (userMatchResult.getScoreInviterTeam() != null)
+            {
                 System.out.println("addNewMatch: I'm the Inviter Prompter. We scored: " + userMatchResult.getScoreInviterTeam());
-                matchInfo.setScoreInviterTeam(userMatchResult.getScoreInviterTeam()); // SET BLOCCANTE SE IL SERVER NON HA L'INFORMAZIONE COMPLETA
+
+                // This function will block the thread if the server has not the complete information on both scores.
+                matchInfo.setScoreInviterTeam(userMatchResult.getScoreInviterTeam());
             }
             else
             {
                 System.out.println("addNewMatch: I'm the Rival Prompter. We scored: " + userMatchResult.getScoreRivalTeam());
-                matchInfo.setScoreRivalTeam(userMatchResult.getScoreRivalTeam());  // SET BLOCCANTE SE IL SERVER NON HA L'INFORMAZIONE COMPLETA
+
+                // This function will block the thread if the server has not the complete information on both scores.
+                matchInfo.setScoreRivalTeam(userMatchResult.getScoreRivalTeam());
             }
 
             matchInfo = runningMatch.get(userMatchResult.getMatchId());
 
-            if (matchInfo.infoMatchIsComplete()) // questo if dovrebbe essere inutile, perchè vuol dire che il latch è a 0 e quindi ho entrambe le info
+            if (matchInfo.infoMatchIsComplete())
             {
                 System.out.println("addNewMatch: COMPLETE INFORMATION ON MATCH -> Inv[" + matchInfo.getScoreInviterTeam() + "] Riv[" + matchInfo.getScoreRivalTeam() + "]");
                 MatchDAO matchDAO = new MatchDAO();
@@ -402,10 +417,6 @@ public class LoggedUserControllerImpl implements LoggedUserControllerInterface
                 if (addOpStatus)
                 {
                     System.out.println("addNewMatch: The match has been successfully added into DB");
-
-                    //  NON RIMUOVERE IL MATCH APPENA INSERITO NEL DB dai RunningMatch, altrimenti quando ricevi una richiesta di getResult
-                    //  non sai se hai già l'info completa.
-                    // runningMatch.remove(userMatchResult.getMatchId());
                 }
                 else
                 {
@@ -424,10 +435,10 @@ public class LoggedUserControllerImpl implements LoggedUserControllerInterface
         return new ResponseEntity<>(addMatchResponse, responseHttp);
     }
 
-
     @PostMapping("/getMatchResult")
     @Override
     public ResponseEntity<ServerResponseDTO<MatchResultRequestDTO>> getMatchResult(@RequestBody MatchResultRequestDTO matchResultRequestDTO)
+    // This endpoint provide the scores-info about a match that just ended (IF THE SERVER HAS THIS INFO, ELSE...)
     {
         ServerResponseDTO<MatchResultRequestDTO> response;
         HttpStatus httpStatus;
@@ -435,7 +446,7 @@ public class LoggedUserControllerImpl implements LoggedUserControllerInterface
         System.out.println("getMatchResult: IdMatch=" + matchResultRequestDTO.getMatchId() + "| DA= " +
                 matchResultRequestDTO.getUsernameRequester());
 
-        if(matchResultRequestDTO == null)
+        if(matchResultRequestDTO == null) // if the request matchId is Wrong...
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 
         MatchDTO matchDTO = runningMatch.get(matchResultRequestDTO.getMatchId());
@@ -444,7 +455,7 @@ public class LoggedUserControllerImpl implements LoggedUserControllerInterface
 
         while(!matchDTO.infoMatchIsComplete())
         {
-            // Se il server non ha ancora l'info completa, allora il thread dovrà aspettare per averla.
+            // If the server still doesn't have the info, then the thread must wait.
             try { Thread.sleep(2000); } catch (Exception e) {}
             System.out.println("getMatchResult: i'm a thread waiting for the info (SCORES) completion");
         }
@@ -465,96 +476,4 @@ public class LoggedUserControllerImpl implements LoggedUserControllerInterface
 
         return new ResponseEntity<>(response, httpStatus);
     }
-
-
-
 }
-/*
-    ************************************************ 08/03/2024 ********************************************************
-        PROGRESSI:
-            -] Creata e gestita la pagina che permette al primo Rival di crearsi il suo Team,
-               nascondendo gli utenti già invitati.
-            -] Il primo Rival può quindi creare il suo team esattamente nello stesso modo in cui lo ha fatto
-               l'Inviter.
-            -] L'invito fatto dall'Inviter viene correttamente aggiornato nell'istante in cui il (primo) rival
-               crea la sua squadra --> Ciò è necessario per informare lato Javascript e Java CHI sono questi rivali
-               e quindi renderli consci (quando eseguono la checkInvite) che sono stati invitati.
-               Ho sfruttato lo stesso endpoint /inviteFriend anche quando il Rival costruisce la propria
-               squadra, visto che per il rival è un invito che fa ai SUOI amici -> Vedi IF nel PostMapping.
-            -] Adesso, ogni giocatore che effettua la checkInvite, capisce perfettamente di essere stato invitato,
-               da chi, e se è in squadra Blu(dell'Inviter) o Rossa(del Rival) -> Gestito nel Javascript del checkInvite.
-
-        DA FARE:
-            -] Gestire il rifiuto dell'invito lato Javascript e Java(PostMapping).    --------->    FATTO il 10/03/2024
-            -] Bisogna gestire il passo successivo, ossia l'attesa dei giocatori.     --------->    FATTO il 11/03/2024
-            -] Aggiornare quindi i playersWaiting che "accettano" l'invito.           --------->    FATTO il 11/03/2024
-            -] Direi di aggiungere un checkInvite anche se si clicca su CreateYourTeam in modo tale da dire
-               all'utente --> "Prima di crearti un tuo team, sei già stato invitato -> Che fai?"
-               obbligandolo quindi ad ACCETTARE o RIFIUTARE.
-               Perchè altrimenti questo utente potrebbe creare un invito che riguarda utenti già invitati ed in
-               attesa di altri -> creando inviti annidati! <(o_O)>
-  ****************************************** ****************************************** ********************************
-
-
-  ************************************************** 10/03/2024 ********************************************************
-        PROGRESSI:
-            -] PROPOSTA DI MODIFICA: Cambiare il nome 'gameId' con 'inviteId'
-            -] Aggiunto l'endpoint /replyInvite per gestire le richieste di Accettazione o Rifiuto di inviti.
-            -] Aggiunta la classe InviteReplyDTO per rappresentare la richiesta di accettazione/rifiuto di un invito.
-               Quando un utente rifiuta l'invito, esso viene cancellato dalla memoria del server
-
-        DA FARE:
-            -] Scegliere un numero costante di giocatori che possono comporre una squadra? Oppure dedurlo da quanti
-               amici invita l'Inviter? ( -> Più realistico ma è fattibile lato Erlang?)
-               Limitare di conseguenza il Rival quando crea la sua squadra.
-
-  ****************************************** ***************************************** *********************************
-
-  ************************************************** 11/03/2024 ********************************************************
-    PROGRESSI:
-            -] Cambiato il tipo della classe Hashmap in ConcurrentHashMap, perchè la classe HashMap non è ThreadSafe,
-               quindi i blocchi synchronized{...} non servono più. -> Cancellare le HashMap non ThreadSafe.
-            -] Creata la classe PendingMatch come sostituta delle classi RivalWaiting e TeamCreationWaiting.
-               La classe contiene la lista degli utenti che hanno accettato l'invito e che quindi sono in attesa.
-            -] Creata la pagina di waiting, in cui viene SEMBRA venga mostrata solo la clessidra, con stile e JS.
-            -] Gestita l'attesa degli utenti che accettano l'invito con LATCH all'interno della classe PendingMatch.
-               Per adesso il Latch è inizializzato a 4 --> OBBLIGATORO AVERE 2 SQUADRE DA 2!
-               La gestione del countdown() viene fatta dai due metodi pubblici.
-            -] Modificato l'invio della risposta dell'invito.
-               Adesso l'invito (accettato o meno) viene eseguito nella pagina di waiting.
-
-    DA FARE - RIEPILOGO PER GAETANO:
-            -] Proseguire con la pagina di gioco vera e propria, quindi quella che si interfaccia con Erlang.
-            -] Scegliere un numero costante di giocatori (SEMPLIFICAZIONE) -> 3 -> Controllo in Javascript.
-            -] Tutto l'ADMIN
-  ****************************************** ***************************************** *********************************
-*/
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -2,8 +2,16 @@ package it.unipi.dsmt.dsmt_taboo.model.DTO;
 
 public class UserSearchRequestDTO
 {
-    private String requesterUsername; // logged username
-    private String usernameToSearch;  // username to search in the DB
+    /**
+     * This class represents a Data Transfer Object (DTO) used for encapsulating user search
+     * request data in the system. It includes fields for the username of the requester and
+     * the username to be searched in the database. A constructor is provided to initialize
+     * the object with these fields. Getter and setter methods are available for each field
+     * to retrieve and update their values.
+     */
+
+    private String requesterUsername; // Logged username
+    private String usernameToSearch;  // Username to search in the DB
 
     public UserSearchRequestDTO(String requesterUsername, String usernameToSearch)
     {

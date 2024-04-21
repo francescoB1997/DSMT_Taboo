@@ -9,16 +9,27 @@ import it.unipi.dsmt.dsmt_taboo.model.DTO.FriendDTO;
 import it.unipi.dsmt.dsmt_taboo.utility.SessionManagement;
 
 public class FriendDAO extends BaseDAO
-    // This class represents the friendships of a specific user -> Username
 {
+    /**
+     * This class implements operations to handle friendships of a specific user in the MySQL Database.
+     * It provides methods to retrieve the list of friends for a user, remove a friend from the user's friend list,
+     * and add a friend for the user. The class utilizes the BaseDAO class for database connectivity.
+     * It handles exceptions related to database connectivity, such as DatabaseNotReachableException,
+     * and ensures error logging for debugging purposes. The class also includes private methods
+     * to check if a user exists in the database and if a specified user is already a friend of the current user.
+     * The class maintains the username of the current user and encapsulates it for use in the DAO operations.
+     */
+
     private String username;
 
     public FriendDAO(String username)
     {
-        //System.out.println("FriendDAO: " + username);
         this.username = username;
     }
 
+    /*
+     * Retrieves the list of friends for the user
+     */
     public List<FriendDTO> getFriendList()
     {
         List<FriendDTO> friendList = null;
@@ -53,10 +64,14 @@ public class FriendDAO extends BaseDAO
 
         return friendList;
     }
+
+    /*
+     * Removes a friend from the user's friend list
+     */
     public boolean removeFriendDB(String usernameToRemove) {
         String removeQuery = "DELETE FROM " + DB_NAME + ".friendship " +
                 "WHERE (Username1 = ? AND Username2 = ?) OR (Username1 = ? AND Username2 = ?)";
-        //Indipendentemente dall'ordine dei nomi degli utenti
+        //Regardless of the order of users' names
 
         try (Connection connection = getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(removeQuery)) {
@@ -79,6 +94,9 @@ public class FriendDAO extends BaseDAO
         }
     }
 
+    /*
+     * Checks if the specified user exists in the database
+     */
     private Boolean checkIfUserExists(String username)
     {
         Boolean result = false;
@@ -102,6 +120,9 @@ public class FriendDAO extends BaseDAO
         return result;
     }
 
+    /*
+     * Adds a friend for the user
+     */
     public Integer addFriend(String usernameToAdd)
     {
         String addFriendQuery = "INSERT INTO " + DB_NAME + ".friendship (Username1, Username2) VALUES (?, ?)";
@@ -121,7 +142,7 @@ public class FriendDAO extends BaseDAO
         }
         catch (SQLIntegrityConstraintViolationException ex) //Handle the Duplicate entry exception (ALREADY FRIEND)
         {
-            System.out.println("addFriend query exception: già amici");
+            System.out.println("addFriend query exception: Already Friends");
             return 0;
         }
         catch (Exception ex)
@@ -134,6 +155,9 @@ public class FriendDAO extends BaseDAO
         }
     }
 
+    /*
+     * Checks if the specified user is already a friend of the current user
+     */
     private Boolean isAlreadyFriend(String username2)
     {
         Boolean alreadyFriend = false;

@@ -19,10 +19,9 @@ public class LoginControllerImpl implements LoginControllerInterface
 {
     SessionManagement session;
 
-    @PostMapping("/login")
+    @PostMapping("/login") // This function handle the login request of a user
     @Override
     public ResponseEntity<ServerResponseDTO<String>> loginRequest(@RequestBody  LoginRequestDTO loginRequest)
-        // This function handle the login request of a user
     {
         String usernameRequester = loginRequest.getUsername();
         String passwordRequester = loginRequest.getPassword();
@@ -32,7 +31,7 @@ public class LoginControllerImpl implements LoginControllerInterface
 
         UserDAO user = new UserDAO();
 
-        System.out.println("login: request from [" + usernameRequester + "]");
+        System.out.println("login: Log-in Request From [" + usernameRequester + "]");
 
         try
         {
@@ -44,7 +43,7 @@ public class LoginControllerImpl implements LoginControllerInterface
                 loginResponse = new ServerResponseDTO<>("LoginOK");
             responseHttp = HttpStatus.OK;
             session.setLogUser(usernameRequester);
-            System.out.println("login: the user [" + usernameRequester + "] logged successfully");
+            System.out.println("login: The User [" + usernameRequester + "] Successfully Logged");
         }
         catch (Exception e)
         {
@@ -68,16 +67,15 @@ public class LoginControllerImpl implements LoginControllerInterface
         return new ResponseEntity<>(loginResponse, responseHttp);
     }
 
-    @PostMapping("/logout")
+    @PostMapping("/logout")// This method is the handler for the logout requests
     @Override
     public ResponseEntity<ServerResponseDTO<String>> logoutRequest(@RequestBody String username)
-        // This method is the handler for the logout requests
     {
         ServerResponseDTO<String> logoutResponse;
         HttpStatus responseHttp;
         session = SessionManagement.getInstance();
 
-        System.out.println("LoginController: logout request from [" + username + "]");
+        System.out.println("logout: Logout Request From [" + username + "]");
 
         if(!session.isUserLogged(username))
         {
@@ -91,22 +89,22 @@ public class LoginControllerImpl implements LoginControllerInterface
         }
         session.logoutUser(username);
 
-        System.out.println("LoginController: the user [" + username + "] successfully exited the system");
+        System.out.println("logout: The User [" + username + "] Successfully Exited The System");
 
         return new ResponseEntity<>(logoutResponse, responseHttp);
     }
 
-    @PostMapping("/signup")
+    @PostMapping("/signup") // This function is responsible for the signup action request
     @Override
     public ResponseEntity<ServerResponseDTO<String>> signUp(@RequestBody UserDTO userToSignup)
-        // This function is responsible for the signup action
     {
         UserDAO user = new UserDAO();
-        System.out.println("signup: request from [" + userToSignup.getUsername() + "]");
+        System.out.println("signup: Sign-up Request From [" + userToSignup.getUsername() + "]");
         int control;
 
+        // To avoid conflict with admin credentials
         if(userToSignup.getUsername().contains(Constant.usernameAdmin)
-            || userToSignup.getUsername().equals(Constant.usernameAdmin)) // non fare il furbo
+            || userToSignup.getUsername().equals(Constant.usernameAdmin))
             control = -1;
         else
             control = user.signup(userToSignup);
@@ -115,14 +113,14 @@ public class LoginControllerImpl implements LoginControllerInterface
         HttpStatus responseHttp;
         if (control == 1)
         {
-            System.out.println("signup: [" + userToSignup.getUsername() + "] completely registered");
+            System.out.println("signup: [" + userToSignup.getUsername() + "] has completed the Registration");
             signupResponse = new ServerResponseDTO<>("Signup Success");
             responseHttp = HttpStatus.OK;
         }
         else if(control == 0)
         {
-            System.out.println("signup: username [" + userToSignup.getUsername() + "] already exists");
-            signupResponse = new ServerResponseDTO<>("Username alredy used");
+            System.out.println("signup: The username: [" + userToSignup.getUsername() + "] already exists");
+            signupResponse = new ServerResponseDTO<>("Username already used");
             responseHttp = HttpStatus.BAD_REQUEST;
         }
         else

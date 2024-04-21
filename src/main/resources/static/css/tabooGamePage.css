@@ -307,13 +307,12 @@ button
 }
 
 .disabled {
-    opacity: 0.5; /* Opacità ridotta per il pulsante disabilitato */
-    cursor: not-allowed; /* Cambia il cursore quando si passa sopra il pulsante disabilitato */
+    opacity: 0.5; /* Reduced opacity for disabled button */
+    cursor: not-allowed; /* Change the cursor when hovering over the disabled button */
 }
 
 .enabled {
-    opacity: 1; /* Opacità ripristinata per il pulsante disabilitato */
-     /* Cambia il cursore quando si passa sopra il pulsante disabilitato */
+    opacity: 1; /* Opacity restored for disabled button */
 }
 
 #img_pass_card

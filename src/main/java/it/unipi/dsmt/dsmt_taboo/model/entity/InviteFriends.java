@@ -4,14 +4,24 @@ import it.unipi.dsmt.dsmt_taboo.model.DTO.InviteFriendRequestDTO;
 
 import java.util.ArrayList;
 
-public class InviteFriends {
+public class InviteFriends
+{
+    /**
+     * This class represents an invitation to a game session. It encapsulates information about the game,
+     * the inviting user, the teams involved, and the roles assigned to each team member. The class initializes
+     * its fields using data from an InviteFriendRequestDTO object and provides methods to retrieve and set
+     * information about the game ID, inviting user, teams, and roles. Additionally, it includes a method
+     * to print detailed information about the invitation, including the requester, game ID, team members,
+     * and their respective roles. The class facilitates the management and representation of game invitations
+     * within the application.
+     */
 
     String gameId;
     String userInviter;
     private ArrayList<String> yourTeam; // This is the inviter team
     private ArrayList<String> roles;    // This represents the inviter team roles
     private ArrayList<String> rivals;   // This is the rivals team
-    private ArrayList<String> rivalsRoles;
+    private ArrayList<String> rivalsRoles; // This represents the rivals team roles
 
     public InviteFriends(InviteFriendRequestDTO inviteFriend)
     {
@@ -67,7 +77,7 @@ public class InviteFriends {
 
     public void printInfoInvite()
     {
-        System.out.println("Invito: Requester[" + this.userInviter + "] , IDRequest[" + this.gameId + "]");
+        System.out.println("Invitation: Requester[" + this.userInviter + "] , ID_Request[" + this.gameId + "]");
         System.out.print("Team Blue { ");
         this.yourTeam.forEach(friendUsername -> System.out.print("[" + friendUsername + "] "));
         System.out.println(" }");

@@ -10,9 +10,7 @@ import java.util.Map;
 public interface AdminControllerInterface
 {
     public ResponseEntity<ServerResponseDTO<Integer>> deleteUser(@RequestBody AdminRequestDTO userToDeleteRequest);
-
     public ResponseEntity<ServerResponseDTO<List<UserDTO>>> getAllSignedUsers(@RequestBody AdminRequestDTO getAllUserRequest);
-
     public ResponseEntity<ServerResponseDTO<List<MatchDTO>>> getAllMatches(@RequestBody AdminRequestDTO getAllMatchesRequest);
 
 }

@@ -1,12 +1,20 @@
 package it.unipi.dsmt.dsmt_taboo.model.DTO;
 
-import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 
-public class InviteFriendRequestDTO //InviteFriendRequestDTO
+public class InviteFriendRequestDTO
 {
+    /**
+     * This class represents a Data Transfer Object (DTO) used for encapsulating information about
+     * a friend invitation request in the system. It contains fields to store details such as the game ID,
+     * the user inviting friends, the invited friends, their respective roles in the game, and the roles of rivals.
+     * The class provides constructors to initialize its fields, as well as getter and setter methods for accessing
+     * and modifying the invitation details. Additionally, it includes a method to generate a unique game ID
+     * if one is not provided and a method to print the invitation information for debugging purposes.
+     */
+
     private String gameId;
     private ArrayList<String> yourTeam;
     private ArrayList<String> roles;
@@ -77,7 +85,7 @@ public class InviteFriendRequestDTO //InviteFriendRequestDTO
 
     public void printInfoInvite()
     {
-        System.out.println("Invito: Requester[" + this.userInviter + "] , IDRequest[" + this.gameId + "]");
+        System.out.println("Invitation: Requester[" + this.userInviter + "] , ID_Request[" + this.gameId + "]");
         System.out.print("Team Blue { ");
         this.yourTeam.forEach(friendUsername -> System.out.print("[" + friendUsername + "] "));
         System.out.println(" }");

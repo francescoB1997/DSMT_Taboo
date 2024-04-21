@@ -5,37 +5,45 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import com.fasterxml.jackson.databind.ser.std.DateTimeSerializerBase;
 import it.unipi.dsmt.dsmt_taboo.exceptions.DatabaseNotReachableException;
 import it.unipi.dsmt.dsmt_taboo.model.DTO.MatchDTO;
 import it.unipi.dsmt.dsmt_taboo.model.DTO.MatchResultRequestDTO;
-import it.unipi.dsmt.dsmt_taboo.model.DTO.ServerResponseDTO;
-import org.springframework.http.HttpStatus;
 
 
 public class MatchDAO extends BaseDAO
 {
+    /**
+     * This class implements operations to handle matches in the MySQL database. It provides methods
+     * to add a new match to the database, retrieve a list of matches for a specified username,
+     * and retrieve the result of a match based on the match ID and username requester.
+     * The class extends the BaseDAO class for database connectivity and handles exceptions related
+     * to database connectivity, such as DatabaseNotReachableException. It includes constants for
+     * SQL error codes and encapsulates the logic for interacting with the match table in the database.
+     * The class also includes private methods to parse and process match data retrieved from the database,
+     * ensuring proper data handling and error logging for debugging purposes.
+     */
+
     private static final int MYSQL_DUPLICATE_PK = 1062;
     public MatchDAO() {super();}
 
+    /*
+     * Adds a new match to the database
+     */
     public boolean addNewMatch(MatchDTO match)
-    // Insert in BD a new Match
     {
         String insertQuery = "INSERT INTO " + DB_NAME + ".match " +
                 "(Team1, Team2, ScoreTeam1, ScoreTeam2, Timestamp) " + "VALUES (?, ?, ?, ?, ?)";
 
-        //Timestamp timestamp = Timestamp.valueOf(match.getMatchId());
 
         try (Connection connection = getConnection();
              PreparedStatement preparedStatement = connection.
-                                                    prepareStatement(insertQuery,
-                                                    PreparedStatement.RETURN_GENERATED_KEYS))
+                     prepareStatement(insertQuery,
+                             PreparedStatement.RETURN_GENERATED_KEYS))
         {
             preparedStatement.setString(1, match.getInviterTeam().toString());
             preparedStatement.setString(2, match.getRivalTeam().toString());
             preparedStatement.setInt(3, match.getScoreInviterTeam());
             preparedStatement.setInt(4, match.getScoreRivalTeam());
-            //preparedStatement.setTimestamp(5, timestamp);
             preparedStatement.setString(5, match.getMatchId());
 
             int rowsAffected = preparedStatement.executeUpdate();
@@ -66,44 +74,47 @@ public class MatchDAO extends BaseDAO
         }
     }
 
+    /*
+     * Retrieves the list of matches for the specified username
+     */
     public List<MatchDTO> getMatches(String username)
     {
         List<MatchDTO> listMatches = null;
 
         String userMatchesQuery = "SELECT * FROM " + DB_NAME + ".match " +
-                                  "WHERE Team1 LIKE ? OR Team2 LIKE ?";
+                "WHERE Team1 LIKE ? OR Team2 LIKE ?";
 
         try (Connection connection = getConnection();
-                 PreparedStatement preparedStatement = connection.
-                                                       prepareStatement(userMatchesQuery,
-                                                       PreparedStatement.RETURN_GENERATED_KEYS))
+             PreparedStatement preparedStatement = connection.
+                     prepareStatement(userMatchesQuery,
+                             PreparedStatement.RETURN_GENERATED_KEYS))
+        {
+            preparedStatement.setString(1, "%" + username + "%");
+            preparedStatement.setString(2, "%" + username + "%");
+            try (ResultSet resultSet = preparedStatement.executeQuery())
             {
-                preparedStatement.setString(1, "%" + username + "%");
-                preparedStatement.setString(2, "%" + username + "%");
-                try (ResultSet resultSet = preparedStatement.executeQuery())
+                listMatches = new ArrayList<>();
+                while (resultSet.next())
                 {
-                    listMatches = new ArrayList<>();
-                    while (resultSet.next())
-                    {
-                        String idMatch = resultSet.getString("Timestamp"); //Timestamp
-                        String team1 = resultSet.getString("Team1");
-                        String team2 = resultSet.getString("Team2");
-                        Integer scoreTeam1 = resultSet.getInt("ScoreTeam1");
-                        Integer scoreTeam2 = resultSet.getInt("ScoreTeam2");
+                    String idMatch = resultSet.getString("Timestamp"); //Timestamp
+                    String team1 = resultSet.getString("Team1");
+                    String team2 = resultSet.getString("Team2");
+                    Integer scoreTeam1 = resultSet.getInt("ScoreTeam1");
+                    Integer scoreTeam2 = resultSet.getInt("ScoreTeam2");
 
-                        ArrayList<String> team1List =
-                                new ArrayList<>(Arrays.asList(team1.split(",")));
-                        ArrayList<String> team2List =
-                                new ArrayList<>(Arrays.asList(team2.split(",")));
+                    ArrayList<String> team1List =
+                            new ArrayList<>(Arrays.asList(team1.split(",")));
+                    ArrayList<String> team2List =
+                            new ArrayList<>(Arrays.asList(team2.split(",")));
 
-                        MatchDTO match = new MatchDTO(idMatch, team1List,
-                                                      team2List, scoreTeam1,
-                                                      scoreTeam2);
-                        listMatches.add(match);
-                    }
-                    System.out.println("getMatches: OK");
+                    MatchDTO match = new MatchDTO(idMatch, team1List,
+                            team2List, scoreTeam1,
+                            scoreTeam2);
+                    listMatches.add(match);
                 }
+                System.out.println("getMatches: OK");
             }
+        }
         catch (Exception ex)
         {
             if(ex instanceof DatabaseNotReachableException)
@@ -117,12 +128,14 @@ public class MatchDAO extends BaseDAO
     }
 
 
+    /*
+     * Retrieves the result of a match based on the match ID and username requester
+     */
     public MatchResultRequestDTO getMatchResult(String matchId, String usernameRequester)
     {
         MatchResultRequestDTO mathResultToReturn = null;
 
-        String getMatchQuery = "SELECT * FROM " + DB_NAME + ".match " +
-                "WHERE (Timestamp = ?)"; //AND (Team1 LIKE ? OR Team2 LIKE ?)";
+        String getMatchQuery = "SELECT * FROM " + DB_NAME + ".match " + "WHERE (Timestamp = ?)";
 
         int attempt = 0;
 
@@ -131,11 +144,9 @@ public class MatchDAO extends BaseDAO
                      prepareStatement(getMatchQuery,
                              PreparedStatement.RETURN_GENERATED_KEYS))
         {
-            //Timestamp timestamp = Timestamp.valueOf(matchId);
-            //System.out.println("timestamp t string = " + timestamp.toString());
+
             preparedStatement.setString(1, matchId);
-            //preparedStatement.setString(2, "%" + usernameRequester + "%");
-            //preparedStatement.setString(3, "%" + usernameRequester + "%");
+
             do
             {
                 try (ResultSet resultSet = preparedStatement.executeQuery()) {

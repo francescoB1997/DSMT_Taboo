@@ -13,10 +13,23 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class UserDAO extends BaseDAO
-    // This class handle the UserDTO model and interact with the DB
 {
+    /**
+     * This class implements operations to handle user entities in the MySQL database.
+     * It provides methods for user signup, login, removal, and global user search.
+     * The class extends the BaseDAO class for database connectivity and handles exceptions
+     * related to database connectivity, such as DatabaseNotReachableException and SQLException.
+     * It includes methods to insert user information into the database during signup, authenticate
+     * users during login, remove users from the database, and search for users globally based on
+     * their usernames. The class encapsulates the logic for interacting with the user table in the
+     * database and ensures proper data handling and error logging for debugging purposes.
+     */
+
     public UserDAO() { super(); }
 
+    /*
+     * Inserte the user info of Sign up into db
+     */
     public int signup(UserDTO user)
     {
         String checkIfUserExistsQuery = "SELECT COUNT(*) as AccountExists FROM " + DB_NAME + ".user as u WHERE (u.username = ?);";
@@ -36,11 +49,11 @@ public class UserDAO extends BaseDAO
                     }
                 }
             } catch (SQLException ex) {
-                //ex.printStackTrace();
                 return -1;
             }
 
-            try (PreparedStatement preparedStatement = connection.prepareStatement(signupUserQuery)) // We can insert the new username
+            // We can insert the new username
+            try (PreparedStatement preparedStatement = connection.prepareStatement(signupUserQuery))
             {
                 preparedStatement.setString(1, user.getUsername());
                 preparedStatement.setString(2, user.getName());
@@ -71,6 +84,9 @@ public class UserDAO extends BaseDAO
         return 1;
     }
 
+    /*
+     * Login a user
+     */
     public void login(String username, String password) throws UserNotExistsException, DatabaseNotReachableException, SQLException
     {
         String loginQuery = "SELECT COUNT(*) as AccountExists FROM " + DB_NAME + ".user as u WHERE (u.username = ? AND u.password = ?);";
@@ -83,7 +99,7 @@ public class UserDAO extends BaseDAO
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 if (resultSet.next()) {
                     int userExists = resultSet.getInt("AccountExists");
-                    if (userExists == 0) // then, the user can't correctly login
+                    if (userExists == 0) // then, the user can't correctly log in
                         throw new UserNotExistsException();
                 }
             }
@@ -99,6 +115,9 @@ public class UserDAO extends BaseDAO
         }
     }
 
+    /*
+     * Remove a user
+     */
     public Boolean removeUser(String username)
     {
         String removeQuery = "DELETE FROM " + DB_NAME + ".user" + " WHERE username = ?";
@@ -121,6 +140,9 @@ public class UserDAO extends BaseDAO
         }
     }
 
+    /*
+     * Search users globally
+     */
     public List<UserDTO> globalSearchUser(String userToSearch)
     {
         List<UserDTO> globalSearchUserList = null;
@@ -155,10 +177,6 @@ public class UserDAO extends BaseDAO
             return  null;
         }
 
-        //System.out.println("\t*** Below the matching of users based on the searchRequest: ***");
-        //globalSearchUserList.forEach(searchedUserDTO -> System.out.println("[" + searchedUserDTO.getUsername() + "]"));
-
         return  globalSearchUserList;
     }
-
 }

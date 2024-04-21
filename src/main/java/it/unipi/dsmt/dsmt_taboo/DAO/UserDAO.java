@@ -3,6 +3,7 @@ package it.unipi.dsmt.dsmt_taboo.DAO;
 import it.unipi.dsmt.dsmt_taboo.exceptions.DatabaseNotReachableException;
 import it.unipi.dsmt.dsmt_taboo.exceptions.UserNotExistsException;
 import it.unipi.dsmt.dsmt_taboo.model.DTO.UserDTO;
+import it.unipi.dsmt.dsmt_taboo.utility.Constant;
 import it.unipi.dsmt.dsmt_taboo.utility.SessionManagement;
 
 import java.sql.Connection;
@@ -161,6 +162,8 @@ public class UserDAO extends BaseDAO
                 while (resultSet.next())
                 {
                     String username = resultSet.getString("Username");
+                    if(username.equals(Constant.usernameAdmin) || username.contains(Constant.usernameAdmin))
+                        continue;
                     String name = resultSet.getString("Name");
                     String surname = resultSet.getString("Surname");
 

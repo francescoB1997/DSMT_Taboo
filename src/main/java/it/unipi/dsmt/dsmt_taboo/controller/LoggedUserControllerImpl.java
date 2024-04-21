@@ -343,7 +343,7 @@ public class LoggedUserControllerImpl implements LoggedUserControllerInterface
         }
         else
             httpStatus = HttpStatus.BAD_REQUEST;
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        return new ResponseEntity<>(response, httpStatus);
     }
 
     @PostMapping("/getMyMatches")
